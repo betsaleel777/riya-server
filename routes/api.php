@@ -44,13 +44,13 @@ Route::apiResource('personnes', PersonneController::class)->middleware('auth:san
 Route::apiResource('terrains', TerrainController::class)->middleware('auth:sanctum');
 Route::apiResource('users', UserController::class)->middleware('auth:sanctum');
 Route::apiResource('visites', VisiteController::class)->middleware('auth:sanctum');
-Route::resource('frais', FraisController::class)->middleware('auth:sanctum');
-Route::resource('avances', AvanceController::class)->middleware('auth:sanctum');
-Route::resource('cautions', CautionController::class)->middleware('auth:sanctum');
-Route::resource('contrats', ContratController::class)->middleware('auth:sanctum');
+Route::apiResource('frais', FraisController::class)->middleware('auth:sanctum');
+Route::apiResource('avances', AvanceController::class)->middleware('auth:sanctum');
+Route::apiResource('cautions', CautionController::class)->middleware('auth:sanctum');
+Route::apiResource('contrats', ContratController::class)->middleware('auth:sanctum');
 Route::resource('societes', SocieteController::class)->except(['create', 'edit', 'destroy', 'show'])->middleware('auth:sanctum');
-Route::resource('achats', AchatController::class)->except(['update'])->middleware('auth:sanctum');
-Route::resource('paiements', PaiementController::class)->middleware('auth:sanctum');
+Route::resource('achats', AchatController::class)->except(['update', 'edit', 'create'])->middleware('auth:sanctum');
+Route::apiResource('paiements', PaiementController::class)->middleware('auth:sanctum');
 
 Route::get('societe-count', [CountController::class, 'societe'])->middleware('auth:sanctum');
 Route::get('paiements/payable/{id}', [PaiementController::class, 'getByPayable'])->middleware('auth:sanctum');

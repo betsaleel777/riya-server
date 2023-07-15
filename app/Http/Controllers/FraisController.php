@@ -33,18 +33,18 @@ class FraisController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Frais $frais): JsonResource
+    public function show(Frais $frai): JsonResource
     {
-        return OperationResource::make($frais);
+        return OperationResource::make($frai);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(OperationRequest $request, Frais $frais): JsonResponse
+    public function update(OperationRequest $request, Frais $frai): JsonResponse
     {
         $request->validated();
-        $frais->update($request->all());
+        $frai->update($request->all());
         return response()->json("Les frais ont bien été modifié");
     }
 
