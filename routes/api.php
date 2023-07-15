@@ -53,6 +53,7 @@ Route::resource('achats', AchatController::class)->except(['update'])->middlewar
 Route::resource('paiements', PaiementController::class)->middleware('auth:sanctum');
 
 Route::get('societe-count', [CountController::class, 'societe'])->middleware('auth:sanctum');
-Route::get('paiements/achat/{id}', [PaiementController::class, 'getByAchat'])->middleware('auth:sanctum');
-Route::post('visites/contrat-validate', [VisiteController::class, 'contratValidate'])->middleware('auth:sanctum');
+Route::get('paiements/payable/{id}', [PaiementController::class, 'getByPayable'])->middleware('auth:sanctum');
+Route::patch('paiements/validate/{paiement}', [PaiementController::class, 'valider'])->middleware('auth:sanctum');
+Route::post('contrats/validate', [ContratController::class, 'contratValidate'])->middleware('auth:sanctum');
 Route::patch('visites/direct-validate/{id}', [VisiteController::class, 'directValidate'])->middleware('auth:sanctum');

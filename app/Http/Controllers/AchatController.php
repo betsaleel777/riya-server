@@ -2,20 +2,26 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\PaiementType;
 use App\Events\AchatCreated;
+use App\Events\AchatDeleted;
 use App\Http\Requests\Achat\AchatPostRequest;
 use App\Http\Resources\AchatListResource;
 use App\Http\Resources\AchatResource;
 use App\Models\Achat;
 use App\Repositories\AchatRepository;
 use App\Repositories\BienRepository;
+use App\Repositories\PaiementRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class AchatController extends Controller
 {
-    public function __construct(private AchatRepository $achatRepository, private BienRepository $bienRepository)
-    {
+    public function __construct(
+        private AchatRepository $achatRepository,
+        private BienRepository $bienRepository,
+        private PaiementRepository $paiementRepository
+    ) {
     }
 
     public function index(): JsonResource
@@ -36,7 +42,7 @@ class AchatController extends Controller
         $achat->uptodate = $this->achatRepository->firstCheckUptodate($bien, $request->montant);
         $achat->bien()->associate($bien);
         $achat->save();
-        $this->achatRepository->createPaiement($achat->id, $request->montant);
+        $this->paiementRepository->createPaiement($achat->id, PaiementType::ACHAT->value, $request->montant);
         AchatCreated::dispatch($achat);
         return response()->json("L'achat $achat->code a été crée avec succès.");
     }
@@ -47,8 +53,10 @@ class AchatController extends Controller
         return AchatResource::make($achat);
     }
 
-    public function destroy(Achat $achat)
+    public function destroy(Achat $achat): JsonResponse
     {
-        //
+        $achat->delete();
+        AchatDeleted::dispatch($achat);
+        return response()->json("L'achat $achat->code a été supprimé avec succès.");
     }
 }

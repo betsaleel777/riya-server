@@ -5,9 +5,11 @@ namespace App\Providers;
 use App\Interfaces\AchatRepositoryInterface;
 use App\Interfaces\BienRepositoryInterface;
 use App\Interfaces\ContratRepositoryInterface;
+use App\Interfaces\PaiementRepositoryInterface;
 use App\Repositories\AchatRepository;
 use App\Repositories\BienRepository;
 use App\Repositories\ContratRepository;
+use App\Repositories\PaiementRepository;
 use Illuminate\Support\ServiceProvider;
 
 class RepositoryServiceProvider extends ServiceProvider
@@ -20,6 +22,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(ContratRepositoryInterface::class, ContratRepository::class);
         $this->app->bind(AchatRepositoryInterface::class, AchatRepository::class);
         $this->app->bind(BienRepositoryInterface::class, BienRepository::class);
+        $this->app->bind(PaiementRepositoryInterface::class, PaiementRepository::class);
     }
 
     /**

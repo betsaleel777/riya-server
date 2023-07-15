@@ -5,7 +5,6 @@ namespace App\Repositories;
 use App\Interfaces\AchatRepositoryInterface;
 use App\Models\Achat;
 use App\Models\Appartement;
-use App\Models\Paiement;
 use App\Models\Terrain;
 
 class AchatRepository implements AchatRepositoryInterface
@@ -15,16 +14,17 @@ class AchatRepository implements AchatRepositoryInterface
         return $montant >= $bien->cout_achat;
     }
 
-    public function checkUptodate(Appartement|Terrain $bien, Achat $achat): bool
+    public function checkUptodate(Achat $achat): bool
     {
+        $bien = $achat->load('bien')->bien;
         return $achat->paiements->isEmpty() ?: $achat->paiements->sum('montant') >= $bien->cout_achat;
     }
 
-    public function createPaiement(int $achatId, int $montant): Paiement
+    public function cascadeAchatUptodate(Achat $achat): void
     {
-        $paiement = Paiement::make(['achat_id' => $achatId, 'montant' => $montant]);
-        $paiement->genererCode();
-        $paiement->save();
-        return $paiement;
+        $achat->load('contrat');
+        $achat->uptodate = $this->checkUptodate($achat);
+        !$achat->uptodate ?: $achat->contrat->setUptodate();
+        $achat->save();
     }
 }

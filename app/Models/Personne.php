@@ -23,15 +23,14 @@ class Personne extends Model implements HasMedia
         'lieu_naissance', 'nationalite', 'telephone', 'ville', 'quartier',
         'pays', 'animal', 'fonctions', 'photo_piece', 'civilite', 'type_client_id'
     ];
-
     protected $with = ['piece', 'avatar'];
-
     protected $dates = [
         'date_naissance', 'created_at'
     ];
 
     protected $casts = [
         'civilite' => PersonneCiviliteEnum::class,
+        'date_naissance' => 'date'
     ];
 
     public function genererCode(): void

@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Str;
 use Staudenmeir\EloquentEagerLimit\HasEagerLimit;
@@ -46,8 +49,13 @@ class Achat extends Model
         return $this->morphTo();
     }
 
-    public function paiements(): HasMany
+    public function paiements(): MorphMany
     {
-        return $this->hasMany(Paiement::class);
+        return $this->morphMany(Paiement::class, 'payable');
+    }
+
+    public function contrat(): MorphOne
+    {
+        return $this->morphOne(Contrat::class, 'operation');
     }
 }

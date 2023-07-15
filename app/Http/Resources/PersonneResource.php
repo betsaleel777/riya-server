@@ -21,7 +21,7 @@ class PersonneResource extends JsonResource
             'email' => $this->email,
             'cni' => $this->cni,
             'lieu_naissance' => $this->lieu_naissance,
-            'date_naissance' => $this->date_naissance,
+            'date_naissance' => $this->date_naissance->format('d-m-Y'),
             'nationalite' => $this->nationalite,
             'ville' => $this->ville,
             'quartier' => $this->quartier,

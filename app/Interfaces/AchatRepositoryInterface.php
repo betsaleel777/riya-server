@@ -10,6 +10,6 @@ use App\Models\Terrain;
 interface AchatRepositoryInterface
 {
     public function firstCheckUptodate(Appartement|Terrain $bien, int $montant): bool;
-    public function checkUptodate(Appartement|Terrain $bien, Achat $achat): bool;
-    public function createPaiement(int $achatId, int $montant): Paiement;
+    public function checkUptodate(Achat $achat): bool;
+    public function cascadeAchatUptodate(Achat $achat): void;
 }

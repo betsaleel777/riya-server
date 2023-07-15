@@ -27,8 +27,8 @@ class ContratController extends Controller
     {
         $request->validated();
         $this->contratRepository->store($request);
-        $visite = Visite::find($request->visite_id);
-        return response()->json("Le contrat pour la visite $visite->code a été crée avec succès.");
+        $operation = $this->contratRepository->getByType($request->operation_id, $request->operation_type);
+        return response()->json("Le contrat pour l'opération $operation->code a été crée avec succès.");
     }
 
     public function update(ContratRequest $request, Contrat $contrat): JsonResponse
@@ -44,5 +44,14 @@ class ContratController extends Controller
         $contrat->setAborted();
         //run event when contrat aborted
         return response()->json("Le contrat a été résilié avec succès.");
+    }
+
+    public function contratValidate(ContratRequest $request): JsonResponse
+    {
+        $request->validated();
+        $operation = $this->contratRepository->getByType($request->operation_id, $request->operation_type);
+        if ($operation instanceof Visite) $operation->setValide();
+        $this->contratRepository->store($request);
+        return response()->json("L'opération $operation->code a été validée avec succès.");
     }
 }

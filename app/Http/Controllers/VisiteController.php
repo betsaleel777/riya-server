@@ -46,15 +46,6 @@ class VisiteController extends Controller
         return response()->json("La visite a été modifié avec succès.");
     }
 
-    public function contratValidate(ContratRequest $request): JsonResponse
-    {
-        $request->validated();
-        $visite = Visite::find($request->operation_id);
-        $visite->setValide();
-        $this->contratRepository->store($request);
-        return response()->json("La visite $visite->code a été validée avec succès.");
-    }
-
     public function directValidate(int $id): JsonResponse
     {
         $visite = Visite::find($id);

@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Achat;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -19,9 +20,11 @@ class PaiementResource extends JsonResource
             'code' => $this->code,
             'montant' => $this->montant,
             'status' => $this->status,
-            'achat_id' => $this->achat_id,
+            'payable_id' => $this->payable_id,
             'created_at' => $this->created_at->format('d-m-Y'),
-            'achat' => $this->whenLoaded('achat', fn () => AchatResource::make($this->achat)),
+            'payable' => $this->whenLoaded('achat', fn () => match (true) {
+                $this->payable instanceof Achat => AchatResource::make($this->achat),
+            }),
         ];
     }
 }

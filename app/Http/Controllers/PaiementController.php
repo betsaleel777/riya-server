@@ -2,16 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\PaiementValidated;
 use App\Http\Requests\Achat\PaiementRequest;
 use App\Http\Resources\PaiementResource;
 use App\Models\Paiement;
-use App\Repositories\AchatRepository;
+use App\Repositories\PaiementRepository;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class PaiementController extends Controller
 {
-    public function __construct(private AchatRepository $achatRepository)
+    public function __construct(private PaiementRepository $paiementRepository)
     {
     }
 
@@ -19,16 +21,16 @@ class PaiementController extends Controller
     {
         $request->validated();
         $paiement->update($request->all());
-        $paiement->load('achat');
-        $achat = $paiement->achat;
+        $paiement->load('payable');
+        $payable = $paiement->payable;
         return response()->json("Le montant du paiement $paiement->code concernant
-        l'achat $achat->code a été modifié avec succès.");
+        l'achat $payable->code a été modifié avec succès.");
     }
 
     public function store(PaiementRequest $request): JsonResponse
     {
         $request->validated();
-        $paiement = $this->achatRepository->createPaiement($request->achat_id, $request->montant);
+        $paiement = $this->paiementRepository->createPaiement($request->payable_id, $request->payable_type, $request->montant);
         return response()->json("Le paiement $paiement->code a été effectué avec succès.");
     }
 
@@ -37,9 +39,10 @@ class PaiementController extends Controller
         return PaiementResource::make($paiement);
     }
 
-    public function getByAchat(int $id): JsonResource
+    public function valider(Paiement $paiement): JsonResponse
     {
-        $paiements = Paiement::where('achat_id', $id)->get();
-        return PaiementResource::collection($paiements);
+        $paiement->setValide();
+        PaiementValidated::dispatch($paiement);
+        return response()->json("Le paiement $paiement->code a été validé avec succès.");
     }
 }
