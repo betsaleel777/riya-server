@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Achat;
 
+use App\Models\Achat;
 use Illuminate\Foundation\Http\FormRequest;
 
 class PaiementRequest extends FormRequest
@@ -21,8 +22,12 @@ class PaiementRequest extends FormRequest
      */
     public function rules(): array
     {
+        $value = match ($this->payable_type) {
+            'Achat' => Achat::with('bien', 'paiements')->find($this->payable_id)->reste(),
+            // loyer
+        };
         return [
-            'montant' => 'required|numeric',
+            'montant' => 'required|numeric|not_in:0|lte:' . $value,
         ];
     }
 }

@@ -19,7 +19,7 @@ class ContratController extends Controller
 
     public function index(): JsonResource
     {
-        $contrats = Contrat::with('operation')->get();
+        $contrats = Contrat::with('operation.personne')->get();
         return ContratListResource::collection($contrats);
     }
 

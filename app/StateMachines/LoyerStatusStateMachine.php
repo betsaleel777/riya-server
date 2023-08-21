@@ -2,10 +2,10 @@
 
 namespace App\StateMachines;
 
-use App\Enums\ContratStatus;
+use App\Enums\LoyerStatus;
 use Asantibanez\LaravelEloquentStateMachines\StateMachines\StateMachine;
 
-class ContratStatusStateMachine extends StateMachine
+class LoyerStatusStateMachine extends StateMachine
 {
     public function recordHistory(): bool
     {
@@ -19,8 +19,8 @@ class ContratStatusStateMachine extends StateMachine
         ];
     }
 
-    public function defaultState(): ?string
+    public function defaultState(): string
     {
-        return ContratStatus::UPTODATE->value;
+        return LoyerStatus::UNPAID->value;
     }
 }

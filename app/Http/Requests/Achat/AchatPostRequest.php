@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests\Achat;
 
+use App\Models\Appartement;
+use App\Models\Terrain;
 use Illuminate\Foundation\Http\FormRequest;
 
 class AchatPostRequest extends FormRequest
@@ -21,10 +23,24 @@ class AchatPostRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            'personne_id' => 'required',
-            'bien_id' => 'required',
-            'montant' => 'required|numeric'
-        ];
+
+        if ($this->filled('bien_id')) {
+            $coutAchat = match ($this->bien_type) {
+                'Terrain' => Terrain::find($this->bien_id)->cout_achat,
+                'Appartement' => Appartement::find($this->bien_id)->cout_achat,
+            };
+            return [
+                'personne_id' => 'required',
+                'bien_id' => 'required',
+                'montant' => 'required|numeric|not_in:0|lte:' . $coutAchat
+            ];
+        } else {
+            return
+                [
+                    'personne_id' => 'required',
+                    'bien_id' => 'required',
+                    'montant' => 'required|numeric|not_in:0'
+                ];
+        }
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\AvanceStatus;
 use App\Enums\ValidableEntityStatus;
 use App\StateMachines\ValidableEntityStateMachine;
 use Asantibanez\LaravelEloquentStateMachines\Traits\HasStateMachines;
@@ -10,6 +11,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Support\Str;
 
 /**
@@ -26,6 +28,19 @@ class Visite extends Model
     public $stateMachines = [
         'status' => ValidableEntityStateMachine::class
     ];
+
+    public function statusAvance(): string
+    {
+        $this->relationLoaded('contrat') ?: $this->load('contrat');
+        if ($this->exists() and empty($this->contrat)) {
+            return AvanceStatus::CONTRACTWITHOUT->value;
+        }
+        if ($this->exists() and !empty($this->contrat)) {
+            $this->relationLoaded('avance') ?: $this->load('avance');
+            return Carbon::now()->isBefore($this->contrat->debut->addMonth($this->avance->mois)) ?
+                AvanceStatus::INUSE->value : AvanceStatus::EXHAUSTED->value;
+        }
+    }
 
     public function setExpiration()
     {
@@ -69,5 +84,10 @@ class Visite extends Model
     public function appartement(): BelongsTo
     {
         return $this->belongsTo(Appartement::class);
+    }
+
+    public function contrat(): MorphOne
+    {
+        return $this->MorphOne(Contrat::class, 'operation');
     }
 }

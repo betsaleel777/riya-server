@@ -23,7 +23,6 @@ class ContratRequest extends FormRequest
     {
         return [
             'debut' => 'required',
-            'fin' => 'required',
             'operation_id' => 'required',
             'commission' => 'required|numeric',
         ];

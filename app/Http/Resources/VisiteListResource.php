@@ -27,6 +27,7 @@ class VisiteListResource extends JsonResource
             'caution' => $this->whenLoaded('caution', fn () => $this->caution->mois) ?? 0,
             'avance' => $this->whenLoaded('avance', fn () => $this->avance->mois) ?? 0,
             'frais' => $this->whenLoaded('frais', fn () => $this->frais->mois) ?? 0,
+            'avanceStatus' => $this->statusAvance(),
         ];
     }
 }

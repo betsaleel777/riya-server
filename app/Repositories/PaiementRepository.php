@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Enums\PaiementType;
 use App\Interfaces\PaiementRepositoryInterface;
 use App\Models\Achat;
+use App\Models\Loyer;
 use App\Models\Paiement;
 
 class PaiementRepository implements PaiementRepositoryInterface
@@ -14,6 +15,7 @@ class PaiementRepository implements PaiementRepositoryInterface
     {
         return match ($type) {
             PaiementType::ACHAT->value => Achat::find($payableId),
+            PaiementType::LOYER->value => Loyer::find($payableId)
         };
     }
 
@@ -23,6 +25,14 @@ class PaiementRepository implements PaiementRepositoryInterface
         $paiement->genererCode('PAA');
         $payable = $this->getByType($payable_id, $payable_type);
         $paiement->payable()->associate($payable)->save();
+        return $paiement;
+    }
+
+    public function createPaiementLoyer(Loyer $loyer): Paiement
+    {
+        $paiement = Paiement::make(['montant' => $loyer->montant]);
+        $paiement->genererCode('PAA');
+        $paiement->payable()->associate($loyer)->save();
         return $paiement;
     }
 }

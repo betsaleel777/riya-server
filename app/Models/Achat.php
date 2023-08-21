@@ -7,8 +7,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
@@ -28,6 +26,18 @@ class Achat extends Model
     public function genererCode(): void
     {
         $this->attributes['code'] = 'ACH' . Str::upper(Str::random(3)) . Carbon::now()->format('y');
+    }
+
+    public function reste(): int
+    {
+        if ($this->exists()) {
+            $this->relationLoaded('paiements') ?: $this->load('paiements');
+            $totalPaye = $this->paiements->sum('montant');
+            $this->relationLoaded('bien') ?: $this->load('bien');
+            return $this->bien->cout_achat - $totalPaye;
+        } else {
+            return 0;
+        }
     }
 
     // scopes

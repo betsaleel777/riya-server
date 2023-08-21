@@ -7,9 +7,10 @@ use App\Enums\ContratStatus;
 use App\StateMachines\ContratStateMachine;
 use App\StateMachines\ContratStatusStateMachine;
 use Asantibanez\LaravelEloquentStateMachines\Traits\HasStateMachines;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 /**
@@ -27,6 +28,16 @@ class Contrat extends Model
         'status' => ContratStatusStateMachine::class
     ];
 
+    public function encaissable(): bool
+    {
+        if ($this->exists()) {
+            $this->relationLoaded('operation') and $this->operation->relationLoaded('appartement') ?: $this->load(['operation' => ['avance', 'appartement']]);
+            return Carbon::now()->greaterThanOrEqualTo($this->debut->addMonth($this->operation->avance->mois));
+        } else {
+            return false;
+        }
+    }
+
     public function setAborted(): void
     {
         $this->etat()->transitionTo($to = ContratState::ABORTED->value);
@@ -40,6 +51,21 @@ class Contrat extends Model
     public function setNotuptodate(): void
     {
         $this->status()->transitionTo($to = ContratStatus::NOTUPTODATE->value);
+    }
+
+    public function scopeProcessing(Builder $query): Builder
+    {
+        return $query->where('etat', ContratState::USING->value);
+    }
+
+    public function scopePurchaseProcessing(Builder $query): Builder
+    {
+        return $query->processing()->where('operation_type', 'App\Models\Achat');
+    }
+
+    public function scopeRentProcessing(Builder $query): Builder
+    {
+        return $query->processing()->where('operation_type', 'App\Models\Visite');
     }
 
     public function operation(): MorphTo
