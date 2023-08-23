@@ -4,17 +4,23 @@ namespace App\Http\Controllers;
 
 use App\Events\PaiementValidated;
 use App\Http\Requests\Achat\PaiementRequest;
+use App\Http\Requests\Paiement\PaiementDirectRequest;
 use App\Http\Resources\PaiementResource;
 use App\Models\Paiement;
 use App\Repositories\PaiementRepository;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class PaiementController extends Controller
 {
     public function __construct(private PaiementRepository $paiementRepository)
     {
+    }
+
+    public function index(): JsonResource
+    {
+        $paiements = Paiement::get();
+        return PaiementResource::collection($paiements);
     }
 
     public function update(PaiementRequest $request, Paiement $paiement): JsonResponse
@@ -28,6 +34,13 @@ class PaiementController extends Controller
     }
 
     public function store(PaiementRequest $request): JsonResponse
+    {
+        $request->validated();
+        $paiement = $this->paiementRepository->createPaiement($request->payable_id, $request->payable_type, $request->montant);
+        return response()->json("Le paiement $paiement->code a été effectué avec succès.");
+    }
+
+    public function createDirect(PaiementDirectRequest $request): JsonResponse
     {
         $request->validated();
         $paiement = $this->paiementRepository->createPaiement($request->payable_id, $request->payable_type, $request->montant);
