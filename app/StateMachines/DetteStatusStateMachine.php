@@ -5,7 +5,7 @@ namespace App\StateMachines;
 use App\Enums\PayableStatus;
 use Asantibanez\LaravelEloquentStateMachines\StateMachines\StateMachine;
 
-class LoyerStatusStateMachine extends StateMachine
+class DetteStatusStateMachine extends StateMachine
 {
     public function recordHistory(): bool
     {
@@ -19,7 +19,7 @@ class LoyerStatusStateMachine extends StateMachine
         ];
     }
 
-    public function defaultState(): string
+    public function defaultState(): ?string
     {
         return PayableStatus::UNPAID->value;
     }

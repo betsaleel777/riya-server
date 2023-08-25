@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Enums\LoyerStatus;
+use App\Enums\PayableStatus;
 use App\StateMachines\LoyerStatusStateMachine;
 use Asantibanez\LaravelEloquentStateMachines\Traits\HasStateMachines;
 use Carbon\Carbon;
@@ -31,12 +31,12 @@ class Loyer extends Model
 
     public function setPending(): void
     {
-        $this->status()->transitionTo(LoyerStatus::PENDING->value);
+        $this->status()->transitionTo(PayableStatus::PENDING->value);
     }
 
     public function setPaid(): void
     {
-        $this->status()->transitionTo(LoyerStatus::PAID->value);
+        $this->status()->transitionTo(PayableStatus::PAID->value);
     }
 
     public function contrat(): BelongsTo

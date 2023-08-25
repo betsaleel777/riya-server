@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Enums\ContratOperationType;
+use App\Events\ContratAchatCreated;
 use App\Events\ContratBailCreated;
 use App\Http\Requests\Contrat\ContratRequest;
 use App\Interfaces\ContratRepositoryInterface;
@@ -28,12 +29,11 @@ class ContratRepository implements ContratRepositoryInterface
         $operation = $this->getByType($request->operation_id, $request->operation_type);
         $contrat->operation()->associate($operation)->save();
         if ($operation instanceof Visite) {
-            ContratBailCreated::dispatch($contrat);
+            ContratBailCreated::dispatch($contrat, $operation);
         }
         if ($operation instanceof Achat) {
             $paiement = Paiement::find($request->paiement);
-            $paiement->setValide();
-            $this->achatRepository->checkUptodate($operation) ? $contrat->setUptodate() : $contrat->setNotuptodate();
+            ContratAchatCreated::dispatch($paiement, $operation, $contrat);
         }
     }
 }

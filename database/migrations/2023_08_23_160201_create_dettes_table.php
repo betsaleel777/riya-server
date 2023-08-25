@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('dettes', function (Blueprint $table) {
             $table->id();
+            $table->string('code', 10)->unique();
+            $table->unsignedInteger('montant');
+            $table->string('status', 20);
+            $table->morphs('origine');
             $table->timestamps();
         });
     }

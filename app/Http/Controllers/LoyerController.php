@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\PaiementType;
+use App\Events\LoyerValidated;
 use App\Http\Resources\LoyerListResource;
 use App\Http\Resources\LoyerResource;
 use App\Models\Loyer;
@@ -44,10 +45,7 @@ class LoyerController extends Controller
 
     public function valider(Loyer $loyer): JsonResponse
     {
-        $loyer->load('paiement');
-        $loyer->setPaid();
-        $loyer->paiement->setValide();
-        // créer une dette ici
+        LoyerValidated::dispatch($loyer);
         return response()->json("Le paiement du $loyer->code a été validé avec succès.");
     }
 

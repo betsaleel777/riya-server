@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum LoyerStatus: string
+enum PayableStatus: string
 {
     case PAID = 'payé';
     case UNPAID = 'impayé';

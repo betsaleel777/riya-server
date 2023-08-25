@@ -55,8 +55,15 @@ class AchatController extends Controller
 
     public function destroy(Achat $achat): JsonResponse
     {
-        $achat->delete();
-        AchatDeleted::dispatch($achat);
-        return response()->json("L'achat $achat->code a été supprimé avec succès.");
+        $achat->load('contrat');
+        if ($achat->contrat->exists) {
+            $message = "Suppression impossible, car l'achat $achat->code a un contrat en cours,
+            pour supprimer cet achat vous devez résilier son contrat.";
+        } else {
+            $achat->delete();
+            AchatDeleted::dispatch($achat);
+            $message = "L'achat $achat->code a été supprimé avec succès.";
+        }
+        return response()->json($message);
     }
 }

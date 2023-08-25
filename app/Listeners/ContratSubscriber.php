@@ -4,22 +4,26 @@ namespace App\Listeners;
 
 use App\Events\ContratAchatCreated;
 use App\Events\ContratBailCreated;
+use App\Repositories\AchatRepository;
+use App\Repositories\DetteRepository;
 
 class ContratSubscriber
 {
-    /**
-     * Handle the event.
-     */
+    public function __construct(public DetteRepository $detteRepository, public AchatRepository $achatRepository)
+    {
+    }
+
     public function handleAchatCreated(ContratAchatCreated $event): void
     {
-        $bien = $event->contrat->load('operation.bien')->operation->bien;
-        $bien->setBusy();
+        $event->paiement->setValide();
+        $this->achatRepository->checkUptodate($event->achat) ? $event->contrat->setUptodate() : $event->contrat->setNotuptodate();
+        $this->detteRepository->storeForPayement($event->paiement, $event->contrat);
     }
 
     public function handleBailCreated(ContratBailCreated $event): void
     {
-        $appartement = $event->contrat->load('operation.appartement')->operation->appartement;
-        $appartement->setBusy();
+        $event->visite->appartement()->setBusy();
+        $this->detteRepository->storeForRental($event->contrat, $event->visite);
     }
 
     public function subscribe(): array

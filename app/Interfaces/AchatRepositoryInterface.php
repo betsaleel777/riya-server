@@ -4,7 +4,6 @@ namespace App\Interfaces;
 
 use App\Models\Achat;
 use App\Models\Appartement;
-use App\Models\Paiement;
 use App\Models\Terrain;
 
 interface AchatRepositoryInterface
