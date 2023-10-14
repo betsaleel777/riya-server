@@ -24,9 +24,8 @@ return new class extends Migration
             $table->string('quartier', 60);
             $table->string('pays', 20);
             $table->string('fonctions');
-            $table->string('animal', 20);
             $table->string('civilite', 3);
-            $table->string('animal')->nullable();
+            $table->string('animal',20)->nullable();
             $table->date('date_naissance');
             $table->timestamps();
         });
