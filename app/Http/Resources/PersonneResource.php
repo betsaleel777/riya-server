@@ -21,7 +21,7 @@ class PersonneResource extends JsonResource
             'email' => $this->email,
             'cni' => $this->cni,
             'lieu_naissance' => $this->lieu_naissance,
-            'date_naissance' => $this->date_naissance->format('d-m-Y'),
+            'date_naissance' => $this->date_naissance,
             'nationalite' => $this->nationalite,
             'ville' => $this->ville,
             'quartier' => $this->quartier,
@@ -31,9 +31,9 @@ class PersonneResource extends JsonResource
             'civilite' => $this->civilite,
             'created_at' => $this->created_at->format('d-m-Y'),
             'type_client_id' => $this->type_client_id,
-            'type' => $this->whenLoaded('type', fn () => $this->type),
-            'piece' => $this->whenLoaded('piece', fn () => url($this->piece->getUrl())),
-            'avatar' => $this->whenLoaded('avatar', fn () => url($this->avatar->getUrl())),
+            'type' => $this->whenLoaded('type', fn() => $this->type),
+            'piece' => $this->whenLoaded('piece', fn() => url($this->piece->getUrl())),
+            'avatar' => $this->whenLoaded('avatar', fn() => url($this->avatar->getUrl())),
         ];
     }
 }

@@ -31,7 +31,7 @@ class PersonneController extends Controller
         $personne->genererCode();
         $personne->save();
         $personne->addMediaFromRequest('image_piece')->toMediaCollection('piece');
-        if ($request->has('image_avatar')) {
+        if ($request->hasFile('image_avatar')) {
             $personne->addMediaFromRequest('image_avatar')->toMediaCollection('avatar');
         }
         return response()->json('Le client ' . Str::upper($personne->nom_complet) . ' a été enregistré avec succès.');
@@ -52,10 +52,10 @@ class PersonneController extends Controller
     {
         $request->validated();
         $personne->update($request->all());
-        if ($request->has('image_avatar')) {
+        if ($request->hasFile('image_avatar')) {
             $personne->addMediaFromRequest('image_avatar')->toMediaCollection('avatar');
         }
-        if ($request->has('image_piece')) {
+        if ($request->hasFile('image_piece')) {
             $personne->addMediaFromRequest('image_piece')->toMediaCollection('piece');
         }
         return response()->json("Les informations du client ont bien été modifiées.");

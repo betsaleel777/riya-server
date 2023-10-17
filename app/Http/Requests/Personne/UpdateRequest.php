@@ -33,8 +33,8 @@ class UpdateRequest extends FormRequest
             'quartier' => 'required|max:60',
             'pays' => 'required|max:20',
             'fonctions' => 'required',
-            'image_piece' => 'nullable|image|mimes:jpeg,png,jpg',
-            'image_avatar' => 'nullable|image|mimes:jpeg,png,jpg',
+            'image_piece' => 'nullable|mimes:jpeg,png,jpg',
+            'image_avatar' => 'nullable|mimes:jpeg,png,jpg',
         ];
     }
 }

@@ -7,10 +7,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Illuminate\Support\Str;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
-use Illuminate\Support\Str;
 
 /**
  * @mixin IdeHelperPersonne
@@ -21,16 +21,14 @@ class Personne extends Model implements HasMedia
     protected $fillable = [
         'code', 'email', 'nom_complet', 'cni', 'date_naissance',
         'lieu_naissance', 'nationalite', 'telephone', 'ville', 'quartier',
-        'pays', 'animal', 'fonctions', 'photo_piece', 'civilite', 'type_client_id'
+        'pays', 'animal', 'fonctions', 'photo_piece', 'civilite', 'type_client_id',
     ];
     protected $with = ['piece', 'avatar'];
-    protected $dates = [
-        'date_naissance', 'created_at'
-    ];
+    protected $dates = ['created_at'];
 
     protected $casts = [
         'civilite' => PersonneCiviliteEnum::class,
-        'date_naissance' => 'date'
+        'date_naissance' => 'date',
     ];
 
     public function genererCode(): void
