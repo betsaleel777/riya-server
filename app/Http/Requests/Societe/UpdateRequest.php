@@ -31,6 +31,7 @@ class UpdateRequest extends FormRequest
             'contact' => 'required|max:15|min:10',
             'siege' => 'required|max:50',
             'image' => 'nullable|image|mimes:jpeg,png,jpg',
+            'frais_dossier' => 'required|numeric',
         ];
     }
 }

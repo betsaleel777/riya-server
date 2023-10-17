@@ -16,7 +16,7 @@ class SocieteController extends Controller
     {
         $societes = Societe::get();
         $societe = $societes->first();
-        return $societes->isEmpty() ?  response()->json('no societe') : SocieteResource::make($societe);
+        return $societes->isEmpty() ? response()->json('no societe') : SocieteResource::make($societe);
     }
     /**
      * Store a newly created resource in storage.
@@ -37,7 +37,7 @@ class SocieteController extends Controller
     {
         $request->validated();
         $societe->update($request->all());
-        if ($request->has('image')) {
+        if ($request->hasFile('image')) {
             $societe->addMediaFromRequest('image')->toMediaCollection('logo');
         }
         return response()->json("Les informations de la société ont bien été modifiés.");

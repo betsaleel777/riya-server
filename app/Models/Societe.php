@@ -18,9 +18,9 @@ class Societe extends Model implements HasMedia
 
     protected $fillable = [
         'raison_sociale', 'description', 'slogan', 'email', 'boite_postale',
-        'forme_juridique', 'registre', 'contact', 'siege'
+        'forme_juridique', 'registre', 'contact', 'siege', 'frais_dossier',
     ];
-
+    protected $casts = ['frais_dossier' => 'integer'];
     protected $with = ['logo'];
 
     public function registerMediaCollections(): void
