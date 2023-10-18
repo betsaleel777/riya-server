@@ -20,13 +20,13 @@ use Illuminate\Support\Str;
 class Visite extends Model
 {
     use HasFactory, HasStateMachines;
-    protected $fillable = ['code', 'personne_id', 'montant', 'date_expiration', 'appartement_id'];
+    protected $fillable = ['code', 'personne_id', 'montant', 'date_expiration', 'appartement_id', 'frais_dossier'];
 
     protected $dates = ['created_at'];
-    protected $casts = ['montant' => 'integer', 'date_expiration' => 'date'];
+    protected $casts = ['montant' => 'integer', 'date_expiration' => 'date', 'frais_dossier' => 'integer'];
 
     public $stateMachines = [
-        'status' => ValidableEntityStateMachine::class
+        'status' => ValidableEntityStateMachine::class,
     ];
 
     public function statusAvance(): string
@@ -38,13 +38,13 @@ class Visite extends Model
         if ($this->exists() and !empty($this->contrat)) {
             $this->relationLoaded('avance') ?: $this->load('avance');
             return Carbon::now()->isBefore($this->contrat->debut->addMonth($this->avance->mois)) ?
-                AvanceStatus::INUSE->value : AvanceStatus::EXHAUSTED->value;
+            AvanceStatus::INUSE->value : AvanceStatus::EXHAUSTED->value;
         }
     }
 
     public function setExpiration()
     {
-        $this->attributes['date_expiration'] =  Carbon::now()->addMonth(3);
+        $this->attributes['date_expiration'] = Carbon::now()->addMonth(3);
     }
     public function genererCode(): void
     {

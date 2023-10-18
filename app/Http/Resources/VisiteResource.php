@@ -2,8 +2,6 @@
 
 namespace App\Http\Resources;
 
-use App\Models\Appartement;
-use App\Models\Terrain;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Str;
@@ -26,14 +24,15 @@ class VisiteResource extends JsonResource
             'appartement_id' => $this->appartement_id,
             'personne_id' => $this->personne_id,
             'status' => $this->status,
+            'frais_dossier' => $this->frais_dossier,
             'personne' => PersonneResource::make($this->whenLoaded('personne')),
             'appartement' => AppartementResource::make($this->whenLoaded('appartement')),
-            'caution' => $this->whenLoaded('caution', fn () => $this->caution->mois) ?? 0,
-            'avance' => $this->whenLoaded('avance', fn () => $this->avance->mois) ?? 0,
-            'frais' => $this->whenLoaded('frais', fn () => $this->frais->mois) ?? 0,
-            'cautionObject' => $this->whenLoaded('caution', fn () => $this->caution),
-            'avanceObject' => $this->whenLoaded('avance', fn () => $this->avance),
-            'fraisObject' => $this->whenLoaded('frais', fn () => $this->frais),
+            'caution' => $this->whenLoaded('caution', fn() => $this->caution->mois) ?? 0,
+            'avance' => $this->whenLoaded('avance', fn() => $this->avance->mois) ?? 0,
+            'frais' => $this->whenLoaded('frais', fn() => $this->frais->mois) ?? 0,
+            'cautionObject' => $this->whenLoaded('caution', fn() => $this->caution),
+            'avanceObject' => $this->whenLoaded('avance', fn() => $this->avance),
+            'fraisObject' => $this->whenLoaded('frais', fn() => $this->frais),
         ];
     }
 }

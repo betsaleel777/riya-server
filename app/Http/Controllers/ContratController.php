@@ -50,7 +50,9 @@ class ContratController extends Controller
     {
         $request->validated();
         $operation = $this->contratRepository->getByType($request->operation_id, $request->operation_type);
-        if ($operation instanceof Visite) $operation->setValide();
+        if ($operation instanceof Visite) {
+            $operation->setValide();
+        }
         $this->contratRepository->store($request);
         return response()->json("L'opération $operation->code a été validée avec succès.");
     }

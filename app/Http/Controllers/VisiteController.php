@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Contrat\ContratRequest;
 use App\Http\Requests\Visite\VisiteRequest;
 use App\Http\Resources\VisiteListResource;
 use App\Http\Resources\VisiteResource;
-use App\Models\Contrat;
 use App\Models\Visite;
 use App\Repositories\ContratRepository;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class VisiteController extends Controller
@@ -32,7 +31,6 @@ class VisiteController extends Controller
         $visite->save();
         return response()->json("La visite a été crée avec succès.");
     }
-
 
     public function show(Visite $visite): JsonResource
     {
@@ -57,5 +55,13 @@ class VisiteController extends Controller
     {
         $visite->delete();
         return response()->json("La visite $visite->code a été supprimée avec succès.");
+    }
+
+    public function patchFraisDossier(Request $request, Visite $visite): JsonResponse
+    {
+        $visite->load('personne');
+        $visite->update($request->all());
+        $message = "Les frais de dossier ont été payés par le client " . $visite->personne->nom_complet;
+        return response()->json($message);
     }
 }

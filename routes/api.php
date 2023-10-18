@@ -31,7 +31,7 @@ use Illuminate\Support\Facades\Route;
 | routes are loaded by the RouteServiceProvider and all of them will
 | be assigned to the "api" middleware group. Make something great!
 |
-*/
+ */
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout']);
@@ -66,3 +66,4 @@ Route::patch('dettes/repay/{dette}', [DetteController::class, 'rembourser'])->mi
 Route::patch('dettes/validate/{dette}', [DetteController::class, 'valider'])->middleware('auth:sanctum');
 Route::post('contrats/validate', [ContratController::class, 'contratValidate'])->middleware('auth:sanctum');
 Route::patch('visites/direct-validate/{id}', [VisiteController::class, 'directValidate'])->middleware('auth:sanctum');
+Route::patch('visites/frais-dossier/{visite}', [VisiteController::class, 'patchFraisDossier'])->middleware('auth:sanctum');
