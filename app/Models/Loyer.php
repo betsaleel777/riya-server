@@ -12,6 +12,9 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Support\Str;
 use Staudenmeir\EloquentHasManyDeep\HasOneDeep;
 
+/**
+ * @mixin IdeHelperLoyer
+ */
 class Loyer extends Model
 {
     use HasStateMachines;

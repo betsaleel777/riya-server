@@ -21,11 +21,11 @@ class Appartement extends Model
         'reference', 'nom', 'ville', 'pays', 'quartier', 'observation', 'attestation_villageoise',
         'titre_foncier', 'document_cession', 'arreter_approbation', 'superficie', 'montant_location',
         'montant_investit', 'cout_achat', 'proprietaire_id', 'cours_commune', 'placard', 'etage',
-        'toilette', 'cuisine', 'garage', 'parking', 'cie', 'sodeci', 'cloture', 'type_appartement_id', 'observation'
+        'toilette', 'cuisine', 'garage', 'parking', 'cie', 'sodeci', 'cloture', 'type_appartement_id', 'observation',
     ];
 
     public $stateMachines = [
-        'status' => AppartementStateMachine::class
+        'status' => AppartementStateMachine::class,
     ];
 
     protected $dates = ['created_at'];
@@ -35,14 +35,24 @@ class Appartement extends Model
         $this->attributes['reference'] = 'APP' . Str::upper(Str::random(5));
     }
 
-    public function setFree()
+    public function setFree(): void
     {
         $this->status()->transitionTo($to = BienStatus::FREE->value);
     }
 
-    public function setBusy()
+    public function setBusy(): void
     {
         $this->status()->transitionTo($to = BienStatus::BUSY->value);
+    }
+
+    public function isBusy(): bool
+    {
+        return $this->status === BienStatus::BUSY->value;
+    }
+
+    public function isFree(): bool
+    {
+        return $this->status === BienStatus::FREE->value;
     }
 
     public function type(): BelongsTo

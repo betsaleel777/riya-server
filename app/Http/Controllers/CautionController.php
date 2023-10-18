@@ -4,12 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Operation\OperationRequest;
 use App\Http\Resources\OperationResource;
+use App\Interfaces\VisiteRepositoryInterface;
 use App\Models\Caution;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class CautionController extends Controller
 {
+    public function __construct(private VisiteRepositoryInterface $visiteRepository)
+    {
+    }
     /**
      * Display a listing of the resource.
      */
@@ -27,7 +31,8 @@ class CautionController extends Controller
         $request->validated();
         $caution = Caution::make($request->all());
         $caution->save();
-        return response()->json("La caution a été enregistrée avec succès.");
+        $visite = $this->visiteRepository->emitBailProcess($request->visite_id);
+        return response()->json("La caution pour la location $visite->code a été enregistrée avec succès.");
     }
 
     /**

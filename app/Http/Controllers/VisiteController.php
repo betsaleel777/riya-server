@@ -5,15 +5,16 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Visite\VisiteRequest;
 use App\Http\Resources\VisiteListResource;
 use App\Http\Resources\VisiteResource;
+use App\Interfaces\ContratRepositoryInterface;
+use App\Interfaces\VisiteRepositoryInterface;
 use App\Models\Visite;
-use App\Repositories\ContratRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class VisiteController extends Controller
 {
-    public function __construct(private ContratRepository $contratRepository)
+    public function __construct(private ContratRepositoryInterface $contratRepository, private VisiteRepositoryInterface $visiteRepository)
     {
     }
 
@@ -61,6 +62,7 @@ class VisiteController extends Controller
     {
         $visite->load('personne');
         $visite->update($request->all());
+        $this->visiteRepository->emitBailProcess($visite);
         $message = "Les frais de dossier ont été payés par le client " . $visite->personne->nom_complet;
         return response()->json($message);
     }

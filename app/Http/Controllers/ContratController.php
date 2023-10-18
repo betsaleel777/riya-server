@@ -4,16 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Contrat\ContratRequest;
 use App\Http\Resources\ContratListResource;
+use App\Interfaces\ContratRepositoryInterface;
 use App\Models\Contrat;
 use App\Models\Visite;
-use App\Repositories\ContratRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ContratController extends Controller
 {
 
-    public function __construct(private ContratRepository $contratRepository)
+    public function __construct(private ContratRepositoryInterface $contratRepository)
     {
     }
 

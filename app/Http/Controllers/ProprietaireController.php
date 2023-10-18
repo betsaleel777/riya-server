@@ -7,7 +7,6 @@ use App\Http\Requests\Proprietaire\UpdateProprietaireRequest;
 use App\Http\Resources\ProprietaireResource;
 use App\Models\Proprietaire;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ProprietaireController extends Controller

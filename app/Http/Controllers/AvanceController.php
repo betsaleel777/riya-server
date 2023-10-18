@@ -4,12 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Operation\OperationRequest;
 use App\Http\Resources\OperationResource;
+use App\Interfaces\VisiteRepositoryInterface;
 use App\Models\Avance;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class AvanceController extends Controller
 {
+
+    public function __construct(private VisiteRepositoryInterface $visiteRepository)
+    {
+    }
     /**
      * Display a listing of the resource.
      */
@@ -27,7 +32,8 @@ class AvanceController extends Controller
         $request->validated();
         $avance = Avance::make($request->all());
         $avance->save();
-        return response()->json("L'avance a été crée avec succès.");
+        $visite = $this->visiteRepository->emitBailProcess($request->visite_id);
+        return response()->json("L'avance pour la visite $visite->code a été crée avec succès.");
     }
 
     /**

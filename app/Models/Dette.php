@@ -10,6 +10,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Str;
 
+/**
+ * @mixin IdeHelperDette
+ */
 class Dette extends Model
 {
     use HasStateMachines;

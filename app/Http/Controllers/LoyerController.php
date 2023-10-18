@@ -2,19 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\PaiementType;
 use App\Events\LoyerValidated;
 use App\Http\Resources\LoyerListResource;
 use App\Http\Resources\LoyerResource;
+use App\Interfaces\PaiementRepositoryInterface;
 use App\Models\Loyer;
-use App\Repositories\PaiementRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class LoyerController extends Controller
 {
 
-    public function __construct(private PaiementRepository $paiementRepository)
+    public function __construct(private PaiementRepositoryInterface $paiementRepository)
     {
     }
     /**

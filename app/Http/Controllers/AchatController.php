@@ -8,19 +8,19 @@ use App\Events\AchatDeleted;
 use App\Http\Requests\Achat\AchatPostRequest;
 use App\Http\Resources\AchatListResource;
 use App\Http\Resources\AchatResource;
+use App\Interfaces\AchatRepositoryInterface;
+use App\Interfaces\BienRepositoryInterface;
+use App\Interfaces\PaiementRepositoryInterface;
 use App\Models\Achat;
-use App\Repositories\AchatRepository;
-use App\Repositories\BienRepository;
-use App\Repositories\PaiementRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class AchatController extends Controller
 {
     public function __construct(
-        private AchatRepository $achatRepository,
-        private BienRepository $bienRepository,
-        private PaiementRepository $paiementRepository
+        private AchatRepositoryInterface $achatRepository,
+        private BienRepositoryInterface $bienRepository,
+        private PaiementRepositoryInterface $paiementRepository
     ) {
     }
 

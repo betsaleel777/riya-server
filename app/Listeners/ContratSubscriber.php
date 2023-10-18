@@ -22,7 +22,6 @@ class ContratSubscriber
 
     public function handleBailCreated(ContratBailCreated $event): void
     {
-        $event->visite->appartement()->setBusy();
         $this->detteRepository->storeForRental($event->contrat, $event->visite);
     }
 

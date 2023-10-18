@@ -42,6 +42,16 @@ class Visite extends Model
         }
     }
 
+    public function bailProcessStarted(): bool
+    {
+        if ($this->exists) {
+            $this->relationLoaded('avance') ?: $this->load('avance');
+            $this->relationLoaded('frais') ?: $this->load('frais');
+            $this->relationLoaded('caution') ?: $this->load('caution');
+            return !empty($this->avance) or !empty($this->frais) or !empty($this->caution) or $this->frais_dossier !== 0;
+        }
+    }
+
     public function setExpiration()
     {
         $this->attributes['date_expiration'] = Carbon::now()->addMonth(3);

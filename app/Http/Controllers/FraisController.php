@@ -4,12 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Operation\OperationRequest;
 use App\Http\Resources\OperationResource;
+use App\Interfaces\VisiteRepositoryInterface;
 use App\Models\Frais;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class FraisController extends Controller
 {
+
+    public function __construct(private VisiteRepositoryInterface $visiteRepository)
+    {
+    }
     /**
      * Display a listing of the resource.
      */
@@ -27,7 +32,8 @@ class FraisController extends Controller
         $request->validated();
         $frais = Frais::make($request->all());
         $frais->save();
-        return response()->json("Les frais ont été enregistré");
+        $visite = $this->visiteRepository->emitBailProcess($request->visite_id);
+        return response()->json("Les frais pour la location $visite->code ont été enregistré");
     }
 
     /**
