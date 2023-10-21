@@ -23,17 +23,17 @@ class AchatResource extends JsonResource
             'personne_id' => $this->personne_id,
             'bien_id' => $this->bien_id,
             'created_at' => $this->created_at->format('d-m-Y'),
-            'total' => $this->whenLoaded('paiements', fn () => $this->paiements->sum('montant')),
+            'total' => $this->whenLoaded('paiements', fn() => $this->paiements->sum('montant')),
             'reste' => $this->when(
                 $this->relationLoaded('paiements') and $this->paiements->isNotEmpty() and $this->relationLoaded('bien'),
-                fn () => $this->bien->cout_achat - $this->paiements->sum('montant')
+                fn() => $this->bien->cout_achat - $this->paiements->sum('montant')
             ),
             'personne' => $this->whenLoaded('personne', PersonneResource::make($this->personne)),
-            'bien' => $this->whenLoaded('bien', fn () => match (true) {
+            'bien' => $this->whenLoaded('bien', fn() => match (true) {
                 $this->bien instanceof Appartement => AppartementResource::make($this->bien),
                 $this->bien instanceof Terrain => TerrainResource::make($this->bien)
             }),
-            'paiements' => $this->whenLoaded('paiements', fn () => PaiementResource::collection($this->paiements)),
+            'paiements' => PaiementResource::collection($this->whenLoaded('paiements')),
         ];
     }
 }
