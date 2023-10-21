@@ -8,6 +8,9 @@ use Asantibanez\LaravelEloquentStateMachines\Traits\HasStateMachines;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @mixin IdeHelperDepense
+ */
 class Depense extends Model
 {
     use HasStateMachines;

@@ -213,6 +213,39 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * App\Models\Depense
+ *
+ * @property int $id
+ * @property string $titre
+ * @property int $montant
+ * @property string $description
+ * @property string $status
+ * @property int $type_depense_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Asantibanez\LaravelEloquentStateMachines\Models\PendingTransition> $pendingTransitions
+ * @property-read int|null $pending_transitions_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Asantibanez\LaravelEloquentStateMachines\Models\StateHistory> $stateHistory
+ * @property-read int|null $state_history_count
+ * @property-read \App\Models\TypeDepense $type
+ * @method static \Illuminate\Database\Eloquent\Builder|Depense newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Depense newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Depense query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Depense whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Depense whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Depense whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Depense whereMontant($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Depense whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Depense whereTitre($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Depense whereTypeDepenseId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Depense whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
+	class IdeHelperDepense {}
+}
+
+namespace App\Models{
+/**
  * App\Models\Dette
  *
  * @property int $id
@@ -556,6 +589,26 @@ namespace App\Models{
  * @mixin \Eloquent
  */
 	class IdeHelperTypeClient {}
+}
+
+namespace App\Models{
+/**
+ * App\Models\TypeDepense
+ *
+ * @property int $id
+ * @property string $nom
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder|TypeDepense newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|TypeDepense newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|TypeDepense query()
+ * @method static \Illuminate\Database\Eloquent\Builder|TypeDepense whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|TypeDepense whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|TypeDepense whereNom($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|TypeDepense whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
+	class IdeHelperTypeDepense {}
 }
 
 namespace App\Models{

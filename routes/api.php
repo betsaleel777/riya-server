@@ -63,11 +63,12 @@ Route::resource('achats', AchatController::class)->except(['update', 'edit', 'cr
 Route::get('societe-count', [CountController::class, 'societe'])->middleware('auth:sanctum');
 Route::get('paiements/payable/{id}', [PaiementController::class, 'getByPayable'])->middleware('auth:sanctum');
 Route::post('paiements/direct', [PaiementController::class, 'createDirect'])->middleware('auth:sanctum');
+Route::post('contrats/validate', [ContratController::class, 'contratValidate'])->middleware('auth:sanctum');
 Route::patch('paiements/validate/{paiement}', [PaiementController::class, 'valider'])->middleware('auth:sanctum');
 Route::patch('loyers/cashed/{loyer}', [LoyerController::class, 'encaisser'])->middleware('auth:sanctum');
 Route::patch('loyers/validate/{loyer}', [LoyerController::class, 'valider'])->middleware('auth:sanctum');
 Route::patch('dettes/repay/{dette}', [DetteController::class, 'rembourser'])->middleware('auth:sanctum');
 Route::patch('dettes/validate/{dette}', [DetteController::class, 'valider'])->middleware('auth:sanctum');
-Route::post('contrats/validate', [ContratController::class, 'contratValidate'])->middleware('auth:sanctum');
 Route::patch('visites/direct-validate/{id}', [VisiteController::class, 'directValidate'])->middleware('auth:sanctum');
 Route::patch('visites/frais-dossier/{visite}', [VisiteController::class, 'patchFraisDossier'])->middleware('auth:sanctum');
+Route::patch('depenses/validate/{depense}', [DepenseController::class, 'valider'])->middleware('auth:sanctum');

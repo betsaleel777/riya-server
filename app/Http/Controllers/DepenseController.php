@@ -58,4 +58,10 @@ class DepenseController extends Controller
         $depense->delete();
         return response()->json("La dépense $depense->titre a été supprimée avec succès.");
     }
+
+    public function valider(Depense $depense): JsonResponse
+    {
+        $depense->setValide();
+        return response()->json("La depense $depense->titre a été validée avec succès.");
+    }
 }
