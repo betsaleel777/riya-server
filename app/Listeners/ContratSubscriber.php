@@ -4,12 +4,12 @@ namespace App\Listeners;
 
 use App\Events\ContratAchatCreated;
 use App\Events\ContratBailCreated;
-use App\Repositories\AchatRepository;
-use App\Repositories\DetteRepository;
+use App\Interfaces\AchatRepositoryInterface;
+use App\Interfaces\DetteRepositoryInterface;
 
 class ContratSubscriber
 {
-    public function __construct(public DetteRepository $detteRepository, public AchatRepository $achatRepository)
+    public function __construct(public DetteRepositoryInterface $detteRepository, public AchatRepositoryInterface $achatRepository)
     {
     }
 
