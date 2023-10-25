@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\ValidableEntityStatus;
 use App\StateMachines\ValidableEntityStateMachine;
 use Asantibanez\LaravelEloquentStateMachines\Traits\HasStateMachines;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -23,6 +24,11 @@ class Depense extends Model
     public function setValide(): void
     {
         $this->status()->transitionTo(ValidableEntityStatus::VALID->value);
+    }
+
+    public function scopePending(Builder $query): Builder
+    {
+        return $query->where('status', ValidableEntityStatus::WAIT->value);
     }
 
     public function type(): BelongsTo

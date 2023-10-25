@@ -55,6 +55,7 @@ Route::apiResource('cautions', CautionController::class)->middleware('auth:sanct
 Route::apiResource('contrats', ContratController::class)->middleware('auth:sanctum');
 Route::apiResource('dettes', DetteController::class)->except(['update', 'destroy'])->middleware('auth:sanctum');
 Route::apiResource('paiements', PaiementController::class)->middleware('auth:sanctum');
+Route::get('depenses/pending', [DepenseController::class, 'getPending'])->middleware('auth:sanctum');
 Route::apiResource('depenses', DepenseController::class)->middleware('auth:sanctum');
 Route::resource('societes', SocieteController::class)->except(['create', 'edit', 'destroy', 'show'])->middleware('auth:sanctum');
 Route::resource('loyers', LoyerController::class)->except(['create', 'edit'])->middleware('auth:sanctum');

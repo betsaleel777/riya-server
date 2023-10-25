@@ -6,6 +6,7 @@ use App\Http\Requests\Depense\DepensePostRequest;
 use App\Http\Requests\Depense\DepensePutRequest;
 use App\Http\Resources\DepenseListResource;
 use App\Http\Resources\DepenseShowResource;
+use App\Http\Resources\DepenseValidationResource;
 use App\Models\Depense;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\JsonResponse;
@@ -21,6 +22,13 @@ class DepenseController extends Controller
         $depenses = Depense::select('id', 'titre', 'montant', 'type_depense_id', 'created_at', 'status')
             ->with(['type' => fn(BelongsTo $query) => $query->select('id', 'nom')])->get();
         return DepenseListResource::collection($depenses);
+    }
+
+    public function getPending(): JsonResource
+    {
+        $depenses = Depense::select('id', 'titre', 'montant', 'type_depense_id', 'created_at')
+            ->with(['type' => fn(BelongsTo $query) => $query->select('id', 'nom')])->pending()->get();
+        return DepenseValidationResource::collection($depenses);
     }
 
     /**
