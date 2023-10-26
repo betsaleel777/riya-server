@@ -5,9 +5,12 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Visite\VisiteRequest;
 use App\Http\Resources\VisiteListResource;
 use App\Http\Resources\VisiteResource;
+use App\Http\Resources\VisiteValidationResource;
 use App\Interfaces\ContratRepositoryInterface;
 use App\Interfaces\VisiteRepositoryInterface;
 use App\Models\Visite;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -22,6 +25,18 @@ class VisiteController extends Controller
     {
         $visites = Visite::with('personne', 'frais', 'caution', 'avance')->get();
         return VisiteListResource::collection($visites);
+    }
+
+    public function getPending(): JsonResource
+    {
+        $visites = Visite::select('id', 'code', 'montant', 'created_at', 'frais_dossier', 'appartement_id', 'personne_id')
+            ->with(['personne' => fn(BelongsTo $query) => $query->select('id', 'civilite', 'nom_complet')->without('piece')])
+            ->with(['frais' => fn(HasOne $query) => $query->select('id', 'mois', 'visite_id')])
+            ->with(['caution' => fn(HasOne $query) => $query->select('id', 'mois', 'visite_id')])
+            ->with(['avance' => fn(HasOne $query) => $query->select('id', 'mois', 'visite_id')])
+            ->with(['appartement' => fn(BelongsTo $query) => $query->select('id', 'montant_location', 'nom')])
+            ->pending()->get();
+        return VisiteValidationResource::collection($visites);
     }
 
     public function store(VisiteRequest $request): JsonResponse

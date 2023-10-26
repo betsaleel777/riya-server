@@ -15,7 +15,7 @@ class DetteController extends Controller
      */
     public function index(): JsonResource
     {
-        $dettes = Dette::with('origine.payable')->get();
+        $dettes = Dette::with('origine')->get();
         return DetteListResource::collection($dettes);
     }
 

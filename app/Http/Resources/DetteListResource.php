@@ -2,12 +2,13 @@
 
 namespace App\Http\Resources;
 
-use App\Models\Achat;
-use App\Models\Loyer;
-use App\Models\Visite;
+use App\Models\Dette;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @property Dette resource
+ */
 class DetteListResource extends JsonResource
 {
     /**
@@ -18,16 +19,13 @@ class DetteListResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
-            'code' => $this->code,
-            'montant' => $this->montant,
-            'status' => $this->status,
-            'created_at' => $this->created_at->format('d-m-Y'),
+            'id' => $this->resource->id,
+            'code' => $this->resource->code,
+            'montant' => $this->resource->montant,
+            'status' => $this->resource->status,
+            'created_at' => $this->resource->created_at->format('d-m-Y'),
             'origine_type' => str($this->getOrigine())->explode('\\')[2],
-            'origine_code' => $this->when(
-                $this->relationLoaded('origine') and $this->origine->relationLoaded('payable'),
-                $this->origine->payable->code
-            ),
+            'origine_code' => $this->when($this->relationLoaded('origine'), $this->origine->code),
         ];
     }
 }

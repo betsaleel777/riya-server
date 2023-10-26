@@ -48,6 +48,7 @@ Route::apiResource('proprietaires', ProprietaireController::class)->middleware('
 Route::apiResource('personnes', PersonneController::class)->middleware('auth:sanctum');
 Route::apiResource('terrains', TerrainController::class)->middleware('auth:sanctum');
 Route::apiResource('users', UserController::class)->middleware('auth:sanctum');
+Route::get('visites/pending', [VisiteController::class, 'getPending'])->middleware('auth:sanctum');
 Route::apiResource('visites', VisiteController::class)->middleware('auth:sanctum');
 Route::apiResource('frais', FraisController::class)->middleware('auth:sanctum');
 Route::apiResource('avances', AvanceController::class)->middleware('auth:sanctum');

@@ -16,7 +16,6 @@ return new class extends Migration
             $table->string('code', 8)->unique();
             $table->unsignedInteger('montant');
             $table->string('status', 30);
-            $table->foreignId('achat_id')->constrained('achats')->cascadeOnDelete();
             $table->timestamps();
         });
     }

@@ -7,6 +7,7 @@ use App\Enums\ValidableEntityStatus;
 use App\StateMachines\ValidableEntityStateMachine;
 use Asantibanez\LaravelEloquentStateMachines\Traits\HasStateMachines;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -52,6 +53,18 @@ class Visite extends Model
         }
     }
 
+    public function getAmountTotaly(): int
+    {
+        if ($this->exists) {
+            $this->relationLoaded('avance') ?: $this->load('avance');
+            $this->relationLoaded('frais') ?: $this->load('frais');
+            $this->relationLoaded('caution') ?: $this->load('caution');
+            $this->relationLoaded('appartement') ?: $this->load('appartement');
+            return $this->attributes['frais_dossier'] + $this->attributes['montant'] +
+            ($this->avance?->mois + $this->frais?->mois + $this->caution?->mois) * $this->appartement->montant_location;
+        }
+    }
+
     public function setExpiration()
     {
         $this->attributes['date_expiration'] = Carbon::now()->addMonth(3);
@@ -71,6 +84,13 @@ class Visite extends Model
         return !empty($this->attributes['caution']) and !empty($this->attributes['avance']) and !empty($this->attributes['frais']);
     }
 
+    //scopes
+    public function scopePending(Builder $query): Builder
+    {
+        return $query->where('status', ValidableEntityStatus::WAIT->value);
+    }
+
+    //relations
     public function personne(): BelongsTo
     {
         return $this->belongsTo(Personne::class);
