@@ -6,6 +6,7 @@ use App\Enums\PayableStatus;
 use App\StateMachines\DetteStatusStateMachine;
 use Asantibanez\LaravelEloquentStateMachines\Traits\HasStateMachines;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Str;
@@ -17,11 +18,11 @@ class Dette extends Model
 {
     use HasStateMachines;
 
-    protected $fillable = ['montant'];
+    protected $fillable = ['montant', 'proprietaire_id'];
     protected $casts = ['montant' => 'integer'];
     protected $dates = ['created_at'];
     public $stateMachines = [
-        'status' => DetteStatusStateMachine::class
+        'status' => DetteStatusStateMachine::class,
     ];
 
     public function genererCode(): void
@@ -40,6 +41,17 @@ class Dette extends Model
         }
     }
 
+    public function isVisiteResource(): bool
+    {
+        return str($this->getOrigine())->explode('\\')[2] === 'Visite' and $this->relationLoaded('origine')
+        and $this->origine->relationLoaded('appartement') and $this->origine->appartement->relationLoaded('proprietaire');
+    }
+
+    public function isPaiementResource(): bool
+    {
+        return str($this->getOrigine())->explode('\\')[2] === 'Paiement' and $this->relationLoaded('origine') and $this->origine->relationLoaded('payable') and $this->origine->payable->relationLoaded('bien') and $this->origine->payable->bien->relationLoaded('proprietaire');
+    }
+
     public function setPending(): void
     {
         $this->status()->transitionTo(PayableStatus::PENDING->value);
@@ -48,6 +60,11 @@ class Dette extends Model
     public function setPaid(): void
     {
         $this->status()->transitionTo(PayableStatus::PAID->value);
+    }
+
+    public function scopePending(Builder $query): Builder
+    {
+        return $query->where('status', PayableStatus::PENDING->value);
     }
 
     public function origine(): MorphTo

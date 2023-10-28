@@ -8,6 +8,7 @@ use Asantibanez\LaravelEloquentStateMachines\Traits\HasStateMachines;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Support\Str;
 
 /**
@@ -20,11 +21,11 @@ class Terrain extends Model
     protected $fillable = [
         'reference', 'nom', 'ville', 'quartier', 'pays', 'montant_investit', 'cout_achat',
         'montant_location', 'type_terrain_id', 'proprietaire_id', 'arreter_approbation',
-        'document_cession', 'titre_foncier', 'attestation_villageoise', 'superficie'
+        'document_cession', 'titre_foncier', 'attestation_villageoise', 'superficie',
     ];
 
     public $stateMachines = [
-        'status' => TerrainStateMachine::class
+        'status' => TerrainStateMachine::class,
     ];
 
     protected $dates = ['created_at'];
@@ -52,5 +53,10 @@ class Terrain extends Model
     public function proprietaire(): BelongsTo
     {
         return $this->belongsTo(Proprietaire::class);
+    }
+
+    public function achat(): MorphOne
+    {
+        return $this->morphOne(Achat::class, 'bien');
     }
 }

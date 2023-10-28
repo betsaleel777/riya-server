@@ -41,7 +41,6 @@ class Achat extends Model
     }
 
     // scopes
-
     public function scopeFirstPaiement(Builder $query): Builder
     {
         return $query->whereHas('paiements', function (Builder $query): Builder {

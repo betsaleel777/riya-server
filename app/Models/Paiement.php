@@ -8,7 +8,7 @@ use Asantibanez\LaravelEloquentStateMachines\Traits\HasStateMachines;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Str;
 use Staudenmeir\EloquentEagerLimit\HasEagerLimit;
@@ -24,7 +24,7 @@ class Paiement extends Model
     protected $casts = ['montant' => 'integer'];
 
     public $stateMachines = [
-        'status' => ValidableEntityStateMachine::class
+        'status' => ValidableEntityStateMachine::class,
     ];
 
     public function genererCode(string $prefix): void
@@ -40,5 +40,10 @@ class Paiement extends Model
     public function payable(): MorphTo
     {
         return $this->morphTo();
+    }
+
+    public function dette(): MorphOne
+    {
+        return $this->morphOne(Dette::class, 'origine');
     }
 }

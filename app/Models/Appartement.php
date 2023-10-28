@@ -65,8 +65,8 @@ class Appartement extends Model
         return $this->belongsTo(Proprietaire::class);
     }
 
-    public function visite(): MorphOne
+    public function achat(): MorphOne
     {
-        return $this->morphOne(Visite::class, 'bien');
+        return $this->morphOne(Achat::class, 'bien');
     }
 }

@@ -32,12 +32,12 @@ class Visite extends Model
 
     public function statusAvance(): string
     {
-        $this->relationLoaded('contrat') ?: $this->load('contrat');
+        $this->loadMissing('contrat');
         if ($this->exists() and empty($this->contrat)) {
             return AvanceStatus::CONTRACTWITHOUT->value;
         }
         if ($this->exists() and !empty($this->contrat)) {
-            $this->relationLoaded('avance') ?: $this->load('avance');
+            $this->loadMissing('avance');
             return Carbon::now()->isBefore($this->contrat->debut->addMonth($this->avance->mois)) ?
             AvanceStatus::INUSE->value : AvanceStatus::EXHAUSTED->value;
         }
@@ -46,9 +46,9 @@ class Visite extends Model
     public function bailProcessStarted(): bool
     {
         if ($this->exists) {
-            $this->relationLoaded('avance') ?: $this->load('avance');
-            $this->relationLoaded('frais') ?: $this->load('frais');
-            $this->relationLoaded('caution') ?: $this->load('caution');
+            $this->loadMissing('avance');
+            $this->loadMissing('frais');
+            $this->loadMissing('caution');
             return !empty($this->avance) or !empty($this->frais) or !empty($this->caution) or $this->frais_dossier !== 0;
         }
     }
@@ -56,10 +56,10 @@ class Visite extends Model
     public function getAmountTotaly(): int
     {
         if ($this->exists) {
-            $this->relationLoaded('avance') ?: $this->load('avance');
-            $this->relationLoaded('frais') ?: $this->load('frais');
-            $this->relationLoaded('caution') ?: $this->load('caution');
-            $this->relationLoaded('appartement') ?: $this->load('appartement');
+            $this->loadMissing('avance');
+            $this->loadMissing('frais');
+            $this->loadMissing('caution');
+            $this->loadMissing('appartement');
             return $this->attributes['frais_dossier'] + $this->attributes['montant'] +
             ($this->avance?->mois + $this->frais?->mois + $this->caution?->mois) * $this->appartement->montant_location;
         }
@@ -119,5 +119,10 @@ class Visite extends Model
     public function contrat(): MorphOne
     {
         return $this->MorphOne(Contrat::class, 'operation');
+    }
+
+    public function dette(): MorphOne
+    {
+        return $this->morphOne(Dette::class, 'origine');
     }
 }

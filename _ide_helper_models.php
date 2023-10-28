@@ -230,6 +230,7 @@ namespace App\Models{
  * @property-read \App\Models\TypeDepense $type
  * @method static \Illuminate\Database\Eloquent\Builder|Depense newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Depense newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Depense pending()
  * @method static \Illuminate\Database\Eloquent\Builder|Depense query()
  * @method static \Illuminate\Database\Eloquent\Builder|Depense whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Depense whereDescription($value)
@@ -263,6 +264,7 @@ namespace App\Models{
  * @property-read int|null $state_history_count
  * @method static \Illuminate\Database\Eloquent\Builder|Dette newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Dette newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Dette pending()
  * @method static \Illuminate\Database\Eloquent\Builder|Dette query()
  * @method static \Illuminate\Database\Eloquent\Builder|Dette whereCode($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Dette whereCreatedAt($value)
@@ -340,7 +342,6 @@ namespace App\Models{
  * @property string $code
  * @property int $montant
  * @property string $status
- * @property int $achat_id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property string $payable_type
@@ -353,7 +354,6 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Paiement newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Paiement newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Paiement query()
- * @method static \Illuminate\Database\Eloquent\Builder|Paiement whereAchatId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Paiement whereCode($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Paiement whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Paiement whereId($value)
@@ -695,6 +695,7 @@ namespace App\Models{
  * @property-read int|null $state_history_count
  * @method static \Illuminate\Database\Eloquent\Builder|Visite newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Visite newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Visite pending()
  * @method static \Illuminate\Database\Eloquent\Builder|Visite query()
  * @method static \Illuminate\Database\Eloquent\Builder|Visite whereAppartementId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Visite whereCode($value)
