@@ -18,7 +18,7 @@ class Dette extends Model
 {
     use HasStateMachines;
 
-    protected $fillable = ['montant', 'proprietaire_id'];
+    protected $fillable = ['montant'];
     protected $casts = ['montant' => 'integer'];
     protected $dates = ['created_at'];
     public $stateMachines = [

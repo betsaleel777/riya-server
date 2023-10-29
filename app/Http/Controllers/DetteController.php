@@ -7,7 +7,7 @@ use App\Http\Resources\DetteResource;
 use App\Http\Resources\DetteValidationResource;
 use App\Models\Dette;
 use App\Models\Paiement;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
+use App\Models\Visite;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -24,14 +24,7 @@ class DetteController extends Controller
 
     public function getPending(): JsonResource
     {
-        $dettes = Dette::select('id', 'code', 'montant', 'origine_id', 'origine_type', 'created_at')
-            ->with(['origine' => fn(MorphTo $morphTo) =>
-                $morphTo->morphWith([
-                    Visite::class => ['appartement:id,nom,proprietaire_id', 'appartement.proprietaire:id,nom_complet,telephone'],
-                    Paiement::class => ['payable:id,code,bien_id,bien_type', 'payable.bien:id,nom,proprietaire_id',
-                        'payable.bien.proprietaire:id,nom_complet,telephone'],
-                ]),
-            ])->pending()->get();
+        $dettes = Dette::select('id', 'code', 'montant', 'origine_id', 'origine_type', 'created_at')->with('origine')->pending()->get();
         return DetteValidationResource::collection($dettes);
     }
 
@@ -40,7 +33,10 @@ class DetteController extends Controller
      */
     public function show(Dette $dette): JsonResource
     {
-        $dette->load('origine.contrat');
+        $dette->loadMorph('origine', [
+            Visite::class => ['contrat:id,debut,commission,created_at,operation_id,operation_type'],
+            Paiement::class => ['payable.contrat:id,debut,commission,created_at,operation_id,operation_type'],
+        ]);
         return DetteResource::make($dette);
     }
 
