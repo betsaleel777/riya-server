@@ -4,7 +4,6 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Str;
 
 class VisiteResource extends JsonResource
 {
@@ -17,14 +16,14 @@ class VisiteResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'montant' => $this->montant,
-            'code' => $this->code,
-            'created_at' => $this->created_at->format('d-m-Y'),
-            'date_expiration' => $this->date_expiration->format('d-m-Y'),
-            'appartement_id' => $this->appartement_id,
-            'personne_id' => $this->personne_id,
-            'status' => $this->status,
-            'frais_dossier' => $this->frais_dossier,
+            'montant' => $this->whenNotNull($this->montant),
+            'code' => $this->whenNotNull($this->code),
+            'appartement_id' => $this->whenNotNull($this->appartement_id),
+            'personne_id' => $this->whenNotNull($this->personne_id),
+            'status' => $this->whenNotNull($this->status),
+            'frais_dossier' => $this->whenNotNull($this->frais_dossier),
+            'created_at' => $this->whenNotNull($this->created_at?->format('d-m-Y')),
+            'date_expiration' => $this->whenNotNull($this->date_expiration?->format('d-m-Y')),
             'personne' => PersonneResource::make($this->whenLoaded('personne')),
             'appartement' => AppartementResource::make($this->whenLoaded('appartement')),
             'caution' => $this->whenLoaded('caution', fn() => $this->caution->mois) ?? 0,

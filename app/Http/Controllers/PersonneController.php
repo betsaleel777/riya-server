@@ -42,6 +42,7 @@ class PersonneController extends Controller
      */
     public function show(Personne $personne): JsonResource
     {
+        $personne->load('piece', 'avatar');
         return PersonneResource::make($personne);
     }
 

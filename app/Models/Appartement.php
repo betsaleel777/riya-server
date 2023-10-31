@@ -24,6 +24,27 @@ class Appartement extends Model
         'toilette', 'cuisine', 'garage', 'parking', 'cie', 'sodeci', 'cloture', 'type_appartement_id', 'observation',
     ];
 
+    protected $casts = [
+        'attestation_villageoise' => 'boolean',
+        'titre_foncier' => 'boolean',
+        'document_cession' => 'boolean',
+        'arreter_approbation' => 'boolean',
+        'cours_commune' => 'boolean',
+        'etage' => 'boolean',
+        'placard' => 'boolean',
+        'toilette' => 'boolean',
+        'cuisine' => 'boolean',
+        'garage' => 'boolean',
+        'parking' => 'boolean',
+        'cie' => 'boolean',
+        'sodeci' => 'boolean',
+        'cloture' => 'boolean',
+        'superficie' => 'integer',
+        'montant_location' => 'integer',
+        'montant_investit' => 'integer',
+        'cout_achat' => 'integer',
+    ];
+
     public $stateMachines = [
         'status' => AppartementStateMachine::class,
     ];

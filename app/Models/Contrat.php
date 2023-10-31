@@ -25,7 +25,7 @@ class Contrat extends Model
 
     public $stateMachines = [
         'etat' => ContratStateMachine::class,
-        'status' => ContratStatusStateMachine::class
+        'status' => ContratStatusStateMachine::class,
     ];
 
     public function encaissable(): bool
@@ -68,6 +68,7 @@ class Contrat extends Model
         return $query->processing()->where('operation_type', 'App\Models\Visite');
     }
 
+    // sur achat et sur visite
     public function operation(): MorphTo
     {
         return $this->morphTo();

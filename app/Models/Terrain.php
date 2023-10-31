@@ -23,6 +23,16 @@ class Terrain extends Model
         'montant_location', 'type_terrain_id', 'proprietaire_id', 'arreter_approbation',
         'document_cession', 'titre_foncier', 'attestation_villageoise', 'superficie',
     ];
+    protected $casts = [
+        'attestation_villageoise' => 'boolean',
+        'titre_foncier' => 'boolean',
+        'document_cession' => 'boolean',
+        'arreter_approbation' => 'boolean',
+        'montant_investit' => 'integer',
+        'montant_location' => 'integer',
+        'cout_achat' => 'integer',
+        'superficie' => 'integer',
+    ];
 
     public $stateMachines = [
         'status' => TerrainStateMachine::class,

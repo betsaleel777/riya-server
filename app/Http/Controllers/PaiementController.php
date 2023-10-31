@@ -6,6 +6,8 @@ use App\Events\PaiementValidated;
 use App\Http\Requests\Achat\PaiementRequest;
 use App\Http\Requests\Paiement\PaiementDirectRequest;
 use App\Http\Resources\PaiementResource;
+use App\Models\Achat;
+use App\Models\Loyer;
 use App\Models\Paiement;
 use App\Repositories\PaiementRepository;
 use Illuminate\Http\JsonResponse;
@@ -49,6 +51,12 @@ class PaiementController extends Controller
 
     public function show(Paiement $paiement): JsonResource
     {
+        $paiement->loadMorph('payable', [
+            Loyer::class => ['contrat.operation' => ['personne:id,nom_complet,telephone,quartier', 'appartement:id,nom,montant_location'],
+                'contrat:id,commission,debut,operation_id,operation_type', 'contrat.operation:id,code,montant,appartement_id,personne_id'],
+            Achat::class => ['personne:id,nom_complet,telephone,quartier', 'bien:id,nom,cout_achat,superficie,quartier',
+                'contrat:id,created_at,commission,debut', 'paiements:id,montant,payable_id,payable_type,created_at'],
+        ]);
         return PaiementResource::make($paiement);
     }
 

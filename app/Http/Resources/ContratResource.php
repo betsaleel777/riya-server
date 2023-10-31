@@ -22,14 +22,14 @@ class ContratResource extends JsonResource
     {
         return [
             'id' => $this->resource->id,
-            'etat' => $this->resource->etat,
-            'status' => $this->resource->status,
-            'commission' => $this->resource->commission,
-            'operation_id' => $this->resource->operation_id,
-            'operation_type' => str($this->resource->operation_type)->explode('\\')[2],
-            'debut' => $this->resource->debut?->format('d-m-Y'),
-            'fin' => $this->resource->fin?->format('d-m-Y'),
-            'created_at' => $this->resource->created_at?->format('d-m-Y'),
+            'etat' => $this->whenNotNull($this->resource->etat),
+            'status' => $this->whenNotNull($this->resource->status),
+            'commission' => $this->whenNotNull($this->resource->commission),
+            'operation_id' => $this->whenNotNull($this->resource->operation_id),
+            'operation_type' => $this->whenNotNull(str($this->resource->operation_type)->explode('\\')[2]),
+            'debut' => $this->whenNotNull($this->resource->debut?->format('d-m-Y')),
+            'fin' => $this->whenNotNull($this->resource->fin?->format('d-m-Y')),
+            'created_at' => $this->whenNotNull($this->resource->created_at?->format('d-m-Y')),
             'code' => $this->whenLoaded('operation', fn() => $this->resource->operation->code),
             'operation' => $this->whenLoaded('operation', fn() => match (true) {
                 $this->resource->operation instanceof Visite => VisiteResource::make($this->resource->operation),

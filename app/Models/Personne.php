@@ -23,7 +23,6 @@ class Personne extends Model implements HasMedia
         'lieu_naissance', 'nationalite', 'telephone', 'ville', 'quartier',
         'pays', 'animal', 'fonctions', 'photo_piece', 'civilite', 'type_client_id',
     ];
-    protected $with = ['piece', 'avatar'];
     protected $dates = ['created_at'];
 
     protected $casts = [
