@@ -52,9 +52,9 @@ class PaiementController extends Controller
     public function show(Paiement $paiement): JsonResource
     {
         $paiement->loadMorph('payable', [
-            Loyer::class => ['contrat.operation' => ['personne:id,nom_complet,telephone,quartier', 'appartement:id,nom,montant_location'],
-                'contrat:id,commission,debut,operation_id,operation_type', 'contrat.operation:id,code,montant,appartement_id,personne_id'],
-            Achat::class => ['personne:id,nom_complet,telephone,quartier', 'bien:id,nom,cout_achat,superficie,quartier',
+            Loyer::class => ['client:personnes.id,nom_complet,telephone,quartier,ville',
+                'bien:appartements.id,nom,montant_location,quartier'],
+            Achat::class => ['personne:id,nom_complet,telephone,quartier,ville', 'bien:id,nom,cout_achat,superficie,quartier',
                 'contrat:id,created_at,commission,debut', 'paiements:id,montant,payable_id,payable_type,created_at'],
         ]);
         return PaiementResource::make($paiement);

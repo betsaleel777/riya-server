@@ -24,7 +24,7 @@ class Loyer extends Model
     protected $casts = ['montant' => 'integer'];
     protected $dates = ['created_at'];
     public $stateMachines = [
-        'status' => LoyerStatusStateMachine::class
+        'status' => LoyerStatusStateMachine::class,
     ];
 
     public function genererCode(): void

@@ -18,10 +18,10 @@ class AchatResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'code' => $this->code,
-            'personne_id' => $this->personne_id,
-            'bien_id' => $this->bien_id,
-            'created_at' => $this->created_at->format('d-m-Y'),
+            'code' => $this->whenNotNull($this->code),
+            'personne_id' => $this->whenNotNull($this->personne_id),
+            'bien_id' => $this->whenNotNull($this->bien_id),
+            'created_at' => $this->whenNotNull($this->created_at?->format('d-m-Y')),
             'total' => $this->whenLoaded('paiements', fn() => $this->paiements->sum('montant')),
             'reste' => $this->when(
                 $this->relationLoaded('paiements') and $this->paiements->isNotEmpty() and $this->relationLoaded('bien'),

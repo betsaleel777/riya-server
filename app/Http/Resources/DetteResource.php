@@ -22,9 +22,10 @@ class DetteResource extends JsonResource
     {
         return [
             'id' => $this->resource->id,
-            'code' => $this->resource->code,
-            'montant' => $this->resource->montant,
-            'created_at' => $this->resource->created_at->format('d-m-Y'),
+            'code' => $this->whenNotNull($this->resource->code),
+            'montant' => $this->whenNotNull($this->resource->montant),
+            'status' => $this->whenNotNull($this->resource->status),
+            'created_at' => $this->whenNotNull($this->resource->created_at?->format('d-m-Y')),
             'origine_type' => $this->whenLoaded('origine', str($this->getOrigine())->explode('\\')[2]),
             'origine' => $this->whenLoaded('origine', fn() => match (true) {
                 $this->origine instanceof Visite => VisiteResource::make($this->origine),

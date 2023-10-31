@@ -16,12 +16,12 @@ class LoyerResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'code' => $this->code,
-            'montant' => $this->montant,
-            'status' => $this->status,
-            'created_at' => $this->created_at->format('d-m-Y'),
+            'code' => $this->whenNotNull($this->code),
+            'montant' => $this->whenNotNull($this->montant),
+            'status' => $this->whenNotNull($this->status),
+            'created_at' => $this->whenNotNull($this->created_at?->format('d-m-Y')),
             'contrat' => ContratResource::make($this->whenLoaded('contrat')),
-            'client' => PersonneResource::make($this->whenLoaded('client')),
+            'personne' => PersonneResource::make($this->whenLoaded('client')),
             'bien' => AppartementResource::make($this->whenLoaded('bien')),
         ];
     }

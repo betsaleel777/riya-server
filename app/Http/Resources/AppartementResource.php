@@ -25,7 +25,7 @@ class AppartementResource extends JsonResource
             'ville' => $this->whenNotNull($this->ville),
             'pays' => $this->whenNotNull($this->pays),
             'quartier' => $this->whenNotNull(str($this->quartier)),
-            'observation' => $this->observation,
+            'observation' => $this->whenNotNull($this->observation),
             'attestation_villageoise' => $this->whenNotNull($this->attestation_villageoise),
             'titre_foncier' => $this->whenNotNull($this->titre_foncier),
             'document_cession' => $this->whenNotNull($this->document_cession),
