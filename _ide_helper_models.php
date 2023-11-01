@@ -59,33 +59,33 @@ namespace App\Models{
  * @property int $montant_investit
  * @property int $cout_achat
  * @property string|null $observation
- * @property int $attestation_villageoise
- * @property int $titre_foncier
- * @property int $document_cession
- * @property int $arreter_approbation
- * @property int $cours_commune
- * @property int $placard
- * @property int $etage
- * @property int $toilette
- * @property int $cuisine
- * @property int $garage
- * @property int $parking
- * @property int $cie
- * @property int $sodeci
- * @property int $cloture
+ * @property bool $attestation_villageoise
+ * @property bool $titre_foncier
+ * @property bool $document_cession
+ * @property bool $arreter_approbation
+ * @property bool $cours_commune
+ * @property bool $placard
+ * @property bool $etage
+ * @property bool $toilette
+ * @property bool $cuisine
+ * @property bool $garage
+ * @property bool $parking
+ * @property bool $cie
+ * @property bool $sodeci
+ * @property bool $cloture
  * @property string|null $deleted_at
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property int $proprietaire_id
  * @property int|null $type_appartement_id
  * @property string|null $status
+ * @property-read \App\Models\Achat|null $achat
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Asantibanez\LaravelEloquentStateMachines\Models\PendingTransition> $pendingTransitions
  * @property-read int|null $pending_transitions_count
  * @property-read \App\Models\Proprietaire $proprietaire
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Asantibanez\LaravelEloquentStateMachines\Models\StateHistory> $stateHistory
  * @property-read int|null $state_history_count
  * @property-read \App\Models\TypeAppartement|null $type
- * @property-read \App\Models\Visite|null $visite
  * @method static \Illuminate\Database\Eloquent\Builder|Appartement newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Appartement newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Appartement query()
@@ -321,6 +321,7 @@ namespace App\Models{
  * @property-read int|null $state_history_count
  * @method static \Illuminate\Database\Eloquent\Builder|Loyer newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Loyer newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Loyer pending()
  * @method static \Illuminate\Database\Eloquent\Builder|Loyer query()
  * @method static \Illuminate\Database\Eloquent\Builder|Loyer whereCode($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Loyer whereContratId($value)
@@ -346,6 +347,7 @@ namespace App\Models{
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property string $payable_type
  * @property int $payable_id
+ * @property-read \App\Models\Dette|null $dette
  * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $payable
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Asantibanez\LaravelEloquentStateMachines\Models\PendingTransition> $pendingTransitions
  * @property-read int|null $pending_transitions_count
@@ -503,16 +505,17 @@ namespace App\Models{
  * @property int $montant_investit
  * @property int $cout_achat
  * @property int $superficie
- * @property int $attestation_villageoise
- * @property int $titre_foncier
- * @property int $document_cession
- * @property int $arreter_approbation
+ * @property bool $attestation_villageoise
+ * @property bool $titre_foncier
+ * @property bool $document_cession
+ * @property bool $arreter_approbation
  * @property int $proprietaire_id
  * @property int|null $type_terrain_id
  * @property string|null $deleted_at
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property string|null $status
+ * @property-read \App\Models\Achat|null $achat
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Asantibanez\LaravelEloquentStateMachines\Models\PendingTransition> $pendingTransitions
  * @property-read int|null $pending_transitions_count
  * @property-read \App\Models\Proprietaire $proprietaire
@@ -687,6 +690,7 @@ namespace App\Models{
  * @property-read \App\Models\Avance|null $avance
  * @property-read \App\Models\Caution|null $caution
  * @property-read \App\Models\Contrat|null $contrat
+ * @property-read \App\Models\Dette|null $dette
  * @property-read \App\Models\Frais|null $frais
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Asantibanez\LaravelEloquentStateMachines\Models\PendingTransition> $pendingTransitions
  * @property-read int|null $pending_transitions_count

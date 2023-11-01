@@ -6,6 +6,7 @@ use App\Enums\PayableStatus;
 use App\StateMachines\LoyerStatusStateMachine;
 use Asantibanez\LaravelEloquentStateMachines\Traits\HasStateMachines;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
@@ -42,6 +43,13 @@ class Loyer extends Model
         $this->status()->transitionTo(PayableStatus::PAID->value);
     }
 
+    //scopes
+    public function scopePending(Builder $query): Builder
+    {
+        return $query->where('status', PayableStatus::PENDING->value);
+    }
+
+    //relations
     public function contrat(): BelongsTo
     {
         return $this->belongsTo(Contrat::class);

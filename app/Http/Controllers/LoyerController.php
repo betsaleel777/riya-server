@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Events\LoyerValidated;
 use App\Http\Resources\LoyerListResource;
 use App\Http\Resources\LoyerResource;
+use App\Http\Resources\LoyerValidationResource;
 use App\Interfaces\PaiementRepositoryInterface;
 use App\Models\Loyer;
 use Illuminate\Http\JsonResponse;
@@ -25,12 +26,20 @@ class LoyerController extends Controller
         return LoyerListResource::collection($loyers);
     }
 
+    public function getPending(): JsonResource
+    {
+        $loyers = Loyer::select('id', 'code', 'montant', 'created_at', 'contrat_id')
+            ->with('client:personnes.id,nom_complet', 'bien:appartements.id,nom')->pending()->get();
+        return LoyerValidationResource::collection($loyers);
+    }
+
     /**
      * Display the specified resource.
      */
     public function show(Loyer $loyer): JsonResource
     {
-        $loyer->load('bien', 'client');
+        $loyer->load('bien:appartements.id,nom,ville,quartier,superficie,montant_location,cout_achat',
+            'client:personnes.id,nom_complet,telephone,ville,quartier,civilite');
         return LoyerResource::make($loyer);
     }
 
