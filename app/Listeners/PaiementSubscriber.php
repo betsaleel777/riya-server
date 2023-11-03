@@ -18,11 +18,10 @@ class PaiementSubscriber
      */
     public function handleValidated(PaiementValidated $event): void
     {
-        $event->paiement->setValide();
-        $payable = $event->paiement->load('payable')->payable;
-        match (true) {
-            $payable instanceof Achat => $this->achatRepository->cascadeAchatUptodate($payable),
-        };
+        $payable = $event->paiement->payable()->first();
+        if ($payable instanceof Achat) {
+            $this->achatRepository->cascadeAchatUptodate($payable);
+        }
     }
 
     public function handleLoyerValidated(LoyerValidated $event): void
@@ -37,7 +36,7 @@ class PaiementSubscriber
     {
         return [
             PaiementValidated::class => 'handleValidated',
-            LoyerValidated::class => 'handleLoyerValidated'
+            LoyerValidated::class => 'handleLoyerValidated',
         ];
     }
 }

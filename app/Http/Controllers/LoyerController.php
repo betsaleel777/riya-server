@@ -39,7 +39,7 @@ class LoyerController extends Controller
     public function show(Loyer $loyer): JsonResource
     {
         $loyer->load('bien:appartements.id,nom,ville,quartier,superficie,montant_location,cout_achat',
-            'client:personnes.id,nom_complet,telephone,ville,quartier,civilite');
+            'client:personnes.id,nom_complet,telephone,ville,quartier,civilite', 'client.avatar:id,model_id,model_type,disk,file_name');
         return LoyerResource::make($loyer);
     }
 

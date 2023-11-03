@@ -2,23 +2,21 @@
 
 namespace App\Models;
 
+use App\Enums\ValidableEntityStatus;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Str;
-use Staudenmeir\EloquentEagerLimit\HasEagerLimit;
 
 /**
  * @mixin IdeHelperAchat
  */
 class Achat extends Model
 {
-    use HasFactory, HasEagerLimit;
     protected $fillable = ['personne_id', 'uptodate', 'code'];
     protected $dates = ['created_at'];
     protected $casts = ['uptodate' => 'boolean'];
@@ -31,9 +29,9 @@ class Achat extends Model
     public function reste(): int
     {
         if ($this->exists()) {
-            $this->relationLoaded('paiements') ?: $this->load('paiements');
+            $this->loadMissing('paiements');
             $totalPaye = $this->paiements->sum('montant');
-            $this->relationLoaded('bien') ?: $this->load('bien');
+            $this->loadMissing('bien');
             return $this->bien->cout_achat - $totalPaye;
         } else {
             return 0;
@@ -41,13 +39,13 @@ class Achat extends Model
     }
 
     // scopes
-    public function scopeFirstPaiement(Builder $query): Builder
+
+    public function scopePending(Builder $query): Builder
     {
-        return $query->whereHas('paiements', function (Builder $query): Builder {
-            return $query->limit(1);
-        });
+        return $query->whereHas('paiements', fn(Builder $query): Builder => $query->pending());
     }
 
+    //relations
     public function personne(): BelongsTo
     {
         return $this->belongsTo(Personne::class);
@@ -66,5 +64,15 @@ class Achat extends Model
     public function contrat(): MorphOne
     {
         return $this->morphOne(Contrat::class, 'operation');
+    }
+
+    public function pendingPaiement(): MorphOne
+    {
+        return $this->paiements()->one()->where('status', ValidableEntityStatus::WAIT->value);
+    }
+
+    public function firstPaiement(): MorphOne
+    {
+        return $this->morphOne(Paiement::class, 'payable')->oldestOfMany();
     }
 }

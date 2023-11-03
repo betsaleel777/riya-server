@@ -8,6 +8,7 @@ use App\Events\AchatDeleted;
 use App\Http\Requests\Achat\AchatPostRequest;
 use App\Http\Resources\AchatListResource;
 use App\Http\Resources\AchatResource;
+use App\Http\Resources\AchatValidationResource;
 use App\Interfaces\AchatRepositoryInterface;
 use App\Interfaces\BienRepositoryInterface;
 use App\Interfaces\PaiementRepositoryInterface;
@@ -26,8 +27,15 @@ class AchatController extends Controller
 
     public function index(): JsonResource
     {
-        $achats = Achat::with('bien', 'personne', 'paiements')->firstPaiement()->get();
+        $achats = Achat::withSum(['paiements as total' => fn($query) => $query->validated()], 'montant')
+            ->with('bien:id,nom,cout_achat', 'personne:id,nom_complet')->get();
         return AchatListResource::collection($achats);
+    }
+
+    public function getPending(): JsonResource
+    {
+        $achats = Achat::with('bien:id,nom,cout_achat', 'personne:id,nom_complet', 'personne.avatar:id,model_id,model_type,disk,file_name')->pending()->get();
+        return AchatValidationResource::collection($achats);
     }
 
     /** dépendances:
@@ -49,7 +57,8 @@ class AchatController extends Controller
 
     public function show(Achat $achat): JsonResource
     {
-        $achat->load('bien', 'personne', 'paiements');
+        $achat->loadSum(['paiements as total' => fn($query) => $query->validated()], 'montant')->load('bien:id,cout_achat,nom',
+            'personne:id,nom_complet', 'paiements');
         return AchatResource::make($achat);
     }
 
@@ -65,5 +74,11 @@ class AchatController extends Controller
             $message = "L'achat $achat->code a été supprimé avec succès.";
         }
         return response()->json($message);
+    }
+
+    public function valider(Achat $achat): JsonResponse
+    {
+        $paiement = $this->achatRepository->valider($achat);
+        return response()->json("Le paiement $paiement->code pour le montant de $paiement->montant FCFA a été validé avec succès.");
     }
 }

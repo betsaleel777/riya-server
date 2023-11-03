@@ -62,12 +62,14 @@ Route::apiResource('depenses', DepenseController::class)->middleware('auth:sanct
 Route::resource('societes', SocieteController::class)->except(['create', 'edit', 'destroy', 'show'])->middleware('auth:sanctum');
 Route::get('loyers/pending', [LoyerController::class, 'getPending'])->middleware('auth:sanctum');
 Route::resource('loyers', LoyerController::class)->except(['create', 'edit'])->middleware('auth:sanctum');
+Route::get('achats/pending', [AchatController::class, 'getPending'])->middleware('auth:sanctum');
 Route::resource('achats', AchatController::class)->except(['update', 'edit', 'create'])->middleware('auth:sanctum');
 
 Route::get('societe-count', [CountController::class, 'societe'])->middleware('auth:sanctum');
 Route::get('paiements/payable/{id}', [PaiementController::class, 'getByPayable'])->middleware('auth:sanctum');
 Route::post('paiements/direct', [PaiementController::class, 'createDirect'])->middleware('auth:sanctum');
 Route::post('contrats/validate', [ContratController::class, 'contratValidate'])->middleware('auth:sanctum');
+Route::patch('achats/validate/{achat}', [AchatController::class, 'valider'])->middleware('auth:sanctum');
 Route::patch('paiements/validate/{paiement}', [PaiementController::class, 'valider'])->middleware('auth:sanctum');
 Route::patch('loyers/cashed/{loyer}', [LoyerController::class, 'encaisser'])->middleware('auth:sanctum');
 Route::patch('loyers/validate/{loyer}', [LoyerController::class, 'valider'])->middleware('auth:sanctum');

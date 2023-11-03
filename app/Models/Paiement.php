@@ -6,19 +6,19 @@ use App\Enums\ValidableEntityStatus;
 use App\StateMachines\ValidableEntityStateMachine;
 use Asantibanez\LaravelEloquentStateMachines\Traits\HasStateMachines;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Str;
-use Staudenmeir\EloquentEagerLimit\HasEagerLimit;
 
 /**
  * @mixin IdeHelperPaiement
  */
 class Paiement extends Model
 {
-    use HasFactory, HasStateMachines, HasEagerLimit;
+    use HasFactory, HasStateMachines;
     protected $fillable = ['montant', 'code'];
     protected $dates = ['created_at'];
     protected $casts = ['montant' => 'integer'];
@@ -35,6 +35,17 @@ class Paiement extends Model
     public function setValide(): void
     {
         $this->status()->transitionTo($to = ValidableEntityStatus::VALID->value);
+    }
+
+    //scope
+    public function scopePending(Builder $query): Builder
+    {
+        return $query->where('status', ValidableEntityStatus::WAIT->value);
+    }
+
+    public function scopeValidated(Builder $query): Builder
+    {
+        return $query->where('status', ValidableEntityStatus::VALID->value);
     }
 
     public function payable(): MorphTo
