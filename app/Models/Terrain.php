@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\BienStatus;
 use App\StateMachines\TerrainStateMachine;
 use Asantibanez\LaravelEloquentStateMachines\Traits\HasStateMachines;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -45,14 +46,35 @@ class Terrain extends Model
         $this->attributes['reference'] = 'TER' . Str::upper(Str::random(5));
     }
 
-    public function setFree()
+    public function setFree(): void
     {
-        $this->status()->transitionTo($to = BienStatus::FREE->value);
+        $this->status()->transitionTo(BienStatus::FREE->value);
     }
 
-    public function setBusy()
+    public function setBusy(): void
     {
-        $this->status()->transitionTo($to = BienStatus::BUSY->value);
+        $this->status()->transitionTo(BienStatus::BUSY->value);
+    }
+
+    public function isBusy(): bool
+    {
+        return $this->status === BienStatus::BUSY->value;
+    }
+
+    public function isFree(): bool
+    {
+        return $this->status === BienStatus::FREE->value;
+    }
+
+    //scopes
+    public function scopeBusy(Builder $query): Builder
+    {
+        return $query->where('status', BienStatus::BUSY->value);
+    }
+
+    public function scopeFree(Builder $query): Builder
+    {
+        return $query->where('status', BienStatus::FREE->value);
     }
 
     public function type(): BelongsTo

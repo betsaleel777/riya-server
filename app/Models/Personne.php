@@ -6,6 +6,8 @@ use App\Enums\PersonneCiviliteEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Support\Str;
 use Spatie\MediaLibrary\HasMedia;
@@ -54,5 +56,25 @@ class Personne extends Model implements HasMedia
     public function type(): BelongsTo
     {
         return $this->belongsTo(TypeClient::class);
+    }
+
+    public function achats(): HasMany
+    {
+        return $this->hasMany(Achat::class);
+    }
+
+    public function visites(): HasMany
+    {
+        return $this->hasMany(Visite::class);
+    }
+
+    public function contratsBail(): HasManyThrough
+    {
+        return $this->hasManyThrough(Contrat::class, Visite::class, null, 'operation_id')->where('operation_type', Visite::class);
+    }
+
+    public function contratsAchat(): HasManyThrough
+    {
+        return $this->hasManyThrough(Contrat::class, Achat::class, null, 'operation_id')->where('operation_type', Achat::class);
     }
 }
