@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Appartement;
 use App\Models\Depense;
+use App\Models\Dette;
 use App\Models\Personne;
 use App\Models\Proprietaire;
 use App\Models\Terrain;
@@ -23,15 +24,20 @@ class CountController extends Controller
 
     public function dashboard(): JsonResponse
     {
-        $biens = Appartement::count() + Terrain::count();
-        $taux = $biens ? ((Appartement::busy()->count() + Terrain::busy()->count()) / $biens) * 100 : 0;
+        $terrains = Terrain::count();
+        $appartements = Appartement::count();
+        $biens = $appartements + $terrains;
+        $taux = $biens ? round(((Appartement::busy()->count() + Terrain::busy()->count()) / $biens) * 100, 2) : 0;
         return response()->json([
             'clients' => Personne::count(),
             'locataires' => Personne::has('contratsBail')->count(),
             'biens' => $biens,
             'visites' => Visite::count(),
-            'taux' => round($taux, 2),
+            'taux' => $taux,
             'depenses' => (int) Depense::sum('montant'),
+            'remboursements' => (int) Dette::paid()->sum('montant'),
+            'terrains' => $terrains,
+            'appartements' => $appartements,
         ]);
     }
 }

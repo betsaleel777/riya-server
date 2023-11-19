@@ -67,6 +67,11 @@ class Dette extends Model
         return $query->where('status', PayableStatus::PENDING->value);
     }
 
+    public function scopePaid(Builder $query): Builder
+    {
+        return $query->where('status', PayableStatus::PAID->value);
+    }
+
     public function origine(): MorphTo
     {
         return $this->morphTo();
