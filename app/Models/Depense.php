@@ -8,13 +8,15 @@ use Asantibanez\LaravelEloquentStateMachines\Traits\HasStateMachines;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as ContractsAuditable;
 
 /**
  * @mixin IdeHelperDepense
  */
-class Depense extends Model
+class Depense extends Model implements ContractsAuditable
 {
-    use HasStateMachines;
+    use HasStateMachines, Auditable;
 
     protected $fillable = ['titre', 'montant', 'description', 'type_depense_id'];
     protected $dates = ['created_at'];

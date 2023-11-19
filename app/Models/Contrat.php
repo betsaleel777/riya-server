@@ -9,16 +9,17 @@ use App\StateMachines\ContratStatusStateMachine;
 use Asantibanez\LaravelEloquentStateMachines\Traits\HasStateMachines;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as ContractsAuditable;
 
 /**
  * @mixin IdeHelperContrat
  */
-class Contrat extends Model
+class Contrat extends Model implements ContractsAuditable
 {
-    use HasFactory, HasStateMachines;
+    use Auditable, HasStateMachines;
     protected $fillable = ['debut', 'fin', 'commission'];
     protected $casts = ['commission' => 'integer', 'debut' => 'date', 'fin' => 'date'];
     protected $dates = ['created_at'];

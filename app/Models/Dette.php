@@ -10,13 +10,15 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Str;
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as ContractsAuditable;
 
 /**
  * @mixin IdeHelperDette
  */
-class Dette extends Model
+class Dette extends Model implements ContractsAuditable
 {
-    use HasStateMachines;
+    use HasStateMachines, Auditable;
 
     protected $fillable = ['montant'];
     protected $casts = ['montant' => 'integer'];

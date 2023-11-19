@@ -3,13 +3,14 @@
 namespace App\Models;
 
 use App\Enums\PersonneCiviliteEnum;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Support\Str;
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as ContractsAuditable;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -17,9 +18,9 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 /**
  * @mixin IdeHelperPersonne
  */
-class Personne extends Model implements HasMedia
+class Personne extends Model implements HasMedia, ContractsAuditable
 {
-    use HasFactory, InteractsWithMedia;
+    use Auditable, InteractsWithMedia;
     protected $fillable = [
         'code', 'email', 'nom_complet', 'cni', 'date_naissance',
         'lieu_naissance', 'nationalite', 'telephone', 'ville', 'quartier',

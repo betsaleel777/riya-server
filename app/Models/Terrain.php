@@ -6,18 +6,19 @@ use App\Enums\BienStatus;
 use App\StateMachines\TerrainStateMachine;
 use Asantibanez\LaravelEloquentStateMachines\Traits\HasStateMachines;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Support\Str;
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as ContractsAuditable;
 
 /**
  * @mixin IdeHelperTerrain
  */
-class Terrain extends Model
+class Terrain extends Model implements ContractsAuditable
 {
-    use HasFactory, HasStateMachines;
+    use Auditable, HasStateMachines;
 
     protected $fillable = [
         'reference', 'nom', 'ville', 'quartier', 'pays', 'montant_investit', 'cout_achat',

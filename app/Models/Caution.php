@@ -2,16 +2,17 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as ContractsAuditable;
 
 /**
  * @mixin IdeHelperCaution
  */
-class Caution extends Model
+class Caution extends Model implements ContractsAuditable
 {
-    use HasFactory;
+    use Auditable;
     protected $fillable = ['visite_id', 'mois'];
     protected $dates = ['created_at'];
     protected $casts = ['mois' => 'integer'];

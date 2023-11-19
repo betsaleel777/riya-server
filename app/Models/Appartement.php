@@ -11,13 +11,15 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Support\Str;
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as ContractsAuditable;
 
 /**
  * @mixin IdeHelperAppartement
  */
-class Appartement extends Model
+class Appartement extends Model implements ContractsAuditable
 {
-    use HasFactory, HasStateMachines;
+    use HasFactory, Auditable, HasStateMachines;
     protected $fillable = [
         'reference', 'nom', 'ville', 'pays', 'quartier', 'observation', 'attestation_villageoise',
         'titre_foncier', 'document_cession', 'arreter_approbation', 'superficie', 'montant_location',

@@ -2,15 +2,16 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as ContractsAuditable;
 
 /**
  * @mixin IdeHelperTypeTerrain
  */
-class TypeTerrain extends Model
+class TypeTerrain extends Model implements ContractsAuditable
 {
-    use HasFactory;
+    use Auditable;
     protected $fillable = ['nom'];
 
     protected $dates = ['created_at'];

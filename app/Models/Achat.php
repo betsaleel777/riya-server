@@ -11,12 +11,15 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Str;
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as ContractsAuditable;
 
 /**
  * @mixin IdeHelperAchat
  */
-class Achat extends Model
+class Achat extends Model implements ContractsAuditable
 {
+    use Auditable;
     protected $fillable = ['personne_id', 'uptodate', 'code'];
     protected $dates = ['created_at'];
     protected $casts = ['uptodate' => 'boolean'];

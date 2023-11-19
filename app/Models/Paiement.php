@@ -7,18 +7,19 @@ use App\StateMachines\ValidableEntityStateMachine;
 use Asantibanez\LaravelEloquentStateMachines\Traits\HasStateMachines;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Str;
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as ContractsAuditable;
 
 /**
  * @mixin IdeHelperPaiement
  */
-class Paiement extends Model
+class Paiement extends Model implements ContractsAuditable
 {
-    use HasFactory, HasStateMachines;
+    use Auditable, HasStateMachines;
     protected $fillable = ['montant', 'code'];
     protected $dates = ['created_at'];
     protected $casts = ['montant' => 'integer'];

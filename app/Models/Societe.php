@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as ContractsAuditable;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -12,9 +13,9 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 /**
  * @mixin IdeHelperSociete
  */
-class Societe extends Model implements HasMedia
+class Societe extends Model implements HasMedia, ContractsAuditable
 {
-    use HasFactory, InteractsWithMedia;
+    use Auditable, InteractsWithMedia;
 
     protected $fillable = [
         'raison_sociale', 'description', 'slogan', 'email', 'boite_postale',

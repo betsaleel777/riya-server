@@ -11,15 +11,18 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Support\Str;
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as ContractsAuditable;
 use Staudenmeir\EloquentHasManyDeep\HasOneDeep;
 
 /**
  * @mixin IdeHelperLoyer
  */
-class Loyer extends Model
+class Loyer extends Model implements ContractsAuditable
 {
     use HasStateMachines;
     use \Staudenmeir\EloquentHasManyDeep\HasRelationships;
+    use Auditable;
 
     protected $fillable = ['code', 'contrat_id', 'montant'];
     protected $casts = ['montant' => 'integer'];
