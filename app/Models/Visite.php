@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\AvanceStatus;
 use App\Enums\ValidableEntityStatus;
 use App\StateMachines\ValidableEntityStateMachine;
+use App\Traits\HasResponsible;
 use Asantibanez\LaravelEloquentStateMachines\Traits\HasStateMachines;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -21,7 +22,7 @@ use OwenIt\Auditing\Contracts\Auditable as ContractsAuditable;
  */
 class Visite extends Model implements ContractsAuditable
 {
-    use Auditable, HasStateMachines;
+    use Auditable, HasResponsible, HasStateMachines;
     protected $fillable = ['code', 'personne_id', 'montant', 'date_expiration', 'appartement_id', 'frais_dossier'];
     protected $dates = ['created_at'];
     protected $casts = ['montant' => 'integer', 'date_expiration' => 'date', 'frais_dossier' => 'integer'];

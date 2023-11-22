@@ -34,7 +34,7 @@ class AchatController extends Controller
 
     public function getPending(): JsonResource
     {
-        $achats = Achat::with('bien:id,nom,cout_achat', 'personne:id,nom_complet', 'personne.avatar:id,model_id,model_type,disk,file_name')->pending()->get();
+        $achats = Achat::with('bien:id,nom,cout_achat', 'personne:id,nom_complet', 'personne.piece:id,model_id,model_type,disk,file_name')->pending()->get();
         return AchatValidationResource::collection($achats);
     }
 
@@ -57,8 +57,8 @@ class AchatController extends Controller
 
     public function show(Achat $achat): JsonResource
     {
-        $achat->loadSum(['paiements as total' => fn($query) => $query->validated()], 'montant')->load('bien:id,cout_achat,nom',
-            'personne:id,nom_complet', 'paiements');
+        $achat->loadSum(['paiements as total' => fn($query) => $query->validated()], 'montant')
+            ->load('bien:id,reference,nom,pays,ville,quartier,cout_achat,superficie', 'personne', 'paiements');
         return AchatResource::make($achat);
     }
 

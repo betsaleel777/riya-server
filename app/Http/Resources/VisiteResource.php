@@ -32,6 +32,7 @@ class VisiteResource extends JsonResource
             'cautionObject' => $this->whenLoaded('caution', fn() => $this->caution),
             'avanceObject' => $this->whenLoaded('avance', fn() => $this->avance),
             'fraisObject' => $this->whenLoaded('frais', fn() => $this->frais),
+            'responsable' => $this->when($this->relationLoaded('responsable') and $this->responsable->relationLoaded('user'), UserResource::make($this->responsable->user)),
         ];
     }
 }

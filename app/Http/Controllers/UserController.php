@@ -17,7 +17,7 @@ class UserController extends Controller
      */
     public function index(): JsonResource
     {
-        $users = User::get();
+        $users = User::with('photo:id,model_id,model_type,disk,file_name')->get();
         return UserResource::collection($users);
     }
 
@@ -38,7 +38,7 @@ class UserController extends Controller
      */
     public function show(User $user): JsonResource
     {
-        return UserResource::make($user);
+        return UserResource::make($user->load('photo:id,model_id,model_type,disk,file_name'));
     }
 
     /**

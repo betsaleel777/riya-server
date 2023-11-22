@@ -44,7 +44,7 @@ class AuthController extends Controller
 
     public function user(Request $request): JsonResource
     {
-        $user = User::find($request->user()->id);
+        $user = User::with('photo:id,model_id,model_type,disk,file_name')->find($request->user()->id);
         return UserResource::make($user);
     }
 }

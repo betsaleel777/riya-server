@@ -41,8 +41,15 @@ class Achat extends Model implements ContractsAuditable
         }
     }
 
-    // scopes
+    public function contractible(): bool
+    {
+        if ($this->exists()) {
+            $this->loadMissing('paiements');
+            return $this->paiements->count() === 1;
+        }
+    }
 
+    // scopes
     public function scopePending(Builder $query): Builder
     {
         return $query->whereHas('paiements', fn(Builder $query): Builder => $query->pending());

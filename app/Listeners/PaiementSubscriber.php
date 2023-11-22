@@ -18,9 +18,10 @@ class PaiementSubscriber
      */
     public function handleValidated(PaiementValidated $event): void
     {
-        $payable = $event->paiement->payable()->first();
+        $payable = $event->paiement->load('payable.contrat')->payable;
         if ($payable instanceof Achat) {
             $this->achatRepository->cascadeAchatUptodate($payable);
+            $this->detteRepository->storeForPayement($event->paiement, $payable->contrat);
         }
     }
 

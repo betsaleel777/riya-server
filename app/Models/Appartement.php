@@ -2,10 +2,9 @@
 
 namespace App\Models;
 
-use App\Enums\BienStatus;
 use App\StateMachines\AppartementStateMachine;
+use App\Traits\HasProperty;
 use Asantibanez\LaravelEloquentStateMachines\Traits\HasStateMachines;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -19,7 +18,7 @@ use OwenIt\Auditing\Contracts\Auditable as ContractsAuditable;
  */
 class Appartement extends Model implements ContractsAuditable
 {
-    use HasFactory, Auditable, HasStateMachines;
+    use HasFactory, Auditable, HasStateMachines, HasProperty;
     protected $fillable = [
         'reference', 'nom', 'ville', 'pays', 'quartier', 'observation', 'attestation_villageoise',
         'titre_foncier', 'document_cession', 'arreter_approbation', 'superficie', 'montant_location',
@@ -57,37 +56,6 @@ class Appartement extends Model implements ContractsAuditable
     public function genererCode(): void
     {
         $this->attributes['reference'] = 'APP' . Str::upper(Str::random(5));
-    }
-
-    public function setFree(): void
-    {
-        $this->status()->transitionTo(BienStatus::FREE->value);
-    }
-
-    public function setBusy(): void
-    {
-        $this->status()->transitionTo(BienStatus::BUSY->value);
-    }
-
-    public function isBusy(): bool
-    {
-        return $this->status === BienStatus::BUSY->value;
-    }
-
-    public function isFree(): bool
-    {
-        return $this->status === BienStatus::FREE->value;
-    }
-
-    //scopes
-    public function scopeBusy(Builder $query): Builder
-    {
-        return $query->where('status', BienStatus::BUSY->value);
-    }
-
-    public function scopeFree(Builder $query): Builder
-    {
-        return $query->where('status', BienStatus::FREE->value);
     }
 
     public function type(): BelongsTo

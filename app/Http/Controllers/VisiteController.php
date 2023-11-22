@@ -50,7 +50,7 @@ class VisiteController extends Controller
 
     public function show(Visite $visite): JsonResource
     {
-        $visite->load('appartement', 'personne', 'frais', 'caution', 'avance');
+        $visite->load('appartement', 'personne', 'frais', 'caution', 'avance', 'responsable');
         return VisiteResource::make($visite);
     }
 

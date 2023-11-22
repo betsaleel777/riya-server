@@ -16,10 +16,10 @@ class UserResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
-            'email' => $this->email,
-            'created_at' => $this->created_at->format('d-m-Y'),
-            'photo' => $this->whenLoaded('photo', fn () => $this->photo->getUrl()),
+            'name' => $this->whenNotNull($this->name),
+            'email' => $this->whenNotNull($this->email),
+            'created_at' => $this->whenNotNull($this->created_at?->format('d-m-Y')),
+            'photo' => $this->whenLoaded('photo', fn() => $this->photo?->getUrl()),
         ];
     }
 }

@@ -16,7 +16,7 @@ class AchatListResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'total' => $this->total,
+            'total' => $this->total ?? 0,
             'code' => $this->whenNotNull($this->code),
             'created_at' => $this->whenNotNull($this->created_at?->format('d-m-Y')),
             'personne' => $this->whenLoaded('personne', fn() => str($this->personne->nom_complet)->lower()),

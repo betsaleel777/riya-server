@@ -22,14 +22,15 @@ class AchatResource extends JsonResource
             'personne_id' => $this->whenNotNull($this->personne_id),
             'bien_id' => $this->whenNotNull($this->bien_id),
             'created_at' => $this->whenNotNull($this->created_at?->format('d-m-Y')),
-            'total' => $this->whenNotNull($this->total),
+            'total' => $this->whenNotNull($this->total, 0),
+            'contractible' => $this->contractible(),
             'reste' => $this->whenLoaded('bien', fn() => $this->bien->cout_achat - $this->total),
-            'personne' => $this->whenLoaded('personne', PersonneResource::make($this->whenLoaded('personne'))),
+            'personne' => PersonneResource::make($this->whenLoaded('personne')),
+            'paiements' => PaiementResource::collection($this->whenLoaded('paiements')),
             'bien' => $this->whenLoaded('bien', fn() => match (true) {
                 $this->bien instanceof Appartement => AppartementResource::make($this->bien),
                 $this->bien instanceof Terrain => TerrainResource::make($this->bien)
             }),
-            'paiements' => PaiementResource::collection($this->whenLoaded('paiements')),
         ];
     }
 }

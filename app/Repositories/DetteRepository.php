@@ -12,8 +12,9 @@ class DetteRepository implements DetteRepositoryInterface
 {
     public function storeForRental(Contrat $contrat, Visite $visite): void
     {
-        $visite->load('caution', 'appartement');
-        $dette = Dette::make(['montant' => $visite->caution->mois * $visite->appartement->montant_location]);
+        $visite->load('caution', 'avance', 'appartement');
+        $montant = $visite->caution->mois * $visite->appartement->montant_location + $visite->avance->mois * $visite->appartement->montant_location * $contrat->commission / 100;
+        $dette = Dette::make(['montant' => $montant]);
         $dette->genererCode();
         $dette->origine()->associate($visite)->save();
     }

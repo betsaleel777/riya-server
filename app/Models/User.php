@@ -26,21 +26,14 @@ class User extends Authenticatable implements HasMedia, ContractsAuditable
      *
      * @var array<int, string>
      */
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-    ];
+    protected $fillable = ['name', 'email', 'password'];
 
     /**
      * The attributes that should be hidden for serialization.
      *
      * @var array<int, string>
      */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
+    protected $hidden = ['password', 'remember_token'];
 
     protected $dates = ['created_at'];
 
@@ -49,11 +42,7 @@ class User extends Authenticatable implements HasMedia, ContractsAuditable
      *
      * @var array<string, string>
      */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
-
-    protected $with = ['photo'];
+    protected $casts = ['email_verified_at' => 'datetime'];
 
     public function registerMediaCollections(): void
     {
