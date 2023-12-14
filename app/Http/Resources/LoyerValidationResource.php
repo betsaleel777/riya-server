@@ -25,7 +25,10 @@ class LoyerValidationResource extends JsonResource
             'created_at' => $this->whenNotNull($this->resource->created_at?->format('d-m-Y')),
             'personne' => $this->whenLoaded('client', str($this->resource->client->nom_complet)->lower()),
             'bien' => $this->whenLoaded('bien', str($this->resource->bien->nom)->lower()),
-            'avatar' => $this->when($this->relationLoaded('client') and $this->client->relationLoaded('avatar'), $this->client->avatar->getUrl()),
+            'avatar' => $this->when(
+                $this->relationLoaded('client') and $this->client->relationLoaded('avatar'),
+                MediaResource::make($this->client->avatar)
+            ),
         ];
     }
 }

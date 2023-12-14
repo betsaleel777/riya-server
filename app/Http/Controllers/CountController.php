@@ -40,4 +40,9 @@ class CountController extends Controller
             'appartements' => $appartements,
         ]);
     }
+
+    public function pendings(): JsonResponse
+    {
+        return response()->json([]);
+    }
 }

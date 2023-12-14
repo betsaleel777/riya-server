@@ -27,7 +27,7 @@ class DepenseController extends Controller
     public function getPending(): JsonResource
     {
         $depenses = Depense::select('id', 'titre', 'montant', 'type_depense_id', 'created_at')
-            ->with(['type' => fn(BelongsTo $query) => $query->select('id', 'nom')])->pending()->get();
+            ->with(['type' => fn(BelongsTo $query) => $query->select('id', 'nom')])->withResponsible()->pending()->get();
         return DepenseValidationResource::collection($depenses);
     }
 

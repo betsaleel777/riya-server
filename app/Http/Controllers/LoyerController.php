@@ -28,8 +28,7 @@ class LoyerController extends Controller
 
     public function getPending(): JsonResource
     {
-        $loyers = Loyer::select('id', 'code', 'montant', 'created_at', 'contrat_id')
-            ->with('client:personnes.id,nom_complet', 'bien:appartements.id,nom')->pending()->get();
+        $loyers = Loyer::select('id', 'code', 'montant', 'created_at', 'contrat_id')->with('client:personnes.id,nom_complet', 'bien:appartements.id,nom', 'client.avatar:id,model_id,model_type,disk,file_name')->pending()->get();
         return LoyerValidationResource::collection($loyers);
     }
 

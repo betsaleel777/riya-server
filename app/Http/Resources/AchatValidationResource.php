@@ -26,8 +26,8 @@ class AchatValidationResource extends JsonResource
             'cout' => $this->whenLoaded('bien', $this->resource->bien->cout_achat),
             'montant' => $this->whenLoaded('pendingPaiement', $this->resource->pendingPaiement->montant),
             'personne' => $this->whenLoaded('personne', str($this->resource->personne->nom_complet)->lower()),
-            'avatar' => $this->when($this->relationLoaded('personne') and $this->personne->relationLoaded('piece'),
-                $this->personne->piece?->getUrl()),
+            'avatar' => $this->when($this->relationLoaded('personne') and $this->personne->relationLoaded('avatar'),
+                MediaResource::make($this->personne->avatar)),
         ];
     }
 }

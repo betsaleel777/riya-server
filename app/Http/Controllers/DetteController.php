@@ -24,7 +24,7 @@ class DetteController extends Controller
 
     public function getPending(): JsonResource
     {
-        $dettes = Dette::with('origine', 'responsable:id,user_type,user_id,auditable_type,auditable_id')->pending()->get();
+        $dettes = Dette::with('origine')->withResponsible()->pending()->get();
         return DetteValidationResource::collection($dettes);
     }
 
