@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Contrat\ContratRequest;
 use App\Http\Resources\ContratListResource;
+use App\Http\Resources\ContratResource;
 use App\Interfaces\ContratRepositoryInterface;
+use App\Models\Achat;
 use App\Models\Contrat;
 use App\Models\Visite;
 use Illuminate\Http\JsonResponse;
@@ -21,6 +23,15 @@ class ContratController extends Controller
     {
         $contrats = Contrat::with('operation.personne')->get();
         return ContratListResource::collection($contrats);
+    }
+
+    public function show(Contrat $contrat): JsonResource
+    {
+        $contrat->loadMorph('operation', [
+            Achat::class => ['personne', 'bien'],
+            Visite::class => ['personne', 'appartement', 'caution', 'avance'],
+        ]);
+        return ContratResource::make($contrat);
     }
 
     public function store(ContratRequest $request): JsonResponse
