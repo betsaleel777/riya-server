@@ -61,7 +61,7 @@ Route::get('depenses/pending', [DepenseController::class, 'getPending'])->middle
 Route::apiResource('depenses', DepenseController::class)->middleware('auth:sanctum');
 Route::resource('societes', SocieteController::class)->except(['create', 'edit', 'destroy', 'show'])->middleware('auth:sanctum');
 Route::get('loyers/pending', [LoyerController::class, 'getPending'])->middleware('auth:sanctum');
-Route::resource('loyers', LoyerController::class)->except(['create', 'edit'])->middleware('auth:sanctum');
+Route::resource('loyers', LoyerController::class)->except(['create', 'edit', 'update', 'destroy'])->middleware('auth:sanctum');
 Route::get('achats/pending', [AchatController::class, 'getPending'])->middleware('auth:sanctum');
 Route::resource('achats', AchatController::class)->except(['update', 'edit', 'create'])->middleware('auth:sanctum');
 
@@ -72,7 +72,7 @@ Route::post('paiements/direct', [PaiementController::class, 'createDirect'])->mi
 Route::post('contrats/validate', [ContratController::class, 'contratValidate'])->middleware('auth:sanctum');
 Route::patch('achats/validate/{achat}', [AchatController::class, 'valider'])->middleware('auth:sanctum');
 Route::patch('paiements/validate/{paiement}', [PaiementController::class, 'valider'])->middleware('auth:sanctum');
-Route::patch('loyers/cashed/{loyer}', [LoyerController::class, 'encaisser'])->middleware('auth:sanctum');
+Route::patch('loyers/cashed', [LoyerController::class, 'encaisser'])->middleware('auth:sanctum');
 Route::patch('loyers/validate/{loyer}', [LoyerController::class, 'valider'])->middleware('auth:sanctum');
 Route::patch('dettes/repay/{dette}', [DetteController::class, 'rembourser'])->middleware('auth:sanctum');
 Route::patch('dettes/validate/{dette}', [DetteController::class, 'valider'])->middleware('auth:sanctum');

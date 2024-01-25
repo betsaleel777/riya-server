@@ -9,7 +9,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Str;
 use OwenIt\Auditing\Auditable;
 use OwenIt\Auditing\Contracts\Auditable as ContractsAuditable;
@@ -58,9 +58,9 @@ class Loyer extends Model implements ContractsAuditable
         return $this->belongsTo(Contrat::class);
     }
 
-    public function paiement(): MorphOne
+    public function paiements(): MorphMany
     {
-        return $this->morphOne(Paiement::class, 'payable');
+        return $this->morphMany(Paiement::class, 'payable');
     }
 
     public function client(): HasOneDeep

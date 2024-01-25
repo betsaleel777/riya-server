@@ -28,10 +28,10 @@ class PaiementRepository implements PaiementRepositoryInterface
         return $paiement;
     }
 
-    public function createPaiementLoyer(Loyer $loyer): Paiement
+    public function createPaiementLoyer(Loyer $loyer, int $montant): Paiement
     {
-        $paiement = Paiement::make(['montant' => $loyer->montant]);
-        $paiement->genererCode('PAA');
+        $paiement = Paiement::make(['montant' => $montant]);
+        $paiement->genererCode('PAL');
         $paiement->payable()->associate($loyer)->save();
         return $paiement;
     }

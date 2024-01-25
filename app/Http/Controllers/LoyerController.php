@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\LoyerValidated;
+use App\Http\Requests\Loyer\LoyerPatchRequest;
 use App\Http\Resources\LoyerListResource;
 use App\Http\Resources\LoyerResource;
 use App\Http\Resources\LoyerValidationResource;
@@ -42,24 +43,17 @@ class LoyerController extends Controller
         return LoyerResource::make($loyer);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Loyer $loyer)
-    {
-        //
-    }
-
     public function valider(Loyer $loyer): JsonResponse
     {
         LoyerValidated::dispatch($loyer);
         return response()->json("Le paiement du $loyer->code a été validé avec succès.");
     }
 
-    public function encaisser(Loyer $loyer): JsonResponse
+    public function encaisser(LoyerPatchRequest $request)
     {
-        $loyer->setPending();
-        $this->paiementRepository->createPaiementLoyer($loyer);
+        $request->validated();
+        $loyer = Loyer::find($request->query('id'));
+        $this->paiementRepository->createPaiementLoyer($loyer, (int) $request->query('montant'));
         return response()->json("Le loyer $loyer->code a été encaissé avec succès.");
     }
 }
