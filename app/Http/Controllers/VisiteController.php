@@ -30,7 +30,8 @@ class VisiteController extends Controller
     public function getPending(): JsonResource
     {
         $visites = Visite::select('id', 'code', 'montant', 'created_at', 'frais_dossier', 'appartement_id', 'personne_id')
-            ->with(['personne' => fn(BelongsTo $query) => $query->select('id', 'civilite', 'nom_complet')])
+            ->with(['personne' => fn(BelongsTo $query) => $query->select('id', 'civilite', 'nom_complet')
+                    ->with('avatar:id,model_id,model_type,disk,file_name')])
             ->with(['frais' => fn(HasOne $query) => $query->select('id', 'mois', 'visite_id')])
             ->with(['caution' => fn(HasOne $query) => $query->select('id', 'mois', 'visite_id')])
             ->with(['avance' => fn(HasOne $query) => $query->select('id', 'mois', 'visite_id')])

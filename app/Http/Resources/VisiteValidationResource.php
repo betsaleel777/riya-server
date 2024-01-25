@@ -23,10 +23,8 @@ class VisiteValidationResource extends JsonResource
             'code' => $this->code,
             'montant' => $this->resource->getAmountTotaly(),
             'created_at' => $this->resource->created_at->format('d-m-Y'),
-            'personne' => $this->whenLoaded('personne', $this->resource->personne->civilite->value . ' ' . $this->resource->personne->nom_complet),
+            'personne' => PersonneResource::make($this->whenLoaded('personne')),
             'bien' => $this->whenLoaded('appartement', $this->resource->appartement->nom),
-            'avatar' => $this->when($this->relationLoaded('personne') and $this->personne->relationLoaded('avatar'),
-                url($this->resource->personne->avatar?->getUrl())),
         ];
     }
 }
