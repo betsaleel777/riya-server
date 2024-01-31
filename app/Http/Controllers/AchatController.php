@@ -34,7 +34,7 @@ class AchatController extends Controller
 
     public function getPending(): JsonResource
     {
-        $achats = Achat::with('bien:id,nom,cout_achat', 'personne:id,nom_complet', 'personne.avatar:id,model_id,model_type,disk,file_name')->pending()->get();
+        $achats = Achat::with('bien:id,nom,cout_achat', 'personne:id,nom_complet', 'personne.avatar:id,model_id,model_type,disk,file_name', 'pendingPaiement')->pending()->get();
         return AchatValidationResource::collection($achats);
     }
 

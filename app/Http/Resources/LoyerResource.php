@@ -18,7 +18,7 @@ class LoyerResource extends JsonResource
             'id' => $this->id,
             'code' => $this->whenNotNull($this->code),
             'montant' => $this->whenNotNull($this->montant),
-            'paid' => $this->whenNotNull($this->paid),
+            'paid' => $this->whenNotNull($this->paid, 0),
             'status' => $this->whenNotNull($this->status),
             'created_at' => $this->whenNotNull($this->created_at?->format('d-m-Y')),
             'contrat' => ContratResource::make($this->whenLoaded('contrat')),

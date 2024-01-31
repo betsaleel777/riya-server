@@ -21,8 +21,9 @@ class LoyerValidationResource extends JsonResource
         return [
             'id' => $this->resource->id,
             'code' => $this->whenNotNull($this->code),
-            'montant' => $this->whenNotNull($this->resource->montant),
+            'cout' => $this->whenNotNull($this->resource->montant),
             'created_at' => $this->whenNotNull($this->resource->created_at?->format('d-m-Y')),
+            'montant' => $this->whenLoaded('pendingPaiement', $this->resource->pendingPaiement->montant),
             'personne' => $this->whenLoaded('client', str($this->resource->client->nom_complet)->lower()),
             'bien' => $this->whenLoaded('bien', str($this->resource->bien->nom)->lower()),
             'avatar' => $this->when(

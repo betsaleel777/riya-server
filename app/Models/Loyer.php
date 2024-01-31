@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\PayableStatus;
+use App\Enums\ValidableEntityStatus;
 use App\StateMachines\LoyerStatusStateMachine;
 use Asantibanez\LaravelEloquentStateMachines\Traits\HasStateMachines;
 use Carbon\Carbon;
@@ -10,6 +11,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Support\Str;
 use OwenIt\Auditing\Auditable;
 use OwenIt\Auditing\Contracts\Auditable as ContractsAuditable;
@@ -81,5 +83,15 @@ class Loyer extends Model implements ContractsAuditable
             ['id', 'id', 'id'],
             ['contrat_id', ['operation_type', 'operation_id'], 'appartement_id']
         );
+    }
+
+    public function pendingPaiement(): MorphOne
+    {
+        return $this->paiements()->one()->where('status', ValidableEntityStatus::WAIT->value);
+    }
+
+    public function firstPaiement(): MorphOne
+    {
+        return $this->morphOne(Paiement::class, 'payable')->oldestOfMany();
     }
 }
