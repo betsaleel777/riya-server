@@ -9,6 +9,7 @@ use App\Http\Resources\LoyerResource;
 use App\Http\Resources\LoyerValidationResource;
 use App\Interfaces\PaiementRepositoryInterface;
 use App\Models\Loyer;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -23,7 +24,8 @@ class LoyerController extends Controller
      */
     public function index(): JsonResource
     {
-        $loyers = Loyer::withSum('paiements as paid', 'montant')->with('client:personnes.id,personnes.nom_complet', 'bien:appartements.id,appartements.nom')->get();
+        $loyers = Loyer::withExists('paiements as pending', fn(Builder $query): Builder => $query->pending())
+            ->withSum('paiements as paid', 'montant')->with('client:personnes.id,personnes.nom_complet', 'bien:appartements.id,appartements.nom')->get();
         return LoyerListResource::collection($loyers);
     }
 

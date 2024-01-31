@@ -31,8 +31,7 @@ class PaiementController extends Controller
         $paiement->update($request->all());
         $paiement->load('payable');
         $payable = $paiement->payable;
-        return response()->json("Le montant du paiement $paiement->code concernant
-        l'achat $payable->code a été modifié avec succès.");
+        return response()->json("Le montant du paiement $paiement->code concernant l'achat $payable->code a été modifié avec succès.");
     }
 
     public function store(PaiementRequest $request): JsonResponse
