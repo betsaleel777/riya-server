@@ -49,7 +49,7 @@ class Loyer extends Model implements ContractsAuditable
     //scopes
     public function scopePending(Builder $query): Builder
     {
-        return $query->where('status', PayableStatus::PENDING->value);
+        return $query->whereHas('paiements', fn(Builder $query): Builder => $query->pending());
     }
 
     //relations

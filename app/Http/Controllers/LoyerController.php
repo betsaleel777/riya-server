@@ -23,7 +23,7 @@ class LoyerController extends Controller
      */
     public function index(): JsonResource
     {
-        $loyers = Loyer::with('client', 'bien')->get();
+        $loyers = Loyer::withSum('paiements as paid', 'montant')->with('client:personnes.id,personnes.nom_complet', 'bien:appartements.id,appartements.nom')->get();
         return LoyerListResource::collection($loyers);
     }
 

@@ -66,4 +66,10 @@ class PaiementController extends Controller
         PaiementValidated::dispatch($paiement);
         return response()->json("Le paiement $paiement->code a été validé avec succès.");
     }
+
+    public function getByPayable(int $id): JsonResource
+    {
+        $paiements = Paiement::where('payable_id', $id)->get();
+        return PaiementResource::collection($paiements);
+    }
 }
