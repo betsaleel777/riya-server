@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ValidableEntityStatus;
+use App\Traits\HasResponsible;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -19,7 +20,7 @@ use OwenIt\Auditing\Contracts\Auditable as ContractsAuditable;
  */
 class Achat extends Model implements ContractsAuditable
 {
-    use Auditable;
+    use Auditable, HasResponsible;
     protected $fillable = ['personne_id', 'uptodate', 'code'];
     protected $dates = ['created_at'];
     protected $casts = ['uptodate' => 'boolean'];

@@ -27,6 +27,7 @@ class AchatResource extends JsonResource
             'reste' => $this->whenLoaded('bien', fn() => $this->bien->cout_achat - $this->total),
             'personne' => PersonneResource::make($this->whenLoaded('personne')),
             'paiements' => PaiementResource::collection($this->whenLoaded('paiements')),
+            'audit' => AuditResource::make($this->whenLoaded('audit')),
             'bien' => $this->whenLoaded('bien', fn() => match (true) {
                 $this->bien instanceof Appartement => AppartementResource::make($this->bien),
                 $this->bien instanceof Terrain => TerrainResource::make($this->bien)

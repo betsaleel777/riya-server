@@ -31,6 +31,7 @@ class PaiementResource extends JsonResource
                 $this->payable instanceof Loyer => LoyerResource::make($this->payable),
             }),
             'payable_type' => $this->whenNotNull(str($this->resource->payable_type)->explode('\\')[2]),
+            'audit' => AuditResource::make($this->whenLoaded('audit')),
         ];
     }
 }

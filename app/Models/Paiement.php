@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\ValidableEntityStatus;
 use App\StateMachines\ValidableEntityStateMachine;
+use App\Traits\HasResponsible;
 use Asantibanez\LaravelEloquentStateMachines\Traits\HasStateMachines;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -19,7 +20,7 @@ use OwenIt\Auditing\Contracts\Auditable as ContractsAuditable;
  */
 class Paiement extends Model implements ContractsAuditable
 {
-    use Auditable, HasStateMachines;
+    use Auditable, HasStateMachines, HasResponsible;
     protected $fillable = ['montant', 'code'];
     protected $dates = ['created_at'];
     protected $casts = ['montant' => 'integer'];
