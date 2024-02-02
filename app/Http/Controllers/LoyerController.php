@@ -10,6 +10,7 @@ use App\Http\Resources\LoyerValidationResource;
 use App\Interfaces\PaiementRepositoryInterface;
 use App\Models\Loyer;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -40,7 +41,8 @@ class LoyerController extends Controller
      */
     public function show(Loyer $loyer): JsonResource
     {
-        $loyer->loadSum(['paiements as paid' => fn($query) => $query->validated()], 'montant')->load('bien:appartements.id,nom', 'client:personnes.id,nom_complet', 'client.avatar:id,model_id,model_type,disk,file_name', 'paiements');
+        $loyer->loadSum(['paiements as paid' => fn($query) => $query->validated()], 'montant')->load('bien:appartements.id,nom', 'client:personnes.id,nom_complet,telephone,ville,quartier,email', 'client.avatar:id,model_id,model_type,disk,file_name')
+            ->load(['paiements' => fn(MorphMany $query): MorphMany => $query->withNameResponsible()]);
         return LoyerResource::make($loyer);
     }
 
