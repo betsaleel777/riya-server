@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\LoyerValidated;
 use App\Http\Requests\Loyer\LoyerPatchRequest;
 use App\Http\Resources\LoyerListResource;
 use App\Http\Resources\LoyerResource;
 use App\Http\Resources\LoyerValidationResource;
+use App\Interfaces\LoyerRepositoryInterface;
 use App\Interfaces\PaiementRepositoryInterface;
 use App\Models\Loyer;
 use Illuminate\Database\Eloquent\Builder;
@@ -17,7 +17,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class LoyerController extends Controller
 {
 
-    public function __construct(private PaiementRepositoryInterface $paiementRepository)
+    public function __construct(private PaiementRepositoryInterface $paiementRepository, private LoyerRepositoryInterface $loyerRepository)
     {
     }
     /**
@@ -25,7 +25,7 @@ class LoyerController extends Controller
      */
     public function index(): JsonResource
     {
-        $loyers = Loyer::withExists('paiements as pending', fn(Builder $query): Builder => $query->pending())
+        $loyers = Loyer::withExists(['paiements as pending' => fn(Builder $query): Builder => $query->pending()])
             ->withSum('paiements as paid', 'montant')->with('client:personnes.id,personnes.nom_complet', 'bien:appartements.id,appartements.nom')->get();
         return LoyerListResource::collection($loyers);
     }
@@ -48,8 +48,8 @@ class LoyerController extends Controller
 
     public function valider(Loyer $loyer): JsonResponse
     {
-        LoyerValidated::dispatch($loyer);
-        return response()->json("Le paiement du $loyer->code a été validé avec succès.");
+        $paiement = $this->loyerRepository->valider($loyer);
+        return response()->json("Le paiement: $paiement->code du loyer: $loyer->code a été validé avec succès.");
     }
 
     public function encaisser(LoyerPatchRequest $request)

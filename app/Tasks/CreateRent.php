@@ -5,6 +5,7 @@ namespace App\Tasks;
 use App\Models\Appartement;
 use App\Models\Contrat;
 use App\Models\Loyer;
+use App\Repositories\DetteRepository;
 
 class CreateRent
 {
@@ -21,6 +22,9 @@ class CreateRent
                 $loyer = Loyer::make(['montant' => $appartement->montant_location, 'contrat_id' => $contrat->id]);
                 $loyer->genererCode();
                 $loyer->save();
+                $contrat->setNotuptodate();
+                $detteRepository = new DetteRepository();
+                $detteRepository->storeForRent($loyer, $contrat);
             }
         });
     }

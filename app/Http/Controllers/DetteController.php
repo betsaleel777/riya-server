@@ -6,6 +6,7 @@ use App\Http\Resources\DetteListResource;
 use App\Http\Resources\DetteResource;
 use App\Http\Resources\DetteValidationResource;
 use App\Models\Dette;
+use App\Models\Loyer;
 use App\Models\Paiement;
 use App\Models\Visite;
 use Illuminate\Http\JsonResponse;
@@ -36,6 +37,7 @@ class DetteController extends Controller
         $dette->loadMorph('origine', [
             Visite::class => ['contrat:id,debut,commission,created_at,operation_id,operation_type'],
             Paiement::class => ['payable.contrat:id,debut,commission,created_at,operation_id,operation_type'],
+            Loyer::class => ['contrat:id,debut,commission,created_at,operation_id,operation_type'],
         ]);
         return DetteResource::make($dette);
     }

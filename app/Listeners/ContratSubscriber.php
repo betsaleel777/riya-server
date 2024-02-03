@@ -22,7 +22,7 @@ class ContratSubscriber
 
     public function handleBailCreated(ContratBailCreated $event): void
     {
-        $this->detteRepository->storeForRental($event->contrat, $event->visite);
+        $this->detteRepository->storeForRental($event->contrat);
     }
 
     public function subscribe(): array

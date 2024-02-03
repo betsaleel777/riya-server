@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Models\Dette;
+use App\Models\Loyer;
 use App\Models\Paiement;
 use App\Models\Visite;
 use Illuminate\Http\Request;
@@ -30,6 +31,7 @@ class DetteResource extends JsonResource
             'origine' => $this->whenLoaded('origine', fn() => match (true) {
                 $this->origine instanceof Visite => VisiteResource::make($this->origine),
                 $this->origine instanceof Paiement => PaiementResource::make($this->origine),
+                $this->origine instanceof Loyer => LoyerResource::make($this->origine)
             }),
             'contrat' => $this->whenLoaded('origine', fn() => match (true) {
                 $this->origine instanceof Visite and $this->origine->relationLoaded('contrat') =>

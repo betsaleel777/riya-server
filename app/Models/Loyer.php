@@ -38,9 +38,9 @@ class Loyer extends Model implements ContractsAuditable
         $this->attributes['code'] = 'LOY' . Str::upper(Str::random(3)) . Carbon::now()->format('y');
     }
 
-    public function setPending(): void
+    public function setUnpaid(): void
     {
-        $this->status()->transitionTo(PayableStatus::PENDING->value);
+        $this->status()->transitionTo(PayableStatus::UNPAID->value);
     }
 
     public function setPaid(): void
@@ -93,5 +93,10 @@ class Loyer extends Model implements ContractsAuditable
     public function firstPaiement(): MorphOne
     {
         return $this->morphOne(Paiement::class, 'payable')->oldestOfMany();
+    }
+
+    public function dette(): MorphOne
+    {
+        return $this->morphOne(Dette::class, 'origine');
     }
 }
