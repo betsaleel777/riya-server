@@ -20,7 +20,7 @@ class LoyerListResource extends JsonResource
             'code' => $this->code,
             'montant' => $this->montant,
             'status' => $this->status,
-            'paid' => $this->whenNotNull($this->paid),
+            'paid' => $this->whenNotNull((int) $this->paid),
             'pending' => $this->whenNotNull($this->pending),
             'created_at' => $this->created_at->format('d-m-Y'),
             'client' => $this->whenLoaded('client', fn() => Str::lower($this->client->nom_complet)),

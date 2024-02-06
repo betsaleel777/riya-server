@@ -22,7 +22,7 @@ class AchatResource extends JsonResource
             'personne_id' => $this->whenNotNull($this->personne_id),
             'bien_id' => $this->whenNotNull($this->bien_id),
             'created_at' => $this->whenNotNull($this->created_at?->format('d-m-Y')),
-            'total' => $this->whenNotNull($this->total, 0),
+            'total' => $this->whenNotNull((int) $this->total, 0),
             'contractible' => $this->contractible(),
             'reste' => $this->whenLoaded('bien', fn() => $this->bien->cout_achat - $this->total),
             'personne' => PersonneResource::make($this->whenLoaded('personne')),
