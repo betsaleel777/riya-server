@@ -54,6 +54,12 @@ class Loyer extends Model implements ContractsAuditable
         return $query->whereHas('paiements', fn(Builder $query): Builder => $query->pending());
     }
 
+    public function scopeCurrentMonth(Builder $query): Builder
+    {
+        // created_at sera changé en mois qui sera un nouveau attribut à ajouter pour pouvoir gérer les avances sur le loyer
+        return $query->whereMonth('created_at', now()->format('m'));
+    }
+
     //relations
     public function contrat(): BelongsTo
     {
