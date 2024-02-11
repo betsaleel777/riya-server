@@ -26,7 +26,7 @@ class Loyer extends Model implements ContractsAuditable
     use \Staudenmeir\EloquentHasManyDeep\HasRelationships;
     use Auditable;
 
-    protected $fillable = ['code', 'contrat_id', 'montant'];
+    protected $fillable = ['code', 'contrat_id', 'montant', 'mois'];
     protected $casts = ['montant' => 'integer'];
     protected $dates = ['created_at'];
     public $stateMachines = [

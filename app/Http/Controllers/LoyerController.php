@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Loyer\LoyerPatchRequest;
+use App\Http\Requests\Loyer\LoyerPostRequest;
 use App\Http\Resources\LoyerListResource;
 use App\Http\Resources\LoyerResource;
 use App\Http\Resources\LoyerValidationResource;
@@ -12,6 +13,7 @@ use App\Models\Loyer;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class LoyerController extends Controller
@@ -58,5 +60,20 @@ class LoyerController extends Controller
         $loyer = Loyer::find($request->query('id'));
         $this->paiementRepository->createPaiementLoyer($loyer, (int) $request->query('montant'));
         return response()->json("Le loyer $loyer->code a été encaissé avec succès.");
+    }
+
+    public function getLastPaid(Request $request): JsonResource
+    {
+        $loyer = Loyer::where('contrat_id', $request->query('id'))->latest()->limit(1)->first();
+        return LoyerResource::make($loyer);
+    }
+    public function avancer(LoyerPostRequest $request): JsonResponse
+    {
+        // créer les loyers pour chaque mois
+        // encaisser ces loyers
+        // créer aussi les dettes respectives
+        $request->validated();
+        $this->loyerRepository->avancer($request->integer('contrat_id'), $request->periode, $this->paiementRepository);
+        return response()->json("L'avance sur le loyer a été crée avec succès.");
     }
 }

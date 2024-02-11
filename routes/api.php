@@ -53,6 +53,7 @@ Route::apiResource('visites', VisiteController::class)->middleware('auth:sanctum
 Route::apiResource('frais', FraisController::class)->middleware('auth:sanctum');
 Route::apiResource('avances', AvanceController::class)->middleware('auth:sanctum');
 Route::apiResource('cautions', CautionController::class)->middleware('auth:sanctum');
+Route::get('contrats/active-bail', [ContratController::class, 'getRentProcessing'])->middleware('auth:sanctum');
 Route::apiResource('contrats', ContratController::class)->middleware('auth:sanctum');
 Route::get('dettes/pending', [DetteController::class, 'getPending'])->middleware('auth:sanctum');
 Route::apiResource('dettes', DetteController::class)->except(['update', 'destroy'])->middleware('auth:sanctum');
@@ -61,6 +62,7 @@ Route::get('depenses/pending', [DepenseController::class, 'getPending'])->middle
 Route::apiResource('depenses', DepenseController::class)->middleware('auth:sanctum');
 Route::resource('societes', SocieteController::class)->except(['create', 'edit', 'destroy', 'show'])->middleware('auth:sanctum');
 Route::get('loyers/pending', [LoyerController::class, 'getPending'])->middleware('auth:sanctum');
+Route::get('loyers/last-paid', [LoyerController::class, 'getLastPaid'])->middleware('auth:sanctum');
 Route::get('loyers/pending', [LoyerController::class, 'getPending'])->middleware('auth:sanctum');
 Route::resource('loyers', LoyerController::class)->except(['create', 'edit', 'update', 'destroy'])->middleware('auth:sanctum');
 Route::get('achats/pending', [AchatController::class, 'getPending'])->middleware('auth:sanctum');
@@ -71,6 +73,7 @@ Route::get('dashboard-count', [CountController::class, 'dashboard'])->middleware
 Route::get('paiements/payable/{id}', [PaiementController::class, 'getByPayable'])->middleware('auth:sanctum');
 Route::post('paiements/direct', [PaiementController::class, 'createDirect'])->middleware('auth:sanctum');
 Route::post('contrats/validate', [ContratController::class, 'contratValidate'])->middleware('auth:sanctum');
+Route::post('loyers/avance', [LoyerController::class, 'avancer'])->middleware('auth:sanctum');
 Route::patch('achats/validate/{achat}', [AchatController::class, 'valider'])->middleware('auth:sanctum');
 Route::patch('paiements/validate/{paiement}', [PaiementController::class, 'valider'])->middleware('auth:sanctum');
 Route::patch('loyers/cashed', [LoyerController::class, 'encaisser'])->middleware('auth:sanctum');

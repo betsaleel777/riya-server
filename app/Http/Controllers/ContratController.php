@@ -25,6 +25,12 @@ class ContratController extends Controller
         return ContratListResource::collection($contrats);
     }
 
+    public function getRentProcessing(): JsonResource
+    {
+        $contrats = Contrat::select('id', 'operation_id', 'operation_type')->with('operation:id,code')->rentProcessing()->get();
+        return ContratResource::collection($contrats);
+    }
+
     public function show(Contrat $contrat): JsonResource
     {
         $contrat->loadMorph('operation', [
