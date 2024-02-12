@@ -7,6 +7,7 @@ use App\Interfaces\PaiementRepositoryInterface;
 use App\Models\Contrat;
 use App\Models\Loyer;
 use App\Models\Paiement;
+use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 
 class LoyerRepository implements LoyerRepositoryInterface
@@ -34,7 +35,8 @@ class LoyerRepository implements LoyerRepositoryInterface
     public function createMonthly(Contrat $contrat, string $month): Loyer
     {
         $loyer = $this->prepareCreate($contrat);
-        $loyer->mois = $month;
+        $loyer->mois = Carbon::parse($month)->format('Y-m');
+        $loyer->setPaid();
         $loyer->save();
         return $loyer;
     }
@@ -72,6 +74,8 @@ class LoyerRepository implements LoyerRepositoryInterface
             $contrat = Contrat::with('operation.appartement')->find($contratId);
             $loyer = $this->createMonthly($contrat, $date);
             $paiementRepository->createPaiementLoyer($loyer, (int) $loyer->montant);
+            $detteRepository = new DetteRepository();
+            $detteRepository->storeForRent($loyer, $contrat);
         }
     }
 }

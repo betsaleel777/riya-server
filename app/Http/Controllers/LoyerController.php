@@ -64,14 +64,11 @@ class LoyerController extends Controller
 
     public function getLastPaid(Request $request): JsonResource
     {
-        $loyer = Loyer::where('contrat_id', $request->query('id'))->latest()->limit(1)->first();
+        $loyer = Loyer::where('contrat_id', $request->query('id'))->latest('id')->limit(1)->first();
         return LoyerResource::make($loyer);
     }
     public function avancer(LoyerPostRequest $request): JsonResponse
     {
-        // créer les loyers pour chaque mois
-        // encaisser ces loyers
-        // créer aussi les dettes respectives
         $request->validated();
         $this->loyerRepository->avancer($request->integer('contrat_id'), $request->periode, $this->paiementRepository);
         return response()->json("L'avance sur le loyer a été crée avec succès.");
