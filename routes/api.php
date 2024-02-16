@@ -70,6 +70,7 @@ Route::resource('achats', AchatController::class)->except(['update', 'edit', 'cr
 
 Route::get('societe-count', [CountController::class, 'societe'])->middleware('auth:sanctum');
 Route::get('dashboard-count', [CountController::class, 'dashboard'])->middleware('auth:sanctum');
+Route::get('dashboard-pendings', [CountController::class, 'pendings'])->middleware('auth:sanctum');
 Route::get('paiements/payable/{id}', [PaiementController::class, 'getByPayable'])->middleware('auth:sanctum');
 Route::post('paiements/direct', [PaiementController::class, 'createDirect'])->middleware('auth:sanctum');
 Route::post('contrats/validate', [ContratController::class, 'contratValidate'])->middleware('auth:sanctum');

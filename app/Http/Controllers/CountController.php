@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Achat;
 use App\Models\Appartement;
 use App\Models\Depense;
 use App\Models\Dette;
+use App\Models\Loyer;
 use App\Models\Personne;
 use App\Models\Proprietaire;
 use App\Models\Terrain;
@@ -43,6 +45,8 @@ class CountController extends Controller
 
     public function pendings(): JsonResponse
     {
-        return response()->json([]);
+        $pendings = Achat::pending()->count() + Dette::pending()->count() + Loyer::pending()->count() + Depense::pending()->count() +
+        Visite::pending()->count();
+        return response()->json((int) $pendings);
     }
 }
