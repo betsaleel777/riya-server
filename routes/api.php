@@ -9,6 +9,7 @@ use App\Http\Controllers\ContratController;
 use App\Http\Controllers\CountController;
 use App\Http\Controllers\DepenseController;
 use App\Http\Controllers\DetteController;
+use App\Http\Controllers\FileDownloadController;
 use App\Http\Controllers\FraisController;
 use App\Http\Controllers\LoyerController;
 use App\Http\Controllers\PaiementController;
@@ -38,6 +39,7 @@ use Illuminate\Support\Facades\Route;
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout']);
 Route::get('/user', [AuthController::class, 'user'])->middleware('auth:sanctum');
+Route::get('/media', FileDownloadController::class)->middleware('auth:sanctum');
 
 Route::apiResource('appartements-types', TypeAppartementController::class)->middleware('auth:sanctum');
 Route::apiResource('appartements', AppartementController::class)->middleware('auth:sanctum');
