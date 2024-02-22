@@ -29,6 +29,7 @@ class UserController extends Controller
         $request->validated();
         $user = User::make($request->all());
         $user->save();
+        $user->assignRole(explode(',', $request->roles));
         $user->addMediaFromRequest('image')->toMediaCollection('photo');
         return response()->json("L'utilisateur $user->name a été crée avec succès.");
     }
@@ -53,6 +54,7 @@ class UserController extends Controller
                 $user->email = $request->email;
                 $user->password = Hash::make($request->password);
                 $user->save();
+                $user->syncRoles(explode(',', $request->roles));
                 if ($request->hasFile('image')) {
                     $user->addMediaFromRequest('image')->toMediaCollection('photo');
                 }
@@ -64,6 +66,7 @@ class UserController extends Controller
             $user->name = $request->name;
             $user->email = $request->email;
             $user->save();
+            $user->syncRoles(explode(',', $request->roles));
             if ($request->hasFile('image')) {
                 $user->addMediaFromRequest('image')->toMediaCollection('photo');
             }

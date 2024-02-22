@@ -13,13 +13,14 @@ use OwenIt\Auditing\Contracts\Auditable as ContractsAuditable;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Spatie\Permission\Traits\HasRoles;
 
 /**
  * @mixin IdeHelperUser
  */
 class User extends Authenticatable implements HasMedia, ContractsAuditable
 {
-    use HasApiTokens, HasFactory, Notifiable, InteractsWithMedia, Auditable;
+    use HasApiTokens, HasFactory, Notifiable, InteractsWithMedia, HasRoles, Auditable;
 
     /**
      * The attributes that are mass assignable.
