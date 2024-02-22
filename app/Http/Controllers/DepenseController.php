@@ -11,6 +11,7 @@ use App\Models\Depense;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Auth;
 
 class DepenseController extends Controller
 {
@@ -19,13 +20,15 @@ class DepenseController extends Controller
      */
     public function index(): JsonResource
     {
-        $depenses = Depense::select('id', 'titre', 'montant', 'type_depense_id', 'created_at', 'status')
-            ->with(['type' => fn(BelongsTo $query) => $query->select('id', 'nom')])->get();
+        $query = Depense::select('id', 'titre', 'montant', 'type_depense_id', 'created_at', 'status')
+            ->with(['type' => fn(BelongsTo $query) => $query->select('id', 'nom')]);
+        $depenses = Auth::user()->can('viewAny', Depense::class) ? $query->get() : $query->owner()->get();
         return DepenseListResource::collection($depenses);
     }
 
     public function getPending(): JsonResource
     {
+        $this->authorize('viewPending', Depense::class);
         $depenses = Depense::select('id', 'titre', 'montant', 'type_depense_id', 'created_at')
             ->with(['type' => fn(BelongsTo $query) => $query->select('id', 'nom')])->withResponsible()->pending()->get();
         return DepenseValidationResource::collection($depenses);
@@ -36,6 +39,7 @@ class DepenseController extends Controller
      */
     public function store(DepensePostRequest $request): JsonResponse
     {
+        $this->authorize('create', Depense::class);
         $depense = Depense::make($request->validated());
         $depense->save();
         return response()->json("La dépense $depense->titre a été crée avec succès.");
@@ -46,6 +50,7 @@ class DepenseController extends Controller
      */
     public function show(Depense $depense): JsonResource
     {
+        $this->authorize('view', $depense);
         return DepenseShowResource::make($depense->load('type'));
     }
 
@@ -54,6 +59,7 @@ class DepenseController extends Controller
      */
     public function update(DepensePutRequest $request, Depense $depense): JsonResponse
     {
+        $this->authorize('update', $depense);
         $depense->update($request->validated());
         return response()->json("La dépense a été modifiée avec succès.");
     }
@@ -63,12 +69,14 @@ class DepenseController extends Controller
      */
     public function destroy(Depense $depense): JsonResponse
     {
+        $this->authorize('delete', $depense);
         $depense->delete();
         return response()->json("La dépense $depense->titre a été supprimée avec succès.");
     }
 
     public function valider(Depense $depense): JsonResponse
     {
+        $this->authorize('valider', Depense::class);
         $depense->setValide();
         return response()->json("La depense $depense->titre a été validée avec succès.");
     }

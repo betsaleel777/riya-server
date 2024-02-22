@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\ValidableEntityStatus;
 use App\StateMachines\ValidableEntityStateMachine;
+use App\Traits\HasOwnerScope;
 use App\Traits\HasResponsible;
 use Asantibanez\LaravelEloquentStateMachines\Traits\HasStateMachines;
 use Illuminate\Database\Eloquent\Builder;
@@ -17,7 +18,7 @@ use OwenIt\Auditing\Contracts\Auditable as ContractsAuditable;
  */
 class Depense extends Model implements ContractsAuditable
 {
-    use HasStateMachines, HasResponsible, Auditable;
+    use HasStateMachines, HasResponsible, HasOwnerScope, Auditable;
 
     protected $fillable = ['titre', 'montant', 'description', 'type_depense_id'];
     protected $dates = ['created_at'];

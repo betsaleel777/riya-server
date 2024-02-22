@@ -22,14 +22,19 @@ namespace App\Models{
  * @property int $bien_id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \OwenIt\Auditing\Models\Audit|null $audit
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \OwenIt\Auditing\Models\Audit> $audits
+ * @property-read int|null $audits_count
  * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $bien
  * @property-read \App\Models\Contrat|null $contrat
+ * @property-read \App\Models\Paiement|null $firstPaiement
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Paiement> $paiements
  * @property-read int|null $paiements_count
+ * @property-read \App\Models\Paiement|null $pendingPaiement
  * @property-read \App\Models\Personne $personne
- * @method static \Illuminate\Database\Eloquent\Builder|Achat firstPaiement()
  * @method static \Illuminate\Database\Eloquent\Builder|Achat newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Achat newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Achat pending()
  * @method static \Illuminate\Database\Eloquent\Builder|Achat query()
  * @method static \Illuminate\Database\Eloquent\Builder|Achat whereBienId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Achat whereBienType($value)
@@ -39,6 +44,8 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Achat wherePersonneId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Achat whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Achat whereUptodate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Achat withNameResponsible()
+ * @method static \Illuminate\Database\Eloquent\Builder|Achat withResponsible()
  * @mixin \Eloquent
  */
 	class IdeHelperAchat {}
@@ -80,12 +87,16 @@ namespace App\Models{
  * @property int|null $type_appartement_id
  * @property string|null $status
  * @property-read \App\Models\Achat|null $achat
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \OwenIt\Auditing\Models\Audit> $audits
+ * @property-read int|null $audits_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Asantibanez\LaravelEloquentStateMachines\Models\PendingTransition> $pendingTransitions
  * @property-read int|null $pending_transitions_count
  * @property-read \App\Models\Proprietaire $proprietaire
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Asantibanez\LaravelEloquentStateMachines\Models\StateHistory> $stateHistory
  * @property-read int|null $state_history_count
  * @property-read \App\Models\TypeAppartement|null $type
+ * @method static \Illuminate\Database\Eloquent\Builder|Appartement busy()
+ * @method static \Illuminate\Database\Eloquent\Builder|Appartement free()
  * @method static \Illuminate\Database\Eloquent\Builder|Appartement newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Appartement newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Appartement query()
@@ -134,6 +145,8 @@ namespace App\Models{
  * @property int $mois
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \OwenIt\Auditing\Models\Audit> $audits
+ * @property-read int|null $audits_count
  * @property-read \App\Models\Visite $visite
  * @method static \Illuminate\Database\Eloquent\Builder|Avance newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Avance newQuery()
@@ -157,6 +170,8 @@ namespace App\Models{
  * @property int $mois
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \OwenIt\Auditing\Models\Audit> $audits
+ * @property-read int|null $audits_count
  * @property-read \App\Models\Visite $visite
  * @method static \Illuminate\Database\Eloquent\Builder|Caution newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Caution newQuery()
@@ -185,6 +200,8 @@ namespace App\Models{
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property string $operation_type
  * @property int $operation_id
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \OwenIt\Auditing\Models\Audit> $audits
+ * @property-read int|null $audits_count
  * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $operation
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Asantibanez\LaravelEloquentStateMachines\Models\PendingTransition> $pendingTransitions
  * @property-read int|null $pending_transitions_count
@@ -223,6 +240,9 @@ namespace App\Models{
  * @property int $type_depense_id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \OwenIt\Auditing\Models\Audit|null $audit
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \OwenIt\Auditing\Models\Audit> $audits
+ * @property-read int|null $audits_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Asantibanez\LaravelEloquentStateMachines\Models\PendingTransition> $pendingTransitions
  * @property-read int|null $pending_transitions_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Asantibanez\LaravelEloquentStateMachines\Models\StateHistory> $stateHistory
@@ -240,6 +260,8 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Depense whereTitre($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Depense whereTypeDepenseId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Depense whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Depense withNameResponsible()
+ * @method static \Illuminate\Database\Eloquent\Builder|Depense withResponsible()
  * @mixin \Eloquent
  */
 	class IdeHelperDepense {}
@@ -257,6 +279,9 @@ namespace App\Models{
  * @property int $origine_id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \OwenIt\Auditing\Models\Audit|null $audit
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \OwenIt\Auditing\Models\Audit> $audits
+ * @property-read int|null $audits_count
  * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $origine
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Asantibanez\LaravelEloquentStateMachines\Models\PendingTransition> $pendingTransitions
  * @property-read int|null $pending_transitions_count
@@ -264,6 +289,7 @@ namespace App\Models{
  * @property-read int|null $state_history_count
  * @method static \Illuminate\Database\Eloquent\Builder|Dette newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Dette newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Dette paid()
  * @method static \Illuminate\Database\Eloquent\Builder|Dette pending()
  * @method static \Illuminate\Database\Eloquent\Builder|Dette query()
  * @method static \Illuminate\Database\Eloquent\Builder|Dette whereCode($value)
@@ -274,6 +300,8 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Dette whereOrigineType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Dette whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Dette whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Dette withNameResponsible()
+ * @method static \Illuminate\Database\Eloquent\Builder|Dette withResponsible()
  * @mixin \Eloquent
  */
 	class IdeHelperDette {}
@@ -288,6 +316,8 @@ namespace App\Models{
  * @property int $mois
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \OwenIt\Auditing\Models\Audit> $audits
+ * @property-read int|null $audits_count
  * @property-read \App\Models\Visite $visite
  * @method static \Illuminate\Database\Eloquent\Builder|Frais newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Frais newQuery()
@@ -313,12 +343,20 @@ namespace App\Models{
  * @property int $contrat_id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property string|null $mois
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \OwenIt\Auditing\Models\Audit> $audits
+ * @property-read int|null $audits_count
  * @property-read \App\Models\Contrat $contrat
- * @property-read \App\Models\Paiement|null $paiement
+ * @property-read \App\Models\Dette|null $dette
+ * @property-read \App\Models\Paiement|null $firstPaiement
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Paiement> $paiements
+ * @property-read int|null $paiements_count
+ * @property-read \App\Models\Paiement|null $pendingPaiement
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Asantibanez\LaravelEloquentStateMachines\Models\PendingTransition> $pendingTransitions
  * @property-read int|null $pending_transitions_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Asantibanez\LaravelEloquentStateMachines\Models\StateHistory> $stateHistory
  * @property-read int|null $state_history_count
+ * @method static \Illuminate\Database\Eloquent\Builder|Loyer currentMonth()
  * @method static \Illuminate\Database\Eloquent\Builder|Loyer newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Loyer newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Loyer pending()
@@ -327,6 +365,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Loyer whereContratId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Loyer whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Loyer whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Loyer whereMois($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Loyer whereMontant($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Loyer whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Loyer whereUpdatedAt($value)
@@ -347,6 +386,9 @@ namespace App\Models{
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property string $payable_type
  * @property int $payable_id
+ * @property-read \OwenIt\Auditing\Models\Audit|null $audit
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \OwenIt\Auditing\Models\Audit> $audits
+ * @property-read int|null $audits_count
  * @property-read \App\Models\Dette|null $dette
  * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $payable
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Asantibanez\LaravelEloquentStateMachines\Models\PendingTransition> $pendingTransitions
@@ -355,7 +397,9 @@ namespace App\Models{
  * @property-read int|null $state_history_count
  * @method static \Illuminate\Database\Eloquent\Builder|Paiement newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Paiement newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Paiement pending()
  * @method static \Illuminate\Database\Eloquent\Builder|Paiement query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Paiement validated()
  * @method static \Illuminate\Database\Eloquent\Builder|Paiement whereCode($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Paiement whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Paiement whereId($value)
@@ -364,6 +408,8 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Paiement wherePayableType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Paiement whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Paiement whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Paiement withNameResponsible()
+ * @method static \Illuminate\Database\Eloquent\Builder|Paiement withResponsible()
  * @mixin \Eloquent
  */
 	class IdeHelperPaiement {}
@@ -391,11 +437,21 @@ namespace App\Models{
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property int|null $type_client_id
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Achat> $achats
+ * @property-read int|null $achats_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \OwenIt\Auditing\Models\Audit> $audits
+ * @property-read int|null $audits_count
  * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Media|null $avatar
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Contrat> $contratsAchat
+ * @property-read int|null $contrats_achat_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Contrat> $contratsBail
+ * @property-read int|null $contrats_bail_count
  * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
  * @property-read int|null $media_count
  * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Media|null $piece
  * @property-read \App\Models\TypeClient|null $type
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Visite> $visites
+ * @property-read int|null $visites_count
  * @method static \Illuminate\Database\Eloquent\Builder|Personne newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Personne newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Personne query()
@@ -434,6 +490,9 @@ namespace App\Models{
  * @property string $cni
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \OwenIt\Auditing\Models\Audit|null $audit
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \OwenIt\Auditing\Models\Audit> $audits
+ * @property-read int|null $audits_count
  * @method static \Illuminate\Database\Eloquent\Builder|Proprietaire newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Proprietaire newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Proprietaire query()
@@ -445,6 +504,8 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Proprietaire whereNomComplet($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Proprietaire whereTelephone($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Proprietaire whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Proprietaire withNameResponsible()
+ * @method static \Illuminate\Database\Eloquent\Builder|Proprietaire withResponsible()
  * @mixin \Eloquent
  */
 	class IdeHelperProprietaire {}
@@ -467,6 +528,8 @@ namespace App\Models{
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property int $frais_dossier
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \OwenIt\Auditing\Models\Audit> $audits
+ * @property-read int|null $audits_count
  * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Media|null $logo
  * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
  * @property-read int|null $media_count
@@ -516,12 +579,16 @@ namespace App\Models{
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property string|null $status
  * @property-read \App\Models\Achat|null $achat
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \OwenIt\Auditing\Models\Audit> $audits
+ * @property-read int|null $audits_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Asantibanez\LaravelEloquentStateMachines\Models\PendingTransition> $pendingTransitions
  * @property-read int|null $pending_transitions_count
  * @property-read \App\Models\Proprietaire $proprietaire
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Asantibanez\LaravelEloquentStateMachines\Models\StateHistory> $stateHistory
  * @property-read int|null $state_history_count
  * @property-read \App\Models\TypeTerrain|null $type
+ * @method static \Illuminate\Database\Eloquent\Builder|Terrain busy()
+ * @method static \Illuminate\Database\Eloquent\Builder|Terrain free()
  * @method static \Illuminate\Database\Eloquent\Builder|Terrain newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Terrain newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Terrain query()
@@ -559,6 +626,8 @@ namespace App\Models{
  * @property string|null $deleted_at
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \OwenIt\Auditing\Models\Audit> $audits
+ * @property-read int|null $audits_count
  * @method static \Illuminate\Database\Eloquent\Builder|TypeAppartement newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|TypeAppartement newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|TypeAppartement query()
@@ -581,6 +650,8 @@ namespace App\Models{
  * @property string|null $deleted_at
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \OwenIt\Auditing\Models\Audit> $audits
+ * @property-read int|null $audits_count
  * @method static \Illuminate\Database\Eloquent\Builder|TypeClient newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|TypeClient newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|TypeClient query()
@@ -602,6 +673,8 @@ namespace App\Models{
  * @property string $nom
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \OwenIt\Auditing\Models\Audit> $audits
+ * @property-read int|null $audits_count
  * @method static \Illuminate\Database\Eloquent\Builder|TypeDepense newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|TypeDepense newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|TypeDepense query()
@@ -623,6 +696,8 @@ namespace App\Models{
  * @property string|null $deleted_at
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \OwenIt\Auditing\Models\Audit> $audits
+ * @property-read int|null $audits_count
  * @method static \Illuminate\Database\Eloquent\Builder|TypeTerrain newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|TypeTerrain newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|TypeTerrain query()
@@ -648,17 +723,25 @@ namespace App\Models{
  * @property string|null $remember_token
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \OwenIt\Auditing\Models\Audit> $audits
+ * @property-read int|null $audits_count
  * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
  * @property-read int|null $media_count
  * @property-read \Illuminate\Notifications\DatabaseNotificationCollection<int, \Illuminate\Notifications\DatabaseNotification> $notifications
  * @property-read int|null $notifications_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Spatie\Permission\Models\Permission> $permissions
+ * @property-read int|null $permissions_count
  * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Media|null $photo
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Spatie\Permission\Models\Role> $roles
+ * @property-read int|null $roles_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Laravel\Sanctum\PersonalAccessToken> $tokens
  * @property-read int|null $tokens_count
  * @method static \Database\Factories\UserFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder|User newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|User newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|User permission($permissions, $without = false)
  * @method static \Illuminate\Database\Eloquent\Builder|User query()
+ * @method static \Illuminate\Database\Eloquent\Builder|User role($roles, $guard = null, $without = false)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereEmail($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereEmailVerifiedAt($value)
@@ -667,6 +750,8 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|User wherePassword($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereRememberToken($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User withoutPermission($permissions)
+ * @method static \Illuminate\Database\Eloquent\Builder|User withoutRole($roles, $guard = null)
  * @mixin \Eloquent
  */
 	class IdeHelperUser {}
@@ -687,6 +772,9 @@ namespace App\Models{
  * @property int $appartement_id
  * @property int $frais_dossier
  * @property-read \App\Models\Appartement $appartement
+ * @property-read \OwenIt\Auditing\Models\Audit|null $audit
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \OwenIt\Auditing\Models\Audit> $audits
+ * @property-read int|null $audits_count
  * @property-read \App\Models\Avance|null $avance
  * @property-read \App\Models\Caution|null $caution
  * @property-read \App\Models\Contrat|null $contrat
@@ -711,6 +799,8 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Visite wherePersonneId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Visite whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Visite whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Visite withNameResponsible()
+ * @method static \Illuminate\Database\Eloquent\Builder|Visite withResponsible()
  * @mixin \Eloquent
  */
 	class IdeHelperVisite {}
