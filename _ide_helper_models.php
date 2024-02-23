@@ -250,6 +250,7 @@ namespace App\Models{
  * @property-read \App\Models\TypeDepense $type
  * @method static \Illuminate\Database\Eloquent\Builder|Depense newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Depense newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Depense owner()
  * @method static \Illuminate\Database\Eloquent\Builder|Depense pending()
  * @method static \Illuminate\Database\Eloquent\Builder|Depense query()
  * @method static \Illuminate\Database\Eloquent\Builder|Depense whereCreatedAt($value)
@@ -495,6 +496,7 @@ namespace App\Models{
  * @property-read int|null $audits_count
  * @method static \Illuminate\Database\Eloquent\Builder|Proprietaire newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Proprietaire newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Proprietaire owner()
  * @method static \Illuminate\Database\Eloquent\Builder|Proprietaire query()
  * @method static \Illuminate\Database\Eloquent\Builder|Proprietaire whereCni($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Proprietaire whereCode($value)

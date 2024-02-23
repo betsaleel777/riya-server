@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\HasOwnerScope;
 use App\Traits\HasResponsible;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -13,7 +14,7 @@ use OwenIt\Auditing\Contracts\Auditable as ContractsAuditable;
  */
 class Proprietaire extends Model implements ContractsAuditable
 {
-    use Auditable, HasResponsible;
+    use Auditable, HasResponsible, HasOwnerScope;
 
     protected $fillable = ['code', 'nom_complet', 'telephone', 'email', 'cni'];
     protected $dates = ['created_at'];

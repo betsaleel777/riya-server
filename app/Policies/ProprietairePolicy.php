@@ -3,25 +3,20 @@
 namespace App\Policies;
 
 use App\Enums\RolesName;
-use App\Models\Depense;
+use App\Models\Proprietaire;
 use App\Models\User;
 
-class DepensePolicy
+class ProprietairePolicy
 {
-    private static function ownCheck(User $user, Depense $depense): bool
+    private static function ownCheck(User $user, Proprietaire $proprietaire): bool
     {
-        $depense->loadMissing('audit:user_id,audits.auditable_type,audits.auditable_id');
-        return $depense->audit->user_id === $user->id;
+        $proprietaire->loadMissing('audit:user_id,audits.auditable_type,audits.auditable_id');
+        return $proprietaire->audit->user_id === $user->id;
     }
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
-    {
-        return $user->hasAnyRole(RolesName::ADMIN);
-    }
-
-    public function viewPending(User $user): bool
     {
         return $user->hasRole(RolesName::ADMIN);
     }
@@ -29,13 +24,13 @@ class DepensePolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Depense $depense): bool
+    public function view(User $user, Proprietaire $proprietaire): bool
     {
         if ($user->hasRole(RolesName::ADMIN)) {
             return true;
         }
-        if ($user->hasRole(RolesName::FINANCIAL)) {
-            return self::ownCheck($user, $depense);
+        if ($user->hasRole(RolesName::EMPLOYEE)) {
+            return self::ownCheck($user, $proprietaire);
         }
         return false;
     }
@@ -45,53 +40,45 @@ class DepensePolicy
      */
     public function create(User $user): bool
     {
-        return $user->hasAnyRole(RolesName::ADMIN, RolesName::FINANCIAL);
+        return $user->hasAnyRole(RolesName::ADMIN, RolesName::EMPLOYEE);
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Depense $depense): bool
+    public function update(User $user, Proprietaire $proprietaire): bool
     {
         if ($user->hasAnyRole(RolesName::ADMIN)) {
             return true;
         }
-        if ($user->hasRole(RolesName::FINANCIAL)) {
-            return self::ownCheck($user, $depense);
+        if ($user->hasRole(RolesName::EMPLOYEE)) {
+            return self::ownCheck($user, $proprietaire);
         }
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Depense $depense): bool
+    public function delete(User $user, Proprietaire $proprietaire): bool
     {
         if ($user->hasRole(RolesName::ADMIN)) {return true;}
-        if ($user->hasRole(RolesName::FINANCIAL)) {
-            return self::ownCheck($user, $depense);
+        if ($user->hasRole(RolesName::EMPLOYEE)) {
+            return self::ownCheck($user, $proprietaire);
         }
     }
 
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, Depense $depense): bool
+    public function restore(User $user): bool
     {
         return $user->hasRole(RolesName::ADMIN);
-        if ($user->hasRole(RolesName::FINANCIAL)) {
-            return self::ownCheck($user, $depense);
-        }
     }
 
     /**
      * Determine whether the user can permanently delete the model.
      */
     public function forceDelete(User $user): bool
-    {
-        return $user->hasRole(RolesName::ADMIN);
-    }
-
-    public function valider(User $user): bool
     {
         return $user->hasRole(RolesName::ADMIN);
     }

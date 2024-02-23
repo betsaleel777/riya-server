@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\PersonneCiviliteEnum;
+use App\Traits\HasOwnerScope;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -20,7 +21,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  */
 class Personne extends Model implements HasMedia, ContractsAuditable
 {
-    use Auditable, InteractsWithMedia;
+    use Auditable, InteractsWithMedia, HasOwnerScope;
     protected $fillable = [
         'code', 'email', 'nom_complet', 'cni', 'date_naissance',
         'lieu_naissance', 'nationalite', 'telephone', 'ville', 'quartier',

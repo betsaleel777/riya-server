@@ -8,6 +8,7 @@ use App\Http\Resources\ProprietaireResource;
 use App\Models\Proprietaire;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Auth;
 
 class ProprietaireController extends Controller
 {
@@ -16,7 +17,7 @@ class ProprietaireController extends Controller
      */
     public function index(): JsonResource
     {
-        $proprietaires = Proprietaire::get();
+        $proprietaires = Auth::user()->can('viewAny', Proprietaire::class) ? Proprietaire::get() : Proprietaire::owner()->get();
         return ProprietaireResource::collection($proprietaires);
     }
 
@@ -25,6 +26,7 @@ class ProprietaireController extends Controller
      */
     public function store(StoreProprietaireRequest $request): JsonResponse
     {
+        $this->authorize('create', Proprietaire::class);
         $request->validated();
         $proprietaire = Proprietaire::make($request->all());
         $proprietaire->genererCode();
@@ -37,6 +39,7 @@ class ProprietaireController extends Controller
      */
     public function show(Proprietaire $proprietaire): JsonResource
     {
+        $this->authorize('view', $proprietaire);
         return ProprietaireResource::make($proprietaire);
     }
 
@@ -45,6 +48,7 @@ class ProprietaireController extends Controller
      */
     public function update(Proprietaire $proprietaire, UpdateProprietaireRequest $request)
     {
+        $this->authorize('update', $proprietaire);
         $request->validated();
         $proprietaire->update($request->all());
         return response()->json("Le propriétaire $proprietaire->nom_complet a été modifié avec succès.");
@@ -55,6 +59,7 @@ class ProprietaireController extends Controller
      */
     public function destroy(Proprietaire $proprietaire)
     {
+        $this->authorize('delete', $proprietaire);
         $proprietaire->delete();
         return response()->json("Le propriétaire $proprietaire->nom_complet a été supprimé avec succès.");
     }
