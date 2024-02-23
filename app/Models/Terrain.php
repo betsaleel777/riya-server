@@ -3,7 +3,9 @@
 namespace App\Models;
 
 use App\StateMachines\TerrainStateMachine;
+use App\Traits\HasOwnerScope;
 use App\Traits\HasProperty;
+use App\Traits\HasResponsible;
 use Asantibanez\LaravelEloquentStateMachines\Traits\HasStateMachines;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -17,7 +19,7 @@ use OwenIt\Auditing\Contracts\Auditable as ContractsAuditable;
  */
 class Terrain extends Model implements ContractsAuditable
 {
-    use Auditable, HasStateMachines, HasProperty;
+    use Auditable, HasResponsible, HasStateMachines, HasOwnerScope, HasProperty;
 
     protected $fillable = [
         'reference', 'nom', 'ville', 'quartier', 'pays', 'montant_investit', 'cout_achat',
