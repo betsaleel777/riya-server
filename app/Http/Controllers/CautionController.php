@@ -19,8 +19,7 @@ class CautionController extends Controller
      */
     public function index(): JsonResource
     {
-        $cautions = Caution::get();
-        return OperationResource::collection($cautions);
+        return OperationResource::collection(Caution::get());
     }
 
     /**
@@ -51,13 +50,5 @@ class CautionController extends Controller
         $request->validated();
         $caution->update($request->all());
         return response()->json("La caution a été modifié avec succès.");
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Caution $caution)
-    {
-        //
     }
 }

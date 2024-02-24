@@ -11,7 +11,6 @@ use App\Models\Depense;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\Auth;
 
 class DepenseController extends Controller
 {
@@ -20,9 +19,9 @@ class DepenseController extends Controller
      */
     public function index(): JsonResource
     {
-        $query = Depense::select('id', 'titre', 'montant', 'type_depense_id', 'created_at', 'status')
-            ->with(['type' => fn(BelongsTo $query) => $query->select('id', 'nom')]);
-        $depenses = Auth::user()->can('viewAny', Depense::class) ? $query->get() : $query->owner()->get();
+        $this->authorize('viewAny', Depense::class);
+        $depenses = Depense::select('id', 'titre', 'montant', 'type_depense_id', 'created_at', 'status')
+            ->with(['type' => fn(BelongsTo $query) => $query->select('id', 'nom')])->get();
         return DepenseListResource::collection($depenses);
     }
 
@@ -50,7 +49,7 @@ class DepenseController extends Controller
      */
     public function show(Depense $depense): JsonResource
     {
-        $this->authorize('view', $depense);
+        $this->authorize('view', Depense::class);
         return DepenseShowResource::make($depense->load('type'));
     }
 
@@ -59,7 +58,7 @@ class DepenseController extends Controller
      */
     public function update(DepensePutRequest $request, Depense $depense): JsonResponse
     {
-        $this->authorize('update', $depense);
+        $this->authorize('update', Depense::class);
         $depense->update($request->validated());
         return response()->json("La dépense a été modifiée avec succès.");
     }
@@ -69,7 +68,7 @@ class DepenseController extends Controller
      */
     public function destroy(Depense $depense): JsonResponse
     {
-        $this->authorize('delete', $depense);
+        $this->authorize('delete', Depense::class);
         $depense->delete();
         return response()->json("La dépense $depense->titre a été supprimée avec succès.");
     }

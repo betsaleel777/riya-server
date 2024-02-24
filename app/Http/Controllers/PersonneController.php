@@ -8,7 +8,6 @@ use App\Http\Resources\PersonneListResource;
 use App\Http\Resources\PersonneResource;
 use App\Models\Personne;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 class PersonneController extends Controller
@@ -18,8 +17,8 @@ class PersonneController extends Controller
      */
     public function index(): JsonResource
     {
-        $personnes = Auth::user()->can('viewAny', Personne::class) ? Personne::get() : Personne::owner()->get();
-        return PersonneListResource::collection($personnes);
+        $this->authorize('viewAny', Personne::class);
+        return PersonneListResource::collection(Personne::get());
     }
 
     /**
@@ -44,7 +43,7 @@ class PersonneController extends Controller
      */
     public function show(Personne $personne): JsonResource
     {
-        $this->authorize('view', $personne);
+        $this->authorize('view', Personne::class);
         return PersonneResource::make($personne->load('piece', 'avatar:id,model_id,model_type,disk,file_name'));
     }
 
@@ -53,7 +52,7 @@ class PersonneController extends Controller
      */
     public function update(Personne $personne, UpdateRequest $request)
     {
-        $this->authorize('update', $personne);
+        $this->authorize('update', Personne::class);
         $request->validated();
         $personne->update($request->all());
         if ($request->hasFile('image_avatar')) {
@@ -70,7 +69,7 @@ class PersonneController extends Controller
      */
     public function destroy(Personne $personne)
     {
-        $this->authorize('delete', $personne);
+        $this->authorize('delete', Personne::class);
         $personne->delete();
         return response()->json("Le client " . Str::upper($personne->nom_complet) . " a été supprimé avec succès.");
     }
