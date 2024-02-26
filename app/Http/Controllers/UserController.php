@@ -29,7 +29,8 @@ class UserController extends Controller
     {
         $this->authorize('create', User::class);
         $request->validated();
-        $user = User::make($request->all());
+        $user = User::make($request->except('password'));
+        $user->password = Hash::make($request->password);
         $user->save();
         $user->assignRole(explode(',', $request->roles));
         $user->addMediaFromRequest('image')->toMediaCollection('photo');

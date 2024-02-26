@@ -26,7 +26,7 @@ class UserPostRequest extends FormRequest
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:6|confirmed',
             'image' => 'required|image|mimes:png,jpg,jpeg',
-            'roles' => 'required|array',
+            'roles' => 'required',
         ];
     }
 }
