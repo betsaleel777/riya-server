@@ -16,8 +16,8 @@ class TypeDepenseController extends Controller
      */
     public function index(): JsonResource
     {
-        $types = TypeDepense::get();
-        return TypeResource::collection($types);
+        $this->authorize('viewAny', TypeDepense::class);
+        return TypeResource::collection(TypeDepense::get());
     }
 
     /**
@@ -25,8 +25,8 @@ class TypeDepenseController extends Controller
      */
     public function store(PostTypeRequest $request): JsonResponse
     {
-        $type = TypeDepense::make($request->validated());
-        $type->save();
+        $this->authorize('create', TypeDepense::class);
+        $type = TypeDepense::make($request->validated())->save();
         return response()->json("Le type de dépense $type->nom a été crée avec succès.");
     }
 
@@ -35,6 +35,7 @@ class TypeDepenseController extends Controller
      */
     public function show(TypeDepense $typeDepense): JsonResource
     {
+        $this->authorize('view', TypeDepense::class);
         return TypeResource::make($typeDepense);
     }
 
@@ -43,6 +44,7 @@ class TypeDepenseController extends Controller
      */
     public function update(PutTypeRequest $request, TypeDepense $typeDepense): JsonResponse
     {
+        $this->authorize('update', TypeDepense::class);
         $typeDepense->update($request->validated());
         return response()->json("Le type de dépense $typeDepense->nom a été modifié avec succès.");
     }
@@ -52,6 +54,7 @@ class TypeDepenseController extends Controller
      */
     public function destroy(TypeDepense $typeDepense)
     {
+        $this->authorize('delete', TypeDepense::class);
         $typeDepense->delete();
         return response()->json("Le type de dépense $typeDepense->nom a été supprimé avec succès.");
     }

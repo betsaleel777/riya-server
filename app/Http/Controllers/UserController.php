@@ -17,6 +17,7 @@ class UserController extends Controller
      */
     public function index(): JsonResource
     {
+        $this->authorize('viewAny', User::class);
         $users = User::with('photo:id,model_id,model_type,disk,file_name')->get();
         return UserResource::collection($users);
     }
@@ -26,6 +27,7 @@ class UserController extends Controller
      */
     public function store(UserPostRequest $request): JsonResponse
     {
+        $this->authorize('create', User::class);
         $request->validated();
         $user = User::make($request->all());
         $user->save();
@@ -39,6 +41,7 @@ class UserController extends Controller
      */
     public function show(User $user): JsonResource
     {
+        $this->authorize('view', User::class);
         return UserResource::make($user->load('photo:id,model_id,model_type,disk,file_name'));
     }
 
@@ -47,6 +50,7 @@ class UserController extends Controller
      */
     public function update(UserPutRequest $request, User $user)
     {
+        $this->authorize('update', User::class);
         $request->validated();
         if ($request->filled('oldPassword')) {
             if (Hash::check($request->password, $user->password)) {
@@ -79,6 +83,7 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
+        $this->authorize('delete', User::class);
         $user->delete();
         return response()->json("L'utilisateur a été supprimé avec succès.");
     }

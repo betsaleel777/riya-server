@@ -23,12 +23,14 @@ class VisiteController extends Controller
 
     public function index(): JsonResource
     {
+        $this->authorize('viewAny', Visite::class);
         $visites = Visite::with('personne', 'frais', 'caution', 'avance')->get();
         return VisiteListResource::collection($visites);
     }
 
     public function getPending(): JsonResource
     {
+        $this->authorize('viewPending', Visite::class);
         $visites = Visite::select('id', 'code', 'montant', 'created_at', 'frais_dossier', 'appartement_id', 'personne_id')
             ->with(['personne' => fn(BelongsTo $query) => $query->select('id', 'civilite', 'nom_complet')
                     ->with('avatar:id,model_id,model_type,disk,file_name')])
@@ -41,6 +43,7 @@ class VisiteController extends Controller
 
     public function store(VisiteRequest $request): JsonResponse
     {
+        $this->authorize('create', Visite::class);
         $visite = Visite::make($request->validated());
         $visite->setExpiration();
         $visite->genererCode();
@@ -50,18 +53,21 @@ class VisiteController extends Controller
 
     public function show(Visite $visite): JsonResource
     {
+        $this->authorize('view', Visite::class);
         $visite->load('appartement', 'personne', 'frais', 'caution', 'avance', 'audit:id,user_type,user_id,audits.auditable_id,audits.auditable_type', 'audit.user:id,name', 'audit.user.photo:id,model_id,model_type,disk,file_name');
         return VisiteResource::make($visite);
     }
 
     public function update(VisiteRequest $request, Visite $visite)
     {
+        $this->authorize('update', Visite::class);
         $visite->update($request->validated());
         return response()->json("La visite a été modifié avec succès.");
     }
 
     public function directValidate(int $id): JsonResponse
     {
+        $this->authorize('valider', Visite::class);
         $visite = Visite::find($id);
         $visite->setValide();
         return response()->json("La visite $visite->code a été validée avec succès.");
@@ -69,12 +75,14 @@ class VisiteController extends Controller
 
     public function destroy(Visite $visite)
     {
+        $this->authorize('delete', Visite::class);
         $visite->delete();
         return response()->json("La visite $visite->code a été supprimée avec succès.");
     }
 
     public function patchFraisDossier(Request $request, Visite $visite): JsonResponse
     {
+        $this->authorize('update', Visite::class);
         $visite->load('personne');
         $visite->update($request->all());
         $this->visiteRepository->emitBailProcess($visite);

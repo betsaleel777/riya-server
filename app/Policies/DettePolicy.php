@@ -4,7 +4,7 @@ namespace App\Policies;
 
 use App\Traits\HasValidableAbility;
 
-class DepensePolicy extends FinancialPolicy
+class DettePolicy extends FinancialPolicy
 {
     use HasValidableAbility;
 }

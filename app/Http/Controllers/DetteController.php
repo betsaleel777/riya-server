@@ -19,12 +19,13 @@ class DetteController extends Controller
      */
     public function index(): JsonResource
     {
-        $dettes = Dette::with('origine')->get();
-        return DetteListResource::collection($dettes);
+        $this->authorize('viewAny', Dette::class);
+        return DetteListResource::collection(Dette::with('origine')->get());
     }
 
     public function getPending(): JsonResource
     {
+        $this->authorize('viewPending', Dette::class);
         $dettes = Dette::with('origine')->withResponsible()->pending()->get();
         return DetteValidationResource::collection($dettes);
     }
@@ -34,6 +35,7 @@ class DetteController extends Controller
      */
     public function show(Dette $dette): JsonResource
     {
+        $this->authorize('view', Dette::class);
         $dette->loadMorph('origine', [
             Visite::class => ['contrat:id,debut,commission,created_at,operation_id,operation_type'],
             Paiement::class => ['payable.contrat:id,debut,commission,created_at,operation_id,operation_type'],
@@ -44,12 +46,14 @@ class DetteController extends Controller
 
     public function rembourser(Dette $dette): JsonResponse
     {
+        $this->authorize('update', Dette::class);
         $dette->setPending();
         return response()->json("Le rembourssement de la dette $dette->code a bien été enregistré.");
     }
 
     public function valider(Dette $dette): JsonResponse
     {
+        $this->authorize('valider', Dette::class);
         $dette->setPaid();
         return response()->json("Le rembourssement de la dette $dette->code a bien été validé.");
     }

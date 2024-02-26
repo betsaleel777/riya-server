@@ -21,18 +21,20 @@ class ContratController extends Controller
 
     public function index(): JsonResource
     {
-        $contrats = Contrat::with('operation.personne')->get();
-        return ContratListResource::collection($contrats);
+        $this->authorize('viewAny', Contrat::class);
+        return ContratListResource::collection(Contrat::with('operation.personne')->get());
     }
 
     public function getRentProcessing(): JsonResource
     {
+        $this->authorize('view', Contrat::class);
         $contrats = Contrat::select('id', 'operation_id', 'operation_type')->with('operation:id,code')->rentProcessing()->get();
         return ContratResource::collection($contrats);
     }
 
     public function show(Contrat $contrat): JsonResource
     {
+        $this->authorize('view', Contrat::class);
         $contrat->loadMorph('operation', [
             Achat::class => ['personne', 'bien'],
             Visite::class => ['personne', 'appartement', 'caution', 'avance'],
@@ -42,6 +44,7 @@ class ContratController extends Controller
 
     public function store(ContratRequest $request): JsonResponse
     {
+        $this->authorize('create', Contrat::class);
         $request->validated();
         $this->contratRepository->store($request);
         $operation = $this->contratRepository->getByType($request->operation_id, $request->operation_type);
@@ -50,6 +53,7 @@ class ContratController extends Controller
 
     public function update(ContratRequest $request, Contrat $contrat): JsonResponse
     {
+        $this->authorize('update', Contrat::class);
         $request->validated();
         $contrat->update($request->all());
         $visite = Visite::find($request->visite_id);
@@ -58,6 +62,7 @@ class ContratController extends Controller
 
     public function abort(Contrat $contrat): JsonResponse
     {
+        $this->authorize('resilier', Contrat::class);
         $contrat->setAborted();
         //run event when contrat aborted
         return response()->json("Le contrat a été résilié avec succès.");
@@ -65,6 +70,7 @@ class ContratController extends Controller
 
     public function contratValidate(ContratRequest $request): JsonResponse
     {
+        $this->authorize('valider', Contrat::class);
         $request->validated();
         $operation = $this->contratRepository->getByType($request->operation_id, $request->operation_type);
         if ($operation instanceof Visite) {

@@ -14,15 +14,16 @@ class SocieteController extends Controller
 
     public function index(): JsonResource | JsonResponse
     {
-        $societes = Societe::get();
-        $societe = $societes->first();
-        return $societes->isEmpty() ? response()->json('no societe') : SocieteResource::make($societe);
+        $this->authorize('viewAny', Societe::class);
+        $societes = Societe::get()->first();
+        return $societes->isEmpty() ? response()->json('no societe') : SocieteResource::make($societes);
     }
     /**
      * Store a newly created resource in storage.
      */
     public function store(StoreRequest $request): JsonResponse
     {
+        $this->authorize('create', Societe::class);
         $request->validated();
         $societe = Societe::make($request->all());
         $societe->save();
@@ -35,11 +36,10 @@ class SocieteController extends Controller
      */
     public function update(Societe $societe, UpdateRequest $request): JsonResponse
     {
+        $this->authorize('update', Societe::class);
         $request->validated();
         $societe->update($request->all());
-        if ($request->hasFile('image')) {
-            $societe->addMediaFromRequest('image')->toMediaCollection('logo');
-        }
+        if ($request->hasFile('image')) {$societe->addMediaFromRequest('image')->toMediaCollection('logo');}
         return response()->json("Les informations de la société ont bien été modifiés.");
     }
 }

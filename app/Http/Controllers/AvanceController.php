@@ -20,8 +20,8 @@ class AvanceController extends Controller
      */
     public function index(): JsonResource
     {
-        $avances = Avance::get();
-        return OperationResource::collection($avances);
+        $this->authorize('viewAny', Avance::class);
+        return OperationResource::collection(Avance::get());
     }
 
     /**
@@ -29,6 +29,7 @@ class AvanceController extends Controller
      */
     public function store(OperationRequest $request): JsonResponse
     {
+        $this->authorize('create', Avance::class);
         $request->validated();
         $avance = Avance::make($request->all());
         $avance->save();
@@ -41,6 +42,7 @@ class AvanceController extends Controller
      */
     public function show(Avance $avance): JsonResource
     {
+        $this->authorize('view', Avance::class);
         return OperationResource::make($avance);
     }
 
@@ -49,6 +51,7 @@ class AvanceController extends Controller
      */
     public function update(OperationRequest $request, Avance $avance): JsonResponse
     {
+        $this->authorize('update', Avance::class);
         $request->validated();
         $avance->update($request->all());
         return response()->json("L'avance a été modifié avec succès.");

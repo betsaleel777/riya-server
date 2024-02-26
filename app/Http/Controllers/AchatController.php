@@ -28,6 +28,7 @@ class AchatController extends Controller
 
     public function index(): JsonResource
     {
+        $this->authorize('viewAny', Achat::class);
         $achats = Achat::withSum(['paiements as total' => fn($query) => $query->validated()], 'montant')
             ->with('bien:id,nom,cout_achat', 'personne:id,nom_complet')->get();
         return AchatListResource::collection($achats);
@@ -35,6 +36,7 @@ class AchatController extends Controller
 
     public function getPending(): JsonResource
     {
+        $this->authorize('viewPending', Achat::class);
         $achats = Achat::with('bien:id,nom,cout_achat', 'personne:id,nom_complet', 'personne.avatar:id,model_id,model_type,disk,file_name', 'pendingPaiement')->pending()->get();
         return AchatValidationResource::collection($achats);
     }
@@ -44,6 +46,7 @@ class AchatController extends Controller
      * */
     public function store(AchatPostRequest $request): JsonResponse
     {
+        $this->authorize('create', Achat::class);
         $request->validated();
         $achat = Achat::make($request->all());
         $achat->genererCode();
@@ -58,8 +61,10 @@ class AchatController extends Controller
 
     public function show(Achat $achat): JsonResource
     {
+        $this->authorize('view', Achat::class);
         $achat->loadSum(['paiements as total' => fn($query) => $query->validated()], 'montant')
-            ->load('bien:id,reference,nom,pays,ville,quartier,cout_achat,superficie', 'personne:id,nom_complet,telephone,ville,quartier,email')
+            ->load('bien:id,reference,nom,pays,ville,quartier,cout_achat,superficie',
+                'personne:id,nom_complet,telephone,ville,quartier,email')
             ->load(['paiements' => fn(MorphMany $query): MorphMany => $query->withNameResponsible()])
             ->load('audit:id,user_type,user_id,audits.auditable_id,audits.auditable_type', 'audit.user:id,name');
         return AchatResource::make($achat);
@@ -67,6 +72,7 @@ class AchatController extends Controller
 
     public function destroy(Achat $achat): JsonResponse
     {
+        $this->authorize('delete', Achat::class);
         $achat->load('contrat');
         if ($achat->contrat->exists) {
             $message = "Suppression impossible, car l'achat $achat->code a un contrat en cours,
@@ -81,6 +87,7 @@ class AchatController extends Controller
 
     public function valider(Achat $achat): JsonResponse
     {
+        $this->authorize('valider', Achat::class);
         $paiement = $this->achatRepository->valider($achat);
         return response()->json("Le paiement $paiement->code pour le montant de $paiement->montant FCFA a été validé avec succès.");
     }

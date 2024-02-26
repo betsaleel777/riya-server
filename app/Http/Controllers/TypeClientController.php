@@ -6,16 +6,17 @@ use App\Http\Requests\Personne\StoreTypeRequest;
 use App\Http\Requests\Personne\UpdateTypeRequest;
 use App\Http\Resources\TypeResource;
 use App\Models\TypeClient;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 class TypeClientController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): JsonResource
     {
-        $types = TypeClient::get();
-        return TypeResource::collection($types);
+        $this->authorize('viewAny', TypeClient::class);
+        return TypeResource::collection(TypeClient::get());
     }
 
     /**
@@ -23,6 +24,7 @@ class TypeClientController extends Controller
      */
     public function store(StoreTypeRequest $request)
     {
+        $this->authorize('create', TypeClient::class);
         $request->validated();
         $type = TypeClient::make($request->all());
         $type->save();
@@ -34,6 +36,7 @@ class TypeClientController extends Controller
      */
     public function show(TypeClient $typeClient)
     {
+        $this->authorize('view', TypeClient::class);
         return TypeResource::make($typeClient);
     }
 
@@ -42,6 +45,7 @@ class TypeClientController extends Controller
      */
     public function update(UpdateTypeRequest $request, TypeClient $typeClient)
     {
+        $this->authorize('update', TypeClient::class);
         $request->validated();
         $typeClient->nom = $request->nom;
         $typeClient->save();
@@ -53,6 +57,7 @@ class TypeClientController extends Controller
      */
     public function destroy(TypeClient $typeClient)
     {
+        $this->authorize('delete', TypeClient::class);
         $typeClient->delete();
         return response()->json("Le type de terrain $typeClient->nom a été définitivement supprimé");
     }

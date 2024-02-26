@@ -19,6 +19,7 @@ class CautionController extends Controller
      */
     public function index(): JsonResource
     {
+        $this->authorize('viewAny', Caution::class);
         return OperationResource::collection(Caution::get());
     }
 
@@ -27,6 +28,7 @@ class CautionController extends Controller
      */
     public function store(OperationRequest $request)
     {
+        $this->authorize('create', Caution::class);
         $request->validated();
         $caution = Caution::make($request->all());
         $caution->save();
@@ -39,6 +41,7 @@ class CautionController extends Controller
      */
     public function show(Caution $caution): JsonResource
     {
+        $this->authorize('view', Caution::class);
         return OperationResource::make($caution);
     }
 
@@ -47,6 +50,7 @@ class CautionController extends Controller
      */
     public function update(OperationRequest $request, Caution $caution): JsonResponse
     {
+        $this->authorize('update', Caution::class);
         $request->validated();
         $caution->update($request->all());
         return response()->json("La caution a été modifié avec succès.");

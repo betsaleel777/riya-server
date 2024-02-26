@@ -1,13 +1,12 @@
 <?php
-
-namespace App\Policies;
+namespace App\Traits;
 
 use App\Enums\RolesName;
 use App\Models\User;
 
-class PaiementPolicy extends FinancialPolicy
+trait HasCancellableAbility
 {
-    public function valider(User $user): bool
+    public function resilier(User $user): bool
     {
         return $user->hasRole(RolesName::ADMIN);
     }

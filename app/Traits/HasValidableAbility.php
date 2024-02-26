@@ -1,12 +1,16 @@
 <?php
-
-namespace App\Policies;
+namespace App\Traits;
 
 use App\Enums\RolesName;
 use App\Models\User;
 
-class PaiementPolicy extends FinancialPolicy
+trait HasValidableAbility
 {
+    public function viewPending(User $user): bool
+    {
+        return $user->hasRole(RolesName::ADMIN);
+    }
+
     public function valider(User $user): bool
     {
         return $user->hasRole(RolesName::ADMIN);

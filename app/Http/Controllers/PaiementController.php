@@ -21,12 +21,13 @@ class PaiementController extends Controller
 
     public function index(): JsonResource
     {
-        $paiements = Paiement::get();
-        return PaiementResource::collection($paiements);
+        $this->authorize('viewAny', Paiement::class);
+        return PaiementResource::collection(Paiement::get());
     }
 
     public function update(PaiementRequest $request, Paiement $paiement): JsonResponse
     {
+        $this->authorize('update', Paiement::class);
         $request->validated();
         $paiement->update($request->all());
         $paiement->load('payable');
@@ -36,6 +37,7 @@ class PaiementController extends Controller
 
     public function store(PaiementRequest $request): JsonResponse
     {
+        $this->authorize('create', Paiement::class);
         $request->validated();
         $paiement = $this->paiementRepository->createPaiement($request->payable_id, $request->payable_type, $request->montant);
         return response()->json("Le paiement $paiement->code a été effectué avec succès.");
@@ -43,6 +45,7 @@ class PaiementController extends Controller
 
     public function createDirect(PaiementDirectRequest $request): JsonResponse
     {
+        $this->authorize('create', Paiement::class);
         $request->validated();
         $paiement = $this->paiementRepository->createPaiement($request->payable_id, $request->payable_type, $request->montant);
         return response()->json("Le paiement $paiement->code a été effectué avec succès.");
@@ -50,6 +53,7 @@ class PaiementController extends Controller
 
     public function show(Paiement $paiement): JsonResource
     {
+        $this->authorize('viewAny', Paiement::class);
         $paiement->loadMorph('payable', [
             Loyer::class => ['client:personnes.id,nom_complet,telephone,quartier,ville',
                 'bien:appartements.id,nom,montant_location,quartier'],
@@ -61,6 +65,7 @@ class PaiementController extends Controller
 
     public function valider(Paiement $paiement): JsonResponse
     {
+        $this->authorize('valider', Paiement::class);
         $paiement->setValide();
         PaiementValidated::dispatch($paiement);
         return response()->json("Le paiement $paiement->code a été validé avec succès.");
@@ -68,6 +73,7 @@ class PaiementController extends Controller
 
     public function getByPayable(int $id): JsonResource
     {
+        $this->authorize('view', Paiement::class);
         $paiements = Paiement::where('payable_id', $id)->get();
         return PaiementResource::collection($paiements);
     }
