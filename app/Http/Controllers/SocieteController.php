@@ -15,8 +15,9 @@ class SocieteController extends Controller
     public function index(): JsonResource | JsonResponse
     {
         $this->authorize('viewAny', Societe::class);
-        $societes = Societe::get()->first();
-        return $societes->isEmpty() ? response()->json('no societe') : SocieteResource::make($societes);
+        $societes = Societe::get();
+        $societe = Societe::get()->first();
+        return $societes->isEmpty() ? response()->json('no societe') : SocieteResource::make($societe);
     }
     /**
      * Store a newly created resource in storage.
