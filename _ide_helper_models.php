@@ -209,10 +209,12 @@ namespace App\Models{
  * @property-read int|null $state_history_count
  * @method static \Illuminate\Database\Eloquent\Builder|Contrat newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Contrat newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Contrat notUptodate()
  * @method static \Illuminate\Database\Eloquent\Builder|Contrat processing()
  * @method static \Illuminate\Database\Eloquent\Builder|Contrat purchaseProcessing()
  * @method static \Illuminate\Database\Eloquent\Builder|Contrat query()
  * @method static \Illuminate\Database\Eloquent\Builder|Contrat rentProcessing()
+ * @method static \Illuminate\Database\Eloquent\Builder|Contrat uptodate()
  * @method static \Illuminate\Database\Eloquent\Builder|Contrat whereCommission($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Contrat whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Contrat whereDebut($value)
@@ -248,9 +250,10 @@ namespace App\Models{
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Asantibanez\LaravelEloquentStateMachines\Models\StateHistory> $stateHistory
  * @property-read int|null $state_history_count
  * @property-read \App\Models\TypeDepense $type
+ * @method static \Illuminate\Database\Eloquent\Builder|Depense countDateFilter(array|string $date)
+ * @method static \Illuminate\Database\Eloquent\Builder|Depense currentYear()
  * @method static \Illuminate\Database\Eloquent\Builder|Depense newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Depense newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Depense owner()
  * @method static \Illuminate\Database\Eloquent\Builder|Depense pending()
  * @method static \Illuminate\Database\Eloquent\Builder|Depense query()
  * @method static \Illuminate\Database\Eloquent\Builder|Depense whereCreatedAt($value)
@@ -288,6 +291,8 @@ namespace App\Models{
  * @property-read int|null $pending_transitions_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Asantibanez\LaravelEloquentStateMachines\Models\StateHistory> $stateHistory
  * @property-read int|null $state_history_count
+ * @method static \Illuminate\Database\Eloquent\Builder|Dette countDateFilter(array|string $date)
+ * @method static \Illuminate\Database\Eloquent\Builder|Dette currentYear()
  * @method static \Illuminate\Database\Eloquent\Builder|Dette newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Dette newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Dette paid()
@@ -440,6 +445,7 @@ namespace App\Models{
  * @property int|null $type_client_id
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Achat> $achats
  * @property-read int|null $achats_count
+ * @property-read \OwenIt\Auditing\Models\Audit|null $audit
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \OwenIt\Auditing\Models\Audit> $audits
  * @property-read int|null $audits_count
  * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Media|null $avatar
@@ -474,6 +480,8 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Personne whereTypeClientId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Personne whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Personne whereVille($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Personne withNameResponsible()
+ * @method static \Illuminate\Database\Eloquent\Builder|Personne withResponsible()
  * @mixin \Eloquent
  */
 	class IdeHelperPersonne {}
@@ -496,7 +504,6 @@ namespace App\Models{
  * @property-read int|null $audits_count
  * @method static \Illuminate\Database\Eloquent\Builder|Proprietaire newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Proprietaire newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Proprietaire owner()
  * @method static \Illuminate\Database\Eloquent\Builder|Proprietaire query()
  * @method static \Illuminate\Database\Eloquent\Builder|Proprietaire whereCni($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Proprietaire whereCode($value)
@@ -581,6 +588,7 @@ namespace App\Models{
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property string|null $status
  * @property-read \App\Models\Achat|null $achat
+ * @property-read \OwenIt\Auditing\Models\Audit|null $audit
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \OwenIt\Auditing\Models\Audit> $audits
  * @property-read int|null $audits_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Asantibanez\LaravelEloquentStateMachines\Models\PendingTransition> $pendingTransitions
@@ -614,6 +622,8 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Terrain whereTypeTerrainId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Terrain whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Terrain whereVille($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Terrain withNameResponsible()
+ * @method static \Illuminate\Database\Eloquent\Builder|Terrain withResponsible()
  * @mixin \Eloquent
  */
 	class IdeHelperTerrain {}
@@ -787,6 +797,7 @@ namespace App\Models{
  * @property-read \App\Models\Personne $personne
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Asantibanez\LaravelEloquentStateMachines\Models\StateHistory> $stateHistory
  * @property-read int|null $state_history_count
+ * @method static \Illuminate\Database\Eloquent\Builder|Visite currentYear()
  * @method static \Illuminate\Database\Eloquent\Builder|Visite newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Visite newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Visite pending()

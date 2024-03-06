@@ -4,9 +4,11 @@ namespace App\Models;
 
 use App\Enums\ValidableEntityStatus;
 use App\StateMachines\ValidableEntityStateMachine;
+use App\Traits\HasCountDateFilterScope;
+use App\Traits\HasCurrentYearScope;
 use App\Traits\HasResponsible;
+use App\Traits\HasValidableEntityScope;
 use Asantibanez\LaravelEloquentStateMachines\Traits\HasStateMachines;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use OwenIt\Auditing\Auditable;
@@ -17,7 +19,7 @@ use OwenIt\Auditing\Contracts\Auditable as ContractsAuditable;
  */
 class Depense extends Model implements ContractsAuditable
 {
-    use HasStateMachines, HasResponsible, Auditable;
+    use HasStateMachines, HasResponsible, HasCurrentYearScope, HasCountDateFilterScope, HasValidableEntityScope, Auditable;
 
     protected $fillable = ['titre', 'montant', 'description', 'type_depense_id'];
     protected $dates = ['created_at'];
@@ -27,11 +29,6 @@ class Depense extends Model implements ContractsAuditable
     public function setValide(): void
     {
         $this->status()->transitionTo(ValidableEntityStatus::VALID->value);
-    }
-
-    public function scopePending(Builder $query): Builder
-    {
-        return $query->where('status', ValidableEntityStatus::WAIT->value);
     }
 
     public function type(): BelongsTo

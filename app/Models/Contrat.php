@@ -69,6 +69,16 @@ class Contrat extends Model implements ContractsAuditable
         return $query->processing()->where('operation_type', 'App\Models\Visite');
     }
 
+    public function scopeUptodate(Builder $query): Builder
+    {
+        return $query->where('status', ContratStatus::UPTODATE->value);
+    }
+
+    public function scopeNotUptodate(Builder $query): Builder
+    {
+        return $query->where('status', ContratStatus::NOTUPTODATE->value);
+    }
+
     // sur achat et sur visite
     public function operation(): MorphTo
     {

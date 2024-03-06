@@ -5,10 +5,11 @@ namespace App\Models;
 use App\Enums\AvanceStatus;
 use App\Enums\ValidableEntityStatus;
 use App\StateMachines\ValidableEntityStateMachine;
+use App\Traits\HasCurrentYearScope;
 use App\Traits\HasResponsible;
+use App\Traits\HasValidableEntityScope;
 use Asantibanez\LaravelEloquentStateMachines\Traits\HasStateMachines;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -22,7 +23,7 @@ use OwenIt\Auditing\Contracts\Auditable as ContractsAuditable;
  */
 class Visite extends Model implements ContractsAuditable
 {
-    use Auditable, HasResponsible, HasStateMachines;
+    use Auditable, HasResponsible, HasStateMachines, HasCurrentYearScope, HasValidableEntityScope;
     protected $fillable = ['code', 'personne_id', 'montant', 'date_expiration', 'appartement_id', 'frais_dossier'];
     protected $dates = ['created_at'];
     protected $casts = ['montant' => 'integer', 'date_expiration' => 'date', 'frais_dossier' => 'integer'];
@@ -83,12 +84,6 @@ class Visite extends Model implements ContractsAuditable
     public function checkCreateContrat(): bool
     {
         return !empty($this->attributes['caution']) and !empty($this->attributes['avance']) and !empty($this->attributes['frais']);
-    }
-
-    //scopes
-    public function scopePending(Builder $query): Builder
-    {
-        return $query->where('status', ValidableEntityStatus::WAIT->value);
     }
 
     //relations

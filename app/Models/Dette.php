@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Enums\PayableStatus;
 use App\StateMachines\DetteStatusStateMachine;
+use App\Traits\HasCountDateFilterScope;
+use App\Traits\HasCurrentYearScope;
 use App\Traits\HasResponsible;
 use Asantibanez\LaravelEloquentStateMachines\Traits\HasStateMachines;
 use Carbon\Carbon;
@@ -19,7 +21,7 @@ use OwenIt\Auditing\Contracts\Auditable as ContractsAuditable;
  */
 class Dette extends Model implements ContractsAuditable
 {
-    use HasStateMachines, HasResponsible, Auditable;
+    use HasStateMachines, HasResponsible, HasCurrentYearScope, HasCountDateFilterScope, Auditable;
 
     protected $fillable = ['montant'];
     protected $casts = ['montant' => 'integer'];

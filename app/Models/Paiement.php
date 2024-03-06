@@ -5,9 +5,9 @@ namespace App\Models;
 use App\Enums\ValidableEntityStatus;
 use App\StateMachines\ValidableEntityStateMachine;
 use App\Traits\HasResponsible;
+use App\Traits\HasValidableEntityScope;
 use Asantibanez\LaravelEloquentStateMachines\Traits\HasStateMachines;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
@@ -20,7 +20,7 @@ use OwenIt\Auditing\Contracts\Auditable as ContractsAuditable;
  */
 class Paiement extends Model implements ContractsAuditable
 {
-    use Auditable, HasStateMachines, HasResponsible;
+    use Auditable, HasStateMachines, HasValidableEntityScope, HasResponsible;
     protected $fillable = ['montant', 'code'];
     protected $dates = ['created_at'];
     protected $casts = ['montant' => 'integer'];
@@ -37,17 +37,6 @@ class Paiement extends Model implements ContractsAuditable
     public function setValide(): void
     {
         $this->status()->transitionTo($to = ValidableEntityStatus::VALID->value);
-    }
-
-    //scope
-    public function scopePending(Builder $query): Builder
-    {
-        return $query->where('status', ValidableEntityStatus::WAIT->value);
-    }
-
-    public function scopeValidated(Builder $query): Builder
-    {
-        return $query->where('status', ValidableEntityStatus::VALID->value);
     }
 
     public function payable(): MorphTo
