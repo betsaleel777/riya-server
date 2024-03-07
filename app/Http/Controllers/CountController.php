@@ -35,6 +35,7 @@ class CountController extends Controller
         $appartements = Appartement::count();
         $biens = $appartements + $terrains;
         $taux = $biens ? round(((Appartement::busy()->count() + Terrain::busy()->count()) / $biens) * 100, 2) : 0;
+        $dettes = Dette::currentYear()->paid()->sum('montant');
         return response()->json([
             'clients' => Personne::count(),
             'locataires' => Personne::has('contratsBail')->count(),
@@ -42,9 +43,9 @@ class CountController extends Controller
             'visites' => Visite::currentYear()->count(),
             'taux' => $taux,
             'depenses' => (int) Depense::currentYear()->validated()->sum('montant'),
-            'remboursements' => (int) Dette::currentYear()->paid()->sum('montant'),
+            'remboursements' => (int) $dettes,
             'terrains' => $terrains,
-            'chiffres' => $this->visiteRepository::amout() + Paiement::validated()->sum('montant'),
+            'chiffres' => $this->visiteRepository::amout() + Paiement::validated()->currentYear()->sum('montant') - $dettes,
             'paiements' => $this->paiementRepository::dashboard(),
             'locations' => $this->visiteRepository::dashboard(),
             'contrats' => ['uptodate' => Contrat::uptodate()->count(), 'notuptodate' => Contrat::notUptodate()->count()],
@@ -61,18 +62,22 @@ class CountController extends Controller
 
     public function depenses(CountDateRequest $request): JsonResponse
     {
-        $depenses = (int) Depense::countDateFilter($request->query('date'))->sum('montant');
+        $request->validated();
+        $depenses = (int) Depense::validated()->countDateFilter($request->query('date'))->sum('montant');
         return response()->json($depenses);
     }
 
     public function dettes(CountDateRequest $request): JsonResponse
     {
-        $dettes = (int) Dette::countDateFilter($request->query('date'))->sum('montant');
+        $request->validated();
+        $dettes = (int) Dette::paid()->countDateFilter($request->query('date'))->sum('montant');
         return response()->json($dettes);
     }
 
     public function chiffres(CountDateRequest $request): JsonResponse
     {
-        return response()->json();
+        $request->validated();
+        return response()->json(
+            $this->visiteRepository::amoutDateFilter($request->query('date')) + Paiement::validated()->countDateFilter($request->query('date'))->sum('montant') - Dette::currentYear()->paid()->countDateFilter($request->query('date'))->sum('montant'));
     }
 }

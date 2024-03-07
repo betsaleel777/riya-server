@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Enums\ValidableEntityStatus;
 use App\StateMachines\ValidableEntityStateMachine;
+use App\Traits\HasCountDateFilterScope;
+use App\Traits\HasCurrentYearScope;
 use App\Traits\HasResponsible;
 use App\Traits\HasValidableEntityScope;
 use Asantibanez\LaravelEloquentStateMachines\Traits\HasStateMachines;
@@ -20,7 +22,7 @@ use OwenIt\Auditing\Contracts\Auditable as ContractsAuditable;
  */
 class Paiement extends Model implements ContractsAuditable
 {
-    use Auditable, HasStateMachines, HasValidableEntityScope, HasResponsible;
+    use Auditable, HasStateMachines, HasValidableEntityScope, HasCountDateFilterScope, HasCurrentYearScope, HasResponsible;
     protected $fillable = ['montant', 'code'];
     protected $dates = ['created_at'];
     protected $casts = ['montant' => 'integer'];
@@ -36,7 +38,7 @@ class Paiement extends Model implements ContractsAuditable
 
     public function setValide(): void
     {
-        $this->status()->transitionTo($to = ValidableEntityStatus::VALID->value);
+        $this->status()->transitionTo(ValidableEntityStatus::VALID->value);
     }
 
     public function payable(): MorphTo

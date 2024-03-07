@@ -3,7 +3,6 @@
 namespace App\Http\Requests\Dashboard;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Arr;
 
 class CountDateRequest extends FormRequest
 {
@@ -22,10 +21,6 @@ class CountDateRequest extends FormRequest
      */
     public function rules(): array
     {
-        return Arr::accessible($this->query('date')) ? [
-            'dates' => 'required|array',
-            'dates.*' => 'date_format:Y-m-d',
-        ] :
-        ['date' => 'required|date_format:Y-m-d'];
+        return ['date' => 'required'];
     }
 }

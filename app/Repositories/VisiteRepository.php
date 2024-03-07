@@ -34,6 +34,18 @@ class VisiteRepository implements VisiteRepositoryInterface
                     ->from('visites')->where('visites.status', ValidableEntityStatus::VALID->value)->groupBy('visites.id'))
             ->currentYear()->sum('money');
     }
+    public static function amoutDateFilter(string $date): int
+    {
+        return (int) Visite::select('*')
+            ->from(fn($query) =>
+                $query
+                    ->selectRaw("visites.created_at,SUM(frais_dossier+montant+IFNULL(ap.montant_location*(c.mois+av.mois+f.mois),0)) as money")->leftJoin('cautions as c', 'c.visite_id', '=', 'visites.id')
+                    ->leftjoin('appartements as ap', 'ap.id', '=', 'visites.appartement_id')
+                    ->leftJoin('avances as av', 'av.visite_id', '=', 'visites.id')
+                    ->leftJoin('frais as f', 'f.visite_id', '=', 'visites.id')
+                    ->from('visites')->where('visites.status', ValidableEntityStatus::VALID->value)->groupBy('visites.id'))
+            ->countDateFilter($date)->sum('money');
+    }
 
     public static function dashboard(): array
     {

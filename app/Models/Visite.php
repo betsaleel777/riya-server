@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\AvanceStatus;
 use App\Enums\ValidableEntityStatus;
 use App\StateMachines\ValidableEntityStateMachine;
+use App\Traits\HasCountDateFilterScope;
 use App\Traits\HasCurrentYearScope;
 use App\Traits\HasResponsible;
 use App\Traits\HasValidableEntityScope;
@@ -23,7 +24,7 @@ use OwenIt\Auditing\Contracts\Auditable as ContractsAuditable;
  */
 class Visite extends Model implements ContractsAuditable
 {
-    use Auditable, HasResponsible, HasStateMachines, HasCurrentYearScope, HasValidableEntityScope;
+    use Auditable, HasResponsible, HasStateMachines, HasCurrentYearScope, HasCountDateFilterScope, HasValidableEntityScope;
     protected $fillable = ['code', 'personne_id', 'montant', 'date_expiration', 'appartement_id', 'frais_dossier'];
     protected $dates = ['created_at'];
     protected $casts = ['montant' => 'integer', 'date_expiration' => 'date', 'frais_dossier' => 'integer'];
