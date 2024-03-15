@@ -23,7 +23,7 @@ class DepensePutRequest extends FormRequest
     {
         return [
             'titre' => 'required|max:70|unique:depenses,titre,' . $this->route('depense')->id,
-            'montant' => 'required|numeric',
+            'montant' => 'required|numeric|not_in:0',
             'description' => 'required',
             'type_depense_id' => 'required',
         ];

@@ -26,9 +26,9 @@ class StoreRequest extends FormRequest
             'ville' => 'required',
             'pays' => 'required',
             'quartier' => 'required',
-            'superficie' => 'required|numeric',
-            'montant_location' => 'required|numeric',
-            'montant_investit' => 'required|numeric',
+            'superficie' => 'required|numeric|not_in:0',
+            'montant_location' => 'required|numeric|not_in:0',
+            'montant_investit' => 'required|numeric|not_in:0',
             'cout_achat' => 'required|numeric',
             'proprietaire_id' => 'required',
         ];

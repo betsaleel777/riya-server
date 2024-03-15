@@ -46,7 +46,8 @@ class LoyerController extends Controller
     public function show(Loyer $loyer): JsonResource
     {
         $this->authorize('view', Loyer::class);
-        $loyer->loadSum(['paiements as paid' => fn($query) => $query->validated()], 'montant')->load('bien:appartements.id,nom', 'client:personnes.id,nom_complet,telephone,ville,quartier,email', 'client.avatar:id,model_id,model_type,disk,file_name')
+        $loyer->loadSum(['paiements as paid' => fn($query) => $query->validated()], 'montant')->load('bien:appartements.id,nom', 'client:personnes.id,nom_complet,telephone,ville,quartier,email', 'client.avatar:id,model_id,model_type,disk,file_name',
+            'proprietaire:proprietaires.id,proprietaires.nom_complet,cni,proprietaires.email,proprietaires.telephone')
             ->load(['paiements' => fn(MorphMany $query): MorphMany => $query->withNameResponsible()]);
         return LoyerResource::make($loyer);
     }

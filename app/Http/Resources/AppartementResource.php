@@ -46,8 +46,8 @@ class AppartementResource extends JsonResource
             'cout_achat' => $this->whenNotNull($this->cout_achat),
             'proprietaire_id' => $this->whenNotNull($this->proprietaire_id),
             'type_appartement_id' => $this->whenNotNull($this->type_appartement_id),
-            'proprietaire' => $this->whenLoaded('proprietaire', fn() => $this->proprietaire),
-            'type' => $this->whenLoaded('type', fn() => $this->type),
+            'proprietaire' => ProprietaireResource::make($this->whenLoaded('proprietaire')),
+            'type' => TypeResource::make($this->whenLoaded('type')),
         ];
     }
 }

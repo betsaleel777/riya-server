@@ -26,6 +26,7 @@ class LoyerResource extends JsonResource
             'personne' => PersonneResource::make($this->whenLoaded('client')),
             'bien' => AppartementResource::make($this->whenLoaded('bien')),
             'paiements' => PaiementResource::collection($this->whenLoaded('paiements')),
+            'proprietaire' => ProprietaireResource::make($this->whenLoaded('proprietaire')),
         ];
     }
 }

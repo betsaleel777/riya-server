@@ -69,6 +69,11 @@ class Contrat extends Model implements ContractsAuditable
         return $query->processing()->where('operation_type', 'App\Models\Visite');
     }
 
+    public function scopeWhereAvanceProcessing(Builder $query): Builder
+    {
+        return $query->rentProcessing()->join('visites as v', 'operation_id', '=', 'v.id')->where('operation_type', 'App\Models\Visite')->join('avances as a', 'a.visite_id', '=', 'v.id')->whereRaw('CURRENT_DATE >= DATE_ADD(debut,INTERVAL a.mois MONTH)');
+    }
+
     public function scopeUptodate(Builder $query): Builder
     {
         return $query->where('status', ContratStatus::UPTODATE->value);

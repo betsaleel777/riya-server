@@ -91,6 +91,16 @@ class Loyer extends Model implements ContractsAuditable
         );
     }
 
+    public function proprietaire(): HasOneDeep
+    {
+        return $this->hasOneDeep(
+            Proprietaire::class,
+            [Contrat::class, Visite::class, Appartement::class],
+            ['id', 'id', 'id', 'id'],
+            ['contrat_id', ['operation_type', 'operation_id'], 'appartement_id', 'proprietaire_id']
+        );
+    }
+
     public function pendingPaiement(): MorphOne
     {
         return $this->paiements()->one()->where('status', ValidableEntityStatus::WAIT->value);

@@ -32,6 +32,14 @@ class ContratController extends Controller
         return ContratResource::collection($contrats);
     }
 
+    public function getRentAvanceProcessing(): JsonResource
+    {
+        $this->authorize('view', Contrat::class);
+        $contrats = Contrat::select('contrats.id', 'operation_id', 'operation_type')->with('operation:id,code')
+            ->rentProcessing()->whereAvanceProcessing()->get();
+        return ContratResource::collection($contrats);
+    }
+
     public function show(Contrat $contrat): JsonResource
     {
         $this->authorize('view', Contrat::class);

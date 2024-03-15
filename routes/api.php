@@ -56,6 +56,7 @@ Route::apiResource('frais', FraisController::class)->middleware('auth:sanctum');
 Route::apiResource('avances', AvanceController::class)->middleware('auth:sanctum');
 Route::apiResource('cautions', CautionController::class)->middleware('auth:sanctum');
 Route::get('contrats/active-bail', [ContratController::class, 'getRentProcessing'])->middleware('auth:sanctum');
+Route::get('contrats/active-avance-bail', [ContratController::class, 'getRentAvanceProcessing'])->middleware('auth:sanctum');
 Route::apiResource('contrats', ContratController::class)->middleware('auth:sanctum');
 Route::get('dettes/pending', [DetteController::class, 'getPending'])->middleware('auth:sanctum');
 Route::apiResource('dettes', DetteController::class)->except(['update', 'destroy'])->middleware('auth:sanctum');
