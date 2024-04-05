@@ -13,7 +13,7 @@ trait HasOwnerScope
      */
     public function scopeOwner(Builder $query): Builder
     {
-        return $query->whereHas('audits', fn($query) => $query->where('user_id', Auth::user()->id));
+        return $query->whereHas('audit', fn($query) => $query->where('user_id', Auth::user()->id));
     }
 
 }
