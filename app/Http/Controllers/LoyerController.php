@@ -19,9 +19,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class LoyerController extends Controller
 {
 
-    public function __construct(private PaiementRepositoryInterface $paiementRepository, private LoyerRepositoryInterface $loyerRepository)
-    {
-    }
+    public function __construct(private PaiementRepositoryInterface $paiementRepository, private LoyerRepositoryInterface $loyerRepository) {}
     /**
      * Display a listing of the resource.
      */
@@ -29,14 +27,17 @@ class LoyerController extends Controller
     {
         $this->authorize('viewAny', Loyer::class);
         $loyers = Loyer::withExists(['paiements as pending' => fn(Builder $query): Builder => $query->pending()])
-            ->withSum('paiements as paid', 'montant')->with('client:personnes.id,personnes.nom_complet', 'bien:appartements.id,appartements.nom')->get();
+            ->withSum('paiements as paid', 'montant')->with('client:personnes.id,personnes.nom_complet', 'bien:appartements.id,appartements.nom')
+            ->get();
         return LoyerListResource::collection($loyers);
     }
 
     public function getPending(): JsonResource
     {
         $this->authorize('viewPending', Loyer::class);
-        $loyers = Loyer::select('id', 'code', 'montant', 'created_at', 'contrat_id')->with('client:personnes.id,nom_complet', 'bien:appartements.id,nom', 'client.avatar:id,model_id,model_type,disk,file_name')->pending()->get();
+        $loyers = Loyer::select('id', 'code', 'montant', 'created_at', 'contrat_id')
+            ->with('client:personnes.id,nom_complet', 'bien:appartements.id,nom', 'client.avatar:id,model_id,model_type,disk,file_name')
+            ->pending()->get();
         return LoyerValidationResource::collection($loyers);
     }
 
@@ -46,8 +47,12 @@ class LoyerController extends Controller
     public function show(Loyer $loyer): JsonResource
     {
         $this->authorize('view', Loyer::class);
-        $loyer->loadSum(['paiements as paid' => fn($query) => $query->validated()], 'montant')->load('bien:appartements.id,nom', 'client:personnes.id,nom_complet,telephone,ville,quartier,email', 'client.avatar:id,model_id,model_type,disk,file_name',
-            'proprietaire:proprietaires.id,proprietaires.nom_complet,cni,proprietaires.email,proprietaires.telephone')
+        $loyer->loadSum(['paiements as paid' => fn($query) => $query->validated()], 'montant')->load(
+            'bien:appartements.id,nom',
+            'client:personnes.id,nom_complet,telephone,ville,quartier,email',
+            'client.avatar:id,model_id,model_type,disk,file_name',
+            'proprietaire:proprietaires.id,proprietaires.nom_complet,cni,proprietaires.email,proprietaires.telephone'
+        )
             ->load(['paiements' => fn(MorphMany $query): MorphMany => $query->withNameResponsible()]);
         return LoyerResource::make($loyer);
     }

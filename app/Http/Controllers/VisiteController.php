@@ -17,9 +17,10 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class VisiteController extends Controller
 {
-    public function __construct(private ContratRepositoryInterface $contratRepository, private VisiteRepositoryInterface $visiteRepository)
-    {
-    }
+    public function __construct(
+        private ContratRepositoryInterface $contratRepository,
+        private VisiteRepositoryInterface $visiteRepository
+    ) {}
 
     public function index(): JsonResource
     {
@@ -33,11 +34,12 @@ class VisiteController extends Controller
         $this->authorize('viewPending', Visite::class);
         $visites = Visite::select('id', 'code', 'montant', 'created_at', 'frais_dossier', 'appartement_id', 'personne_id')
             ->with(['personne' => fn(BelongsTo $query) => $query->select('id', 'civilite', 'nom_complet')
-                    ->with('avatar:id,model_id,model_type,disk,file_name')])
+                ->with('avatar:id,model_id,model_type,disk,file_name')])
             ->with(['frais' => fn(HasOne $query) => $query->select('id', 'mois', 'visite_id')])
             ->with(['caution' => fn(HasOne $query) => $query->select('id', 'mois', 'visite_id')])
             ->with(['avance' => fn(HasOne $query) => $query->select('id', 'mois', 'visite_id')])
-            ->with(['appartement' => fn(BelongsTo $query) => $query->select('id', 'montant_location', 'nom')])->pending()->get();
+            ->with(['appartement' =>
+            fn(BelongsTo $query) => $query->select('id', 'montant_location', 'nom')])->pending()->get();
         return VisiteValidationResource::collection($visites);
     }
 
@@ -54,7 +56,16 @@ class VisiteController extends Controller
     public function show(Visite $visite): JsonResource
     {
         $this->authorize('view', Visite::class);
-        $visite->load('appartement', 'personne', 'frais', 'caution', 'avance', 'audit:id,user_type,user_id,audits.auditable_id,audits.auditable_type', 'audit.user:id,name', 'audit.user.photo:id,model_id,model_type,disk,file_name');
+        $visite->load(
+            'appartement',
+            'personne',
+            'frais',
+            'caution',
+            'avance',
+            'audit:id,user_type,user_id,audits.auditable_id,audits.auditable_type',
+            'audit.user:id,name',
+            'audit.user.photo:id,model_id,model_type,disk,file_name'
+        );
         return VisiteResource::make($visite);
     }
 

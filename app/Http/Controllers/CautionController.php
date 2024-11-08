@@ -11,9 +11,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class CautionController extends Controller
 {
-    public function __construct(private VisiteRepositoryInterface $visiteRepository)
-    {
-    }
+    public function __construct(private VisiteRepositoryInterface $visiteRepository) {}
     /**
      * Display a listing of the resource.
      */

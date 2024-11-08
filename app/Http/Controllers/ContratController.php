@@ -15,9 +15,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class ContratController extends Controller
 {
 
-    public function __construct(private ContratRepositoryInterface $contratRepository)
-    {
-    }
+    public function __construct(private ContratRepositoryInterface $contratRepository) {}
 
     public function index(): JsonResource
     {
@@ -28,7 +26,8 @@ class ContratController extends Controller
     public function getRentProcessing(): JsonResource
     {
         $this->authorize('view', Contrat::class);
-        $contrats = Contrat::select('id', 'operation_id', 'operation_type')->with('operation:id,code')->rentProcessing()->get();
+        $contrats = Contrat::select('id', 'operation_id', 'operation_type')->with('operation:id,code')
+            ->rentProcessing()->get();
         return ContratResource::collection($contrats);
     }
 
