@@ -68,7 +68,7 @@ Route::apiResource('depenses', DepenseController::class)->middleware('auth:sanct
 Route::resource('societes', SocieteController::class)->except(['create', 'edit', 'destroy', 'show'])->middleware('auth:sanctum');
 Route::get('loyers/pending', [LoyerController::class, 'getPending'])->middleware('auth:sanctum');
 Route::get('loyers/paginate', [LoyerController::class, 'getPaginate'])->middleware('auth:sanctum');
-Route::get('loyers/search', [LoyerController::class, 'getSearch '])->middleware('auth:sanctum');
+Route::get('loyers/search', [LoyerController::class, 'getSearch'])->middleware('auth:sanctum');
 Route::get('loyers/last-paid', [LoyerController::class, 'getLastPaid'])->middleware('auth:sanctum');
 Route::resource('loyers', LoyerController::class)->except(['create', 'edit', 'update', 'destroy'])->middleware('auth:sanctum');
 Route::get('achats/pending', [AchatController::class, 'getPending'])->middleware('auth:sanctum');

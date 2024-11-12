@@ -58,14 +58,14 @@ class Loyer extends Model implements ContractsAuditable
 
     public function scopeCurrentMonth(Builder $query): Builder
     {
-        // created_at sera changé en mois qui sera un nouveau attribut à ajouter pour pouvoir gérer les avances sur le loyer
         return $query->whereMonth('created_at', now()->format('m'));
     }
 
     public function scopeSearch(Builder $query, string $search): Builder
     {
         return $query->when(!empty($search) and !ctype_space($search), function (Builder $query) use ($search): Builder {
-            return $query->where('code', 'LIKE', "%$search%")
+            return $query->whereRaw("DATE_FORMAT(created_at,'%d-%m-%Y') LIKE ?", "$search%")
+                ->orWhere('code', 'LIKE', "%$search%")->orWhere('status', 'LIKE', "%$search%")
                 ->orWhereHas('client', fn(Builder $query): Builder => $query->where('personnes.nom_complet', 'LIKE', "%$search%"))
                 ->orWhereHas('bien', fn(Builder $query): Builder => $query->where('appartements.nom', 'LIKE', "%$search%"));
         });
