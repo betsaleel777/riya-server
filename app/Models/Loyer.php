@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\PayableStatus;
 use App\Enums\ValidableEntityStatus;
 use App\StateMachines\LoyerStatusStateMachine;
+use App\Traits\HasDescendingScope;
 use Asantibanez\LaravelEloquentStateMachines\Traits\HasStateMachines;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -25,6 +26,7 @@ class Loyer extends Model implements ContractsAuditable
     use HasStateMachines;
     use \Staudenmeir\EloquentHasManyDeep\HasRelationships;
     use Auditable;
+    use HasDescendingScope;
 
     protected $fillable = ['code', 'contrat_id', 'montant', 'mois'];
     protected $casts = ['montant' => 'integer'];
@@ -58,6 +60,15 @@ class Loyer extends Model implements ContractsAuditable
     {
         // created_at sera changé en mois qui sera un nouveau attribut à ajouter pour pouvoir gérer les avances sur le loyer
         return $query->whereMonth('created_at', now()->format('m'));
+    }
+
+    public function scopeSearch(Builder $query, string $search): Builder
+    {
+        return $query->when(!empty($search) and !ctype_space($search), function (Builder $query) use ($search): Builder {
+            return $query->where('code', 'LIKE', "%$search%")
+                ->orWhereHas('client', fn(Builder $query): Builder => $query->where('personnes.nom_complet', 'LIKE', "%$search%"))
+                ->orWhereHas('bien', fn(Builder $query): Builder => $query->where('appartements.nom', 'LIKE', "%$search%"));
+        });
     }
 
     //relations

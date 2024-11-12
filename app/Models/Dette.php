@@ -6,6 +6,7 @@ use App\Enums\PayableStatus;
 use App\StateMachines\DetteStatusStateMachine;
 use App\Traits\HasCountDateFilterScope;
 use App\Traits\HasCurrentYearScope;
+use App\Traits\HasDescendingScope;
 use App\Traits\HasResponsible;
 use Asantibanez\LaravelEloquentStateMachines\Traits\HasStateMachines;
 use Carbon\Carbon;
@@ -21,7 +22,7 @@ use OwenIt\Auditing\Contracts\Auditable as ContractsAuditable;
  */
 class Dette extends Model implements ContractsAuditable
 {
-    use HasStateMachines, HasResponsible, HasCurrentYearScope, HasCountDateFilterScope, Auditable;
+    use HasStateMachines, HasResponsible, HasCurrentYearScope, HasCountDateFilterScope, HasDescendingScope, Auditable;
 
     protected $fillable = ['montant'];
     protected $casts = ['montant' => 'integer'];
@@ -47,12 +48,14 @@ class Dette extends Model implements ContractsAuditable
     public function isVisiteResource(): bool
     {
         return str($this->getOrigine())->explode('\\')[2] === 'Visite' and $this->relationLoaded('origine')
-        and $this->origine->relationLoaded('appartement') and $this->origine->appartement->relationLoaded('proprietaire');
+            and $this->origine->relationLoaded('appartement') and $this->origine->appartement->relationLoaded('proprietaire');
     }
 
     public function isPaiementResource(): bool
     {
-        return str($this->getOrigine())->explode('\\')[2] === 'Paiement' and $this->relationLoaded('origine') and $this->origine->relationLoaded('payable') and $this->origine->payable->relationLoaded('bien') and $this->origine->payable->bien->relationLoaded('proprietaire');
+        return str($this->getOrigine())->explode('\\')[2] === 'Paiement' and $this->relationLoaded('origine') and
+            $this->origine->relationLoaded('payable') and $this->origine->payable->relationLoaded('bien') and
+            $this->origine->payable->bien->relationLoaded('proprietaire');
     }
 
     public function setPending(): void
@@ -74,6 +77,15 @@ class Dette extends Model implements ContractsAuditable
     {
         return $query->where('status', PayableStatus::PAID->value);
     }
+
+    public function scopeSearch(Builder $query, string $search): Builder
+    {
+        return $query->when(!empty($search) and !ctype_space($search), function (Builder $query) use ($search): Builder {
+            return $query->where('code', 'LIKE', "%$search%")
+                ->orWhereHas('origine', fn(Builder $query): Builder => $query->where('code', 'LIKE', "%$search%"));
+        });
+    }
+
 
     public function origine(): MorphTo
     {

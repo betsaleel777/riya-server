@@ -10,6 +10,7 @@ use App\Models\Loyer;
 use App\Models\Paiement;
 use App\Models\Visite;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class DetteController extends Controller
@@ -22,6 +23,21 @@ class DetteController extends Controller
         $this->authorize('viewAny', Dette::class);
         return DetteListResource::collection(Dette::with('origine')->get());
     }
+
+    public function getPaginate(): JsonResource
+    {
+        $this->authorize('viewAny', Dette::class);
+        $dettes = Dette::with('origine')->descending()->paginate(8);
+        return DetteListResource::collection($dettes->withPath('api/dettes/paginate'));
+    }
+
+    public function getSearch(Request $request): JsonResource
+    {
+        $this->authorize('viewAny', Dette::class);
+        $dettes = Dette::with('origine')->descending()->search($request->search)->paginate(8);
+        return DetteListResource::collection($dettes->withPath('api/dettes/search'));
+    }
+
 
     public function getPending(): JsonResource
     {

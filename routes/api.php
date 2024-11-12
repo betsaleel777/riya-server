@@ -59,14 +59,17 @@ Route::get('contrats/active-bail', [ContratController::class, 'getRentProcessing
 Route::get('contrats/active-avance-bail', [ContratController::class, 'getRentAvanceProcessing'])->middleware('auth:sanctum');
 Route::apiResource('contrats', ContratController::class)->middleware('auth:sanctum');
 Route::get('dettes/pending', [DetteController::class, 'getPending'])->middleware('auth:sanctum');
+Route::get('dettes/paginate', [DetteController::class, 'getPaginate'])->middleware('auth:sanctum');
+Route::get('dettes/search', [DetteController::class, 'getSearch'])->middleware('auth:sanctum');
 Route::apiResource('dettes', DetteController::class)->except(['update', 'destroy'])->middleware('auth:sanctum');
 Route::apiResource('paiements', PaiementController::class)->middleware('auth:sanctum');
 Route::get('depenses/pending', [DepenseController::class, 'getPending'])->middleware('auth:sanctum');
 Route::apiResource('depenses', DepenseController::class)->middleware('auth:sanctum');
 Route::resource('societes', SocieteController::class)->except(['create', 'edit', 'destroy', 'show'])->middleware('auth:sanctum');
 Route::get('loyers/pending', [LoyerController::class, 'getPending'])->middleware('auth:sanctum');
+Route::get('loyers/paginate', [LoyerController::class, 'getPaginate'])->middleware('auth:sanctum');
+Route::get('loyers/search', [LoyerController::class, 'getSearch '])->middleware('auth:sanctum');
 Route::get('loyers/last-paid', [LoyerController::class, 'getLastPaid'])->middleware('auth:sanctum');
-Route::get('loyers/pending', [LoyerController::class, 'getPending'])->middleware('auth:sanctum');
 Route::resource('loyers', LoyerController::class)->except(['create', 'edit', 'update', 'destroy'])->middleware('auth:sanctum');
 Route::get('achats/pending', [AchatController::class, 'getPending'])->middleware('auth:sanctum');
 Route::resource('achats', AchatController::class)->except(['update', 'edit', 'create'])->middleware('auth:sanctum');
