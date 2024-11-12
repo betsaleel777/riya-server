@@ -48,14 +48,14 @@ class Dette extends Model implements ContractsAuditable
     public function isVisiteResource(): bool
     {
         return str($this->getOrigine())->explode('\\')[2] === 'Visite' and $this->relationLoaded('origine')
-            and $this->origine->relationLoaded('appartement') and $this->origine->appartement->relationLoaded('proprietaire');
+        and $this->origine->relationLoaded('appartement') and $this->origine->appartement->relationLoaded('proprietaire');
     }
 
     public function isPaiementResource(): bool
     {
         return str($this->getOrigine())->explode('\\')[2] === 'Paiement' and $this->relationLoaded('origine') and
-            $this->origine->relationLoaded('payable') and $this->origine->payable->relationLoaded('bien') and
-            $this->origine->payable->bien->relationLoaded('proprietaire');
+        $this->origine->relationLoaded('payable') and $this->origine->payable->relationLoaded('bien') and
+        $this->origine->payable->bien->relationLoaded('proprietaire');
     }
 
     public function setPending(): void
@@ -81,11 +81,11 @@ class Dette extends Model implements ContractsAuditable
     public function scopeSearch(Builder $query, string $search): Builder
     {
         return $query->when(!empty($search) and !ctype_space($search), function (Builder $query) use ($search): Builder {
-            return $query->where('code', 'LIKE', "%$search%")
+            return $query->whereRaw("DATE_FORMAT(created_at,'%d-%m-%Y') LIKE ?", "$search%")
+                ->orWhere('code', 'LIKE', "%$search%")->orWhere('status', $search)
                 ->orWhereHas('origine', fn(Builder $query): Builder => $query->where('code', 'LIKE', "%$search%"));
         });
     }
-
 
     public function origine(): MorphTo
     {
