@@ -9,6 +9,7 @@ use App\Traits\HasCurrentYearScope;
 use App\Traits\HasResponsible;
 use App\Traits\HasValidableEntityScope;
 use Asantibanez\LaravelEloquentStateMachines\Traits\HasStateMachines;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use OwenIt\Auditing\Auditable;
@@ -30,6 +31,17 @@ class Depense extends Model implements ContractsAuditable
     {
         $this->status()->transitionTo(ValidableEntityStatus::VALID->value);
     }
+
+    public function scopeSearch(Builder $query, string $search): Builder
+    {
+        return $query->when(!empty($search) and !ctype_space($search), function (Builder $query) use ($search): Builder {
+            return $query->whereRaw("DATE_FORMAT(created_at,'%d-%m-%Y') LIKE ?", "$search%")
+                ->orWhere('titre', 'LIKE', "%$search%")
+                ->orWhere('status', $search)
+                ->orWhereHas('type', fn(Builder $query): Builder => $query->where('nom', 'LIKE', "%$search%"));
+        });
+    }
+
 
     public function type(): BelongsTo
     {

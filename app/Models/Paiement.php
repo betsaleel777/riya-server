@@ -10,6 +10,7 @@ use App\Traits\HasResponsible;
 use App\Traits\HasValidableEntityScope;
 use Asantibanez\LaravelEloquentStateMachines\Traits\HasStateMachines;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
@@ -39,6 +40,14 @@ class Paiement extends Model implements ContractsAuditable
     public function setValide(): void
     {
         $this->status()->transitionTo(ValidableEntityStatus::VALID->value);
+    }
+
+    public function scopeSearch(Builder $query, string $search): Builder
+    {
+        return $query->when(!empty($search) and !ctype_space($search), function (Builder $query) use ($search): Builder {
+            return $query->whereRaw("DATE_FORMAT(created_at,'%d-%m-%Y') LIKE ?", "%$search%")
+                ->orWhere('code', 'LIKE', "%$search%")->orWhere('status', $search);
+        });
     }
 
     public function payable(): MorphTo

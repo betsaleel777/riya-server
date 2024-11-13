@@ -10,6 +10,7 @@ use App\Http\Resources\DepenseValidationResource;
 use App\Models\Depense;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class DepenseController extends Controller
@@ -31,6 +32,22 @@ class DepenseController extends Controller
         $depenses = Depense::select('id', 'titre', 'montant', 'type_depense_id', 'created_at')
             ->with(['type' => fn(BelongsTo $query) => $query->select('id', 'nom')])->withResponsible()->pending()->get();
         return DepenseValidationResource::collection($depenses);
+    }
+
+    public function getPaginate(): JsonResource
+    {
+        $this->authorize('viewAny', Depense::class);
+        $depenses = Depense::select('id', 'titre', 'montant', 'type_depense_id', 'created_at', 'status')->with('type:id,nom')->latest()
+            ->paginate(8);
+        return DepenseListResource::collection($depenses->withPath('api/depenses/paginate'));
+    }
+
+    public function getSearch(Request $request): JsonResource
+    {
+        $this->authorize('viewAny', Depense::class);
+        $depenses = Depense::select('id', 'titre', 'montant', 'type_depense_id', 'created_at', 'status')
+            ->with('type:id,nom')->latest()->search($request->search)->paginate(8);
+        return DepenseListResource::collection($depenses->withPath('api/depenses/search'));
     }
 
     /**

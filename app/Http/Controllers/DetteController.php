@@ -27,14 +27,14 @@ class DetteController extends Controller
     public function getPaginate(): JsonResource
     {
         $this->authorize('viewAny', Dette::class);
-        $dettes = Dette::with('origine')->descending()->paginate(8);
+        $dettes = Dette::latest()->with('origine')->paginate(8);
         return DetteListResource::collection($dettes->withPath('api/dettes/paginate'));
     }
 
     public function getSearch(Request $request): JsonResource
     {
         $this->authorize('viewAny', Dette::class);
-        $dettes = Dette::with('origine')->descending()->search($request->search)->paginate(8);
+        $dettes = Dette::latest()->with('origine')->search($request->search)->paginate(8);
         return DetteListResource::collection($dettes->withPath('api/dettes/search'));
     }
 

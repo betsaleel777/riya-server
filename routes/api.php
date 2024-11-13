@@ -62,8 +62,12 @@ Route::get('dettes/pending', [DetteController::class, 'getPending'])->middleware
 Route::get('dettes/paginate', [DetteController::class, 'getPaginate'])->middleware('auth:sanctum');
 Route::get('dettes/search', [DetteController::class, 'getSearch'])->middleware('auth:sanctum');
 Route::apiResource('dettes', DetteController::class)->except(['update', 'destroy'])->middleware('auth:sanctum');
+Route::get('paiements/paginate', [PaiementController::class, 'getPaginate'])->middleware('auth:sanctum');
+Route::get('paiements/search', [PaiementController::class, 'getSearch'])->middleware('auth:sanctum');
 Route::apiResource('paiements', PaiementController::class)->middleware('auth:sanctum');
 Route::get('depenses/pending', [DepenseController::class, 'getPending'])->middleware('auth:sanctum');
+Route::get('depenses/paginate', [DepenseController::class, 'getPaginate'])->middleware('auth:sanctum');
+Route::get('depenses/search', [DepenseController::class, 'getSearch'])->middleware('auth:sanctum');
 Route::apiResource('depenses', DepenseController::class)->middleware('auth:sanctum');
 Route::resource('societes', SocieteController::class)->except(['create', 'edit', 'destroy', 'show'])->middleware('auth:sanctum');
 Route::get('loyers/pending', [LoyerController::class, 'getPending'])->middleware('auth:sanctum');

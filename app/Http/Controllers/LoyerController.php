@@ -36,7 +36,7 @@ class LoyerController extends Controller
     public function getPaginate(): JsonResource
     {
         $this->authorize('viewAny', Loyer::class);
-        $loyers = Loyer::withExists(['paiements as pending' => fn(Builder $query): Builder => $query->pending()])->descending()
+        $loyers = Loyer::withExists(['paiements as pending' => fn(Builder $query): Builder => $query->pending()])->latest()
             ->withSum('paiements as paid', 'montant')
             ->with('client:personnes.id,personnes.nom_complet', 'bien:appartements.id,appartements.nom')
             ->paginate(8);
@@ -46,8 +46,7 @@ class LoyerController extends Controller
     public function getSearch(Request $request): JsonResource
     {
         $this->authorize('viewAny', Loyer::class);
-        // rechercher selon la date
-        $loyers = Loyer::withExists(['paiements as pending' => fn(Builder $query): Builder => $query->pending()])->descending()
+        $loyers = Loyer::withExists(['paiements as pending' => fn(Builder $query): Builder => $query->pending()])->latest()
             ->withSum('paiements as paid', 'montant')
             ->with('client:personnes.id,personnes.nom_complet', 'bien:appartements.id,appartements.nom')
             ->search($request->search)->paginate(8);

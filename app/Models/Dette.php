@@ -22,7 +22,7 @@ use OwenIt\Auditing\Contracts\Auditable as ContractsAuditable;
  */
 class Dette extends Model implements ContractsAuditable
 {
-    use HasStateMachines, HasResponsible, HasCurrentYearScope, HasCountDateFilterScope, HasDescendingScope, Auditable;
+    use HasStateMachines, HasResponsible, HasCurrentYearScope, HasCountDateFilterScope, Auditable;
 
     protected $fillable = ['montant'];
     protected $casts = ['montant' => 'integer'];
@@ -48,14 +48,14 @@ class Dette extends Model implements ContractsAuditable
     public function isVisiteResource(): bool
     {
         return str($this->getOrigine())->explode('\\')[2] === 'Visite' and $this->relationLoaded('origine')
-        and $this->origine->relationLoaded('appartement') and $this->origine->appartement->relationLoaded('proprietaire');
+            and $this->origine->relationLoaded('appartement') and $this->origine->appartement->relationLoaded('proprietaire');
     }
 
     public function isPaiementResource(): bool
     {
         return str($this->getOrigine())->explode('\\')[2] === 'Paiement' and $this->relationLoaded('origine') and
-        $this->origine->relationLoaded('payable') and $this->origine->payable->relationLoaded('bien') and
-        $this->origine->payable->bien->relationLoaded('proprietaire');
+            $this->origine->relationLoaded('payable') and $this->origine->payable->relationLoaded('bien') and
+            $this->origine->payable->bien->relationLoaded('proprietaire');
     }
 
     public function setPending(): void

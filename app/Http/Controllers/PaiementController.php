@@ -11,19 +11,34 @@ use App\Models\Loyer;
 use App\Models\Paiement;
 use App\Repositories\PaiementRepository;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Log;
 
 class PaiementController extends Controller
 {
-    public function __construct(private PaiementRepository $paiementRepository)
-    {
-    }
+    public function __construct(private PaiementRepository $paiementRepository) {}
 
     public function index(): JsonResource
     {
         $this->authorize('viewAny', Paiement::class);
         return PaiementResource::collection(Paiement::get());
     }
+
+    public function getPaginate(): JsonResource
+    {
+        $this->authorize('viewAny', Paiement::class);
+        $paiements = Paiement::latest()->paginate(8);
+        return PaiementResource::collection($paiements->withPath('api/paiements/paginate'));
+    }
+
+    public function getSearch(Request $request): JsonResource
+    {
+        $this->authorize('viewAny', Paiement::class);
+        $paiements = Paiement::latest()->search($request->search)->paginate(8);
+        return PaiementResource::collection($paiements->withPath('api/paiements/search'));
+    }
+
 
     public function update(PaiementRequest $request, Paiement $paiement): JsonResponse
     {
@@ -55,10 +70,16 @@ class PaiementController extends Controller
     {
         $this->authorize('viewAny', Paiement::class);
         $paiement->loadMorph('payable', [
-            Loyer::class => ['client:personnes.id,nom_complet,telephone,quartier,ville',
-                'bien:appartements.id,nom,montant_location,quartier'],
-            Achat::class => ['personne:id,nom_complet,telephone,quartier,ville', 'bien:id,nom,cout_achat,superficie,quartier',
-                'contrat:id,created_at,commission,debut', 'paiements:id,montant,payable_id,payable_type,created_at'],
+            Loyer::class => [
+                'client:personnes.id,nom_complet,telephone,quartier,ville',
+                'bien:appartements.id,nom,montant_location,quartier'
+            ],
+            Achat::class => [
+                'personne:id,nom_complet,telephone,quartier,ville',
+                'bien:id,nom,cout_achat,superficie,quartier',
+                'contrat:id,created_at,commission,debut',
+                'paiements:id,montant,payable_id,payable_type,created_at'
+            ],
         ]);
         return PaiementResource::make($paiement);
     }
