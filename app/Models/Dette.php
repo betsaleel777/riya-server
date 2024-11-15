@@ -45,6 +45,17 @@ class Dette extends Model implements ContractsAuditable
         }
     }
 
+    public function getOrigineId(): string
+    {
+        if ($this->exists) {
+            $this->loadMissing('origine');
+            return match ($this->origine_type) {
+                'App\Models\Paiement' => $this->origine->payable_id,
+                default => $this->origine_id,
+            };
+        }
+    }
+
     public function isVisiteResource(): bool
     {
         return str($this->getOrigine())->explode('\\')[2] === 'Visite' and $this->relationLoaded('origine')
