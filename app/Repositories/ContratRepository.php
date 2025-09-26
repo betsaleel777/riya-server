@@ -11,6 +11,7 @@ use App\Models\Achat;
 use App\Models\Contrat;
 use App\Models\Paiement;
 use App\Models\Visite;
+use RuntimeException;
 
 class ContratRepository implements ContratRepositoryInterface
 {
@@ -18,15 +19,25 @@ class ContratRepository implements ContratRepositoryInterface
     {
     }
 
-    public function getByType(int $operationId, string $type): Visite|Achat
+    public function getByType(int $operationId, string $type): Visite | Achat
     {
-        return $type === ContratOperationType::VISITE->value ? Visite::find($operationId) : Achat::find($operationId);
+        return match ($type) {
+            ContratOperationType::VISITE->value => Visite::with('appartement')->find($operationId),
+            ContratOperationType::ACHAT->value => Achat::with('bien')->find($operationId),
+            default => throw new RuntimeException('Operation type not found'),
+        };
     }
 
     public function store(ContratRequest $request): void
     {
         $contrat = Contrat::make($request->all());
         $operation = $this->getByType($request->operation_id, $request->operation_type);
+        if ($operation instanceof Visite) {
+            $contrat->montant_location = $operation->appartement->montant_location;
+        }
+        if ($operation instanceof Achat) {
+            $contrat->cout_achat = $operation->bien->cout_achat;
+        }
         $contrat->operation()->associate($operation)->save();
         if ($operation instanceof Visite) {
             ContratBailCreated::dispatch($contrat, $operation);

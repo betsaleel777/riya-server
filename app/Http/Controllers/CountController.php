@@ -77,7 +77,7 @@ class CountController extends Controller
     public function chiffres(CountDateRequest $request): JsonResponse
     {
         $request->validated();
-        return response()->json(
-            $this->visiteRepository::amoutDateFilter($request->query('date')) + Paiement::validated()->countDateFilter($request->query('date'))->sum('montant') - Dette::currentYear()->paid()->countDateFilter($request->query('date'))->sum('montant'));
+        $this->visiteRepository::amoutDateFilter($request->query('date')) + Paiement::validated()->countDateFilter($request->query('date'))->sum('montant') - Dette::currentYear()->paid()->countDateFilter($request->query('date'))->sum('montant');
+        return response()->json();
     }
 }

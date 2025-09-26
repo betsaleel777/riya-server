@@ -68,7 +68,7 @@ class Visite extends Model implements ContractsAuditable
         }
     }
 
-    public function setExpiration()
+    public function setExpiration(): void
     {
         $this->attributes['date_expiration'] = Carbon::now()->addMonth(3);
     }

@@ -20,8 +20,8 @@ use OwenIt\Auditing\Contracts\Auditable as ContractsAuditable;
 class Contrat extends Model implements ContractsAuditable
 {
     use Auditable, HasStateMachines;
-    protected $fillable = ['debut', 'fin', 'commission'];
-    protected $casts = ['commission' => 'integer', 'debut' => 'date', 'fin' => 'date'];
+    protected $fillable = ['debut', 'fin', 'commission', 'cout_achat', 'montant_location'];
+    protected $casts = ['commission' => 'integer', 'debut' => 'date', 'fin' => 'date', 'cout_achat' => 'integer', 'montant_location' => 'integer'];
     protected $dates = ['created_at'];
 
     public $stateMachines = [
@@ -71,7 +71,11 @@ class Contrat extends Model implements ContractsAuditable
 
     public function scopeWhereAvanceProcessing(Builder $query): Builder
     {
-        return $query->rentProcessing()->join('visites as v', 'operation_id', '=', 'v.id')->where('operation_type', 'App\Models\Visite')->join('avances as a', 'a.visite_id', '=', 'v.id')->whereRaw('CURRENT_DATE >= DATE_ADD(debut,INTERVAL a.mois MONTH)');
+        return $query->rentProcessing()
+            ->join('visites as v', 'operation_id', '=', 'v.id')
+            ->where('operation_type', 'App\Models\Visite')
+            ->join('avances as a', 'a.visite_id', '=', 'v.id')
+            ->whereRaw('CURRENT_DATE >= DATE_ADD(debut,INTERVAL a.mois MONTH)');
     }
 
     public function scopeUptodate(Builder $query): Builder

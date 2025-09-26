@@ -25,6 +25,8 @@ class ContratRequest extends FormRequest
             'debut' => 'required',
             'operation_id' => 'required',
             'commission' => 'required|numeric',
+            'cout_achat' => 'nullable|numeric|required_without:montant_location',
+            'montant_location' => 'nullable|numeric|required_without:cout_achat',
         ];
     }
 }
