@@ -1363,16 +1363,32 @@ class ContractSeeder extends Seeder
                         return;
                     }
 
+                    // Vérifier si un contrat en cours existe déjà pour cette personne et cet appartement
+                    $contratExistant = Contrat::whereHasMorph('operation', [Visite::class], function ($query) use ($personne, $appartement) {
+                        $query->where('personne_id', $personne->id)
+                            ->where('appartement_id', $appartement->id);
+                    })->where('etat', 'en cours')->exists();
+
+                    if ($contratExistant) {
+                        $this->command->warn("⚠ Ligne {$index}: Contrat en cours déjà existant - Client: {$personne->nom_complet}, Bien: {$appartement->reference} (ignoré)");
+                        $errorCount++;
+                        return;
+                    }
+
                     // 2. Calculs
                     $fraisExact = $row['FRAIS_DAGENCE'] / $appartement->montant_location;
                     $cautionExact = $row['CAUTION'] / $appartement->montant_location;
 
-                    $moisFrais = (int)$fraisExact;
-                    $moisCaution = (int)$cautionExact;
+                    // Arrondir vers le haut (ceil) pour les mois
+                    $moisFrais = (int)ceil($fraisExact);
+                    $moisCaution = (int)ceil($cautionExact);
 
-                    // Calculer les parties décimales (ajustements)
-                    $ajustementFrais = ($fraisExact - $moisFrais) * $appartement->montant_location;
-                    $ajustementCaution = ($cautionExact - $moisCaution) * $appartement->montant_location;
+                    // Calculer les ajustements (différence entre le montant réel et le montant arrondi)
+                    $montantFraisCalcule = $moisFrais * $appartement->montant_location;
+                    $montantCautionCalcule = $moisCaution * $appartement->montant_location;
+
+                    $ajustementFrais = $montantFraisCalcule - $row['FRAIS_DAGENCE'];
+                    $ajustementCaution = $montantCautionCalcule - $row['CAUTION'];
                     $montantAjustementTotal = (int)($ajustementFrais + $ajustementCaution);
 
                     $commission = (int)($row['POURCENTAGE_PROPRIETAIRE'] * 100);
