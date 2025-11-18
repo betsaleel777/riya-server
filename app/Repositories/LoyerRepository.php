@@ -15,9 +15,8 @@ class LoyerRepository implements LoyerRepositoryInterface
 
     private function prepareCreate(Contrat $contrat): Loyer
     {
-        $contrat->loadMissing('operation.appartement');
         $loyer = Loyer::make([
-            'montant' => $contrat->operation->appartement->montant_location,
+            'montant' => $contrat->montant_location,
             'contrat_id' => $contrat->id,
         ]);
         $loyer->genererCode();
@@ -43,8 +42,7 @@ class LoyerRepository implements LoyerRepositoryInterface
 
     public function checkUptodate(Loyer $loyer): bool
     {
-        $bien = $loyer->loadMissing('bien')->bien;
-        return $loyer->paiements->isEmpty() ?: $loyer->paiements->sum('montant') >= $bien->montant_location;
+        return $loyer->paiements->isEmpty() ?: $loyer->paiements->sum('montant') >= $loyer->montant;
     }
 
     public function cascadeLoyerUptodate(Loyer $loyer): void
