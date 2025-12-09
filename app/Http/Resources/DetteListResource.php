@@ -20,7 +20,7 @@ class DetteListResource extends JsonResource
             'status' => $this->resource->status,
             'origine_id' => $this->getOrigineId(),
             'created_at' => $this->resource->created_at->format('d-m-Y'),
-            'origine_type' => str($this->getOrigine())->explode('\\')[2],
+            'origine_type' => class_basename($this->getOrigine()),
             'origine_code' => $this->when($this->relationLoaded('origine'), $this->origine->code),
         ];
     }

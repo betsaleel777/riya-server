@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ValidableEntityStatus;
+use App\Scopes\OrderByIdDescScope;
 use App\StateMachines\ValidableEntityStateMachine;
 use App\Traits\HasCountDateFilterScope;
 use App\Traits\HasCurrentYearScope;
@@ -27,6 +28,16 @@ class Depense extends Model implements ContractsAuditable
     protected $casts = ['montant' => 'integer'];
     public $stateMachines = ['status' => ValidableEntityStateMachine::class];
 
+    /**
+     * The "booted" method of the model.
+     *
+     * @return void
+     */
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new OrderByIdDescScope);
+    }
+
     public function setValide(): void
     {
         $this->status()->transitionTo(ValidableEntityStatus::VALID->value);
@@ -36,9 +47,9 @@ class Depense extends Model implements ContractsAuditable
     {
         return $query->when(!empty($search) and !ctype_space($search), function (Builder $query) use ($search): Builder {
             return $query->whereRaw("DATE_FORMAT(created_at,'%d-%m-%Y') LIKE ?", "$search%")
-                ->orWhere('titre', 'LIKE', "%$search%")
+                ->orWhereLike('titre', $search)
                 ->orWhere('status', $search)
-                ->orWhereHas('type', fn(Builder $query): Builder => $query->where('nom', 'LIKE', "%$search%"));
+                ->orWhereHas('type', fn(Builder $query): Builder => $query->whereLike('nom', $search));
         });
     }
 

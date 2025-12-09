@@ -9,7 +9,7 @@ use App\Repositories\LoyerRepository;
 
 class CreateRent
 {
-    public function __invoke()
+    public function __invoke(): void
     {
         //recupérer la liste des contrats en cours
         $contrats = Contrat::with('operation.appartement')->rentProcessing()->get();

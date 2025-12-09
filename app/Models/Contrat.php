@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\ContratState;
 use App\Enums\ContratStatus;
+use App\Scopes\OrderByIdDescScope;
 use App\StateMachines\ContratStateMachine;
 use App\StateMachines\ContratStatusStateMachine;
 use Asantibanez\LaravelEloquentStateMachines\Traits\HasStateMachines;
@@ -20,14 +21,36 @@ use OwenIt\Auditing\Contracts\Auditable as ContractsAuditable;
 class Contrat extends Model implements ContractsAuditable
 {
     use Auditable, HasStateMachines;
-    protected $fillable = ['debut', 'fin', 'commission', 'cout_achat', 'montant_location'];
-    protected $casts = ['commission' => 'integer', 'debut' => 'date', 'fin' => 'date', 'cout_achat' => 'integer', 'montant_location' => 'integer'];
+    protected $fillable = [
+        'debut',
+        'fin',
+        'commission',
+        'cout_achat',
+        'montant_location'
+    ];
+    protected $casts = [
+        'commission' => 'integer',
+        'debut' => 'date',
+        'fin' => 'date',
+        'cout_achat' => 'integer',
+        'montant_location' => 'integer'
+    ];
     protected $dates = ['created_at'];
 
     public $stateMachines = [
         'etat' => ContratStateMachine::class,
         'status' => ContratStatusStateMachine::class,
     ];
+
+    /**
+     * The "booted" method of the model.
+     *
+     * @return void
+     */
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new OrderByIdDescScope);
+    }
 
     public function encaissable(): bool
     {

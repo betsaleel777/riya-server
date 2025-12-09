@@ -13,7 +13,6 @@ use App\Repositories\PaiementRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\Log;
 
 class PaiementController extends Controller
 {
@@ -72,7 +71,8 @@ class PaiementController extends Controller
         $paiement->loadMorph('payable', [
             Loyer::class => [
                 'client:personnes.id,nom_complet,telephone,quartier,ville',
-                'bien:appartements.id,nom,montant_location,quartier'
+                'bien:appartements.id,nom,quartier',
+                'contrat:contrats.id,contrats.montant_location'
             ],
             Achat::class => [
                 'personne:id,nom_complet,telephone,quartier,ville',

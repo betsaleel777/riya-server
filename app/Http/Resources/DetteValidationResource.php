@@ -23,7 +23,7 @@ class DetteValidationResource extends JsonResource
             'code' => $this->whenNotNull($this->resource->code),
             'montant' => $this->whenNotNull($this->resource->montant),
             'created_at' => $this->whenNotNull($this->resource->created_at?->format('d-m-Y')),
-            'origine' => $this->whenNotNull(str($this->getOrigine())->explode('\\')[2]),
+            'origine' => $this->when($this->getOrigine(), class_basename($this->getOrigine())),
             'audit' => AuditResource::make($this->whenLoaded('audit')),
         ];
     }

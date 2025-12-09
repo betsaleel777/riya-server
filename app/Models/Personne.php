@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\PersonneCiviliteEnum;
+use App\Scopes\OrderByIdDescScope;
 use App\Traits\HasResponsible;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -23,9 +24,22 @@ class Personne extends Model implements HasMedia, ContractsAuditable
 {
     use Auditable, HasResponsible, InteractsWithMedia;
     protected $fillable = [
-        'code', 'email', 'nom_complet', 'cni', 'date_naissance',
-        'lieu_naissance', 'nationalite', 'telephone', 'ville', 'quartier',
-        'pays', 'animal', 'fonctions', 'photo_piece', 'civilite', 'type_client_id',
+        'code',
+        'email',
+        'nom_complet',
+        'cni',
+        'date_naissance',
+        'lieu_naissance',
+        'nationalite',
+        'telephone',
+        'ville',
+        'quartier',
+        'pays',
+        'animal',
+        'fonctions',
+        'photo_piece',
+        'civilite',
+        'type_client_id',
     ];
     protected $dates = ['created_at'];
 
@@ -33,6 +47,16 @@ class Personne extends Model implements HasMedia, ContractsAuditable
         'civilite' => PersonneCiviliteEnum::class,
         'date_naissance' => 'date',
     ];
+
+    /**
+     * The "booted" method of the model.
+     *
+     * @return void
+     */
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new OrderByIdDescScope);
+    }
 
     public function genererCode(): void
     {

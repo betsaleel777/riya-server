@@ -4,8 +4,8 @@ namespace App\Models;
 
 use App\Enums\PayableStatus;
 use App\Enums\ValidableEntityStatus;
+use App\Scopes\OrderByIdDescScope;
 use App\StateMachines\LoyerStatusStateMachine;
-use App\Traits\HasDescendingScope;
 use Asantibanez\LaravelEloquentStateMachines\Traits\HasStateMachines;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -33,6 +33,16 @@ class Loyer extends Model implements ContractsAuditable
     public $stateMachines = [
         'status' => LoyerStatusStateMachine::class,
     ];
+
+    /**
+     * The "booted" method of the model.
+     *
+     * @return void
+     */
+    protected static function booted()
+    {
+        static::addGlobalScope(new OrderByIdDescScope);
+    }
 
     public function genererCode(): void
     {

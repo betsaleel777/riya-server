@@ -32,8 +32,8 @@ class PersonneResource extends JsonResource
             'created_at' => $this->whenNotNull($this->created_at?->format('d-m-Y')),
             'type_client_id' => $this->whenNotNull($this->type_client_id),
             'type' => $this->whenLoaded('type', fn() => $this->type),
-            'piece' => $this->whenLoaded('piece', fn() => url($this->piece->getUrl())),
-            'avatar' => $this->whenLoaded('avatar', fn() => url($this->avatar->getUrl())),
+            'piece' => $this->whenLoaded('piece', fn() => $this->piece->getUrl()),
+            'avatar' => $this->whenLoaded('avatar', fn() => $this->avatar->getUrl()),
         ];
     }
 }

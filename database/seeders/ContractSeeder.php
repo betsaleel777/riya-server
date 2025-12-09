@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\{Visite, Frais, Caution, Avance, Personne, Proprietaire, Appartement, Depense, TypeDepense, Contrat};
 use App\Enums\ValidableEntityStatus;
+use App\Events\ContratBailCreated;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
@@ -1420,9 +1421,10 @@ class ContractSeeder extends Seeder
 
                     $contrat->operation()->associate($visite)->save();
                     $visite->setValide();
+                    $appartement->setBusy();
 
                     // Déclencher l'événement pour créer la dette
-                    \App\Events\ContratBailCreated::dispatch($contrat, $visite);
+                    ContratBailCreated::dispatch($contrat, $visite);
 
                     // 6. Créer la dépense d'ajustement si nécessaire
                     if ($montantAjustementTotal > 0) {

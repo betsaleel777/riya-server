@@ -8,6 +8,7 @@ use App\Http\Resources\SocieteResource;
 use App\Models\Societe;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Str;
 
 class SocieteController extends Controller
 {
@@ -28,7 +29,9 @@ class SocieteController extends Controller
         $request->validated();
         $societe = Societe::make($request->all());
         $societe->save();
-        $societe->addMediaFromRequest('image')->toMediaCollection('logo');
+        $societe->addMediaFromRequest('image')
+            ->sanitizingFileName(fn($fileName) => Str::slug(pathinfo($fileName, PATHINFO_FILENAME)) . '.' . pathinfo($fileName, PATHINFO_EXTENSION))
+            ->toMediaCollection('logo');
         return response()->json("La société $societe->raison_sociale a été enregistré avec succès.");
     }
 
@@ -40,7 +43,11 @@ class SocieteController extends Controller
         $this->authorize('update', Societe::class);
         $request->validated();
         $societe->update($request->all());
-        if ($request->hasFile('image')) {$societe->addMediaFromRequest('image')->toMediaCollection('logo');}
+        if ($request->hasFile('image')) {
+            $societe->addMediaFromRequest('image')
+                ->sanitizingFileName(fn($fileName) => Str::slug(pathinfo($fileName, PATHINFO_FILENAME)) . '.' . pathinfo($fileName, PATHINFO_EXTENSION))
+                ->toMediaCollection('logo');
+        }
         return response()->json("Les informations de la société ont bien été modifiés.");
     }
 }

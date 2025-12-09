@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ValidableEntityStatus;
+use App\Scopes\OrderByIdDescScope;
 use App\StateMachines\ValidableEntityStateMachine;
 use App\Traits\HasCountDateFilterScope;
 use App\Traits\HasCurrentYearScope;
@@ -32,6 +33,16 @@ class Paiement extends Model implements ContractsAuditable
         'status' => ValidableEntityStateMachine::class,
     ];
 
+    /**
+     * The "booted" method of the model.
+     *
+     * @return void
+     */
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new OrderByIdDescScope);
+    }
+
     public function genererCode(string $prefix): void
     {
         $this->attributes['code'] = $prefix . Str::upper(Str::random(3)) . Carbon::now()->format('y');
@@ -46,7 +57,7 @@ class Paiement extends Model implements ContractsAuditable
     {
         return $query->when(!empty($search) and !ctype_space($search), function (Builder $query) use ($search): Builder {
             return $query->whereRaw("DATE_FORMAT(created_at,'%d-%m-%Y') LIKE ?", "%$search%")
-                ->orWhere('code', 'LIKE', "%$search%")->orWhere('status', $search);
+                ->orWhereLike('code', $search)->orWhere('status', $search);
         });
     }
 

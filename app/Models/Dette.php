@@ -3,10 +3,10 @@
 namespace App\Models;
 
 use App\Enums\PayableStatus;
+use App\Scopes\OrderByIdDescScope;
 use App\StateMachines\DetteStatusStateMachine;
 use App\Traits\HasCountDateFilterScope;
 use App\Traits\HasCurrentYearScope;
-use App\Traits\HasDescendingScope;
 use App\Traits\HasResponsible;
 use Asantibanez\LaravelEloquentStateMachines\Traits\HasStateMachines;
 use Carbon\Carbon;
@@ -28,6 +28,16 @@ class Dette extends Model implements ContractsAuditable
     protected $casts = ['montant' => 'integer'];
     protected $dates = ['created_at'];
     public $stateMachines = ['status' => DetteStatusStateMachine::class];
+
+    /**
+     * The "booted" method of the model.
+     *
+     * @return void
+     */
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new OrderByIdDescScope);
+    }
 
     public function genererCode(): void
     {
@@ -58,13 +68,13 @@ class Dette extends Model implements ContractsAuditable
 
     public function isVisiteResource(): bool
     {
-        return str($this->getOrigine())->explode('\\')[2] === 'Visite' and $this->relationLoaded('origine')
+        return class_basename($this->getOrigine()) === 'Visite' and $this->relationLoaded('origine')
             and $this->origine->relationLoaded('appartement') and $this->origine->appartement->relationLoaded('proprietaire');
     }
 
     public function isPaiementResource(): bool
     {
-        return str($this->getOrigine())->explode('\\')[2] === 'Paiement' and $this->relationLoaded('origine') and
+        return class_basename($this->getOrigine()) === 'Paiement' and $this->relationLoaded('origine') and
             $this->origine->relationLoaded('payable') and $this->origine->payable->relationLoaded('bien') and
             $this->origine->payable->bien->relationLoaded('proprietaire');
     }
@@ -93,8 +103,9 @@ class Dette extends Model implements ContractsAuditable
     {
         return $query->when(!empty($search) and !ctype_space($search), function (Builder $query) use ($search): Builder {
             return $query->whereRaw("DATE_FORMAT(created_at,'%d-%m-%Y') LIKE ?", "$search%")
-                ->orWhere('code', 'LIKE', "%$search%")->orWhere('status', $search)
-                ->orWhereHas('origine', fn(Builder $query): Builder => $query->where('code', 'LIKE', "%$search%"));
+                ->orWhere('status', $search)
+                ->orWhereLike('code', $search)
+                ->orWhereHas('origine', fn(Builder $query): Builder => $query->whereLike('code', $search));
         });
     }
 

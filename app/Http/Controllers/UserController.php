@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
@@ -33,7 +34,9 @@ class UserController extends Controller
         $user->password = Hash::make($request->password);
         $user->save();
         $user->assignRole(explode(',', $request->roles));
-        $user->addMediaFromRequest('image')->toMediaCollection('photo');
+        $user->addMediaFromRequest('image')
+            ->sanitizingFileName(fn($fileName) => Str::slug(pathinfo($fileName, PATHINFO_FILENAME)) . '.' . pathinfo($fileName, PATHINFO_EXTENSION))
+            ->toMediaCollection('photo');
         return response()->json("L'utilisateur $user->name a été crée avec succès.");
     }
 
@@ -61,7 +64,9 @@ class UserController extends Controller
                 $user->save();
                 $user->syncRoles(explode(',', $request->roles));
                 if ($request->hasFile('image')) {
-                    $user->addMediaFromRequest('image')->toMediaCollection('photo');
+                    $user->addMediaFromRequest('image')
+                        ->sanitizingFileName(fn($fileName) => Str::slug(pathinfo($fileName, PATHINFO_FILENAME)) . '.' . pathinfo($fileName, PATHINFO_EXTENSION))
+                        ->toMediaCollection('photo');
                 }
                 return response()->json('Utilisateur modifié avec succès.');
             } else {
@@ -73,7 +78,9 @@ class UserController extends Controller
             $user->save();
             $user->syncRoles(explode(',', $request->roles));
             if ($request->hasFile('image')) {
-                $user->addMediaFromRequest('image')->toMediaCollection('photo');
+                $user->addMediaFromRequest('image')
+                    ->sanitizingFileName(fn($fileName) => Str::slug(pathinfo($fileName, PATHINFO_FILENAME)) . '.' . pathinfo($fileName, PATHINFO_EXTENSION))
+                    ->toMediaCollection('photo');
             }
             return response()->json('Utilisateur modifié avec succès.');
         }

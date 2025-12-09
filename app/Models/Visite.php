@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\AvanceStatus;
 use App\Enums\ValidableEntityStatus;
+use App\Scopes\OrderByIdDescScope;
 use App\StateMachines\ValidableEntityStateMachine;
 use App\Traits\HasCountDateFilterScope;
 use App\Traits\HasCurrentYearScope;
@@ -33,6 +34,16 @@ class Visite extends Model implements ContractsAuditable
         'status' => ValidableEntityStateMachine::class,
     ];
 
+    /**
+     * The "booted" method of the model.
+     *
+     * @return void
+     */
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new OrderByIdDescScope);
+    }
+
     public function statusAvance(): string
     {
         $this->loadMissing('contrat');
@@ -42,7 +53,7 @@ class Visite extends Model implements ContractsAuditable
         if ($this->exists() and !empty($this->contrat)) {
             $this->loadMissing('avance');
             return Carbon::now()->isBefore($this->contrat->debut->addMonth($this->avance->mois)) ?
-            AvanceStatus::INUSE->value : AvanceStatus::EXHAUSTED->value;
+                AvanceStatus::INUSE->value : AvanceStatus::EXHAUSTED->value;
         }
     }
 
@@ -64,7 +75,7 @@ class Visite extends Model implements ContractsAuditable
             $this->loadMissing('caution');
             $this->loadMissing('appartement');
             return $this->attributes['frais_dossier'] + $this->attributes['montant'] +
-            ($this->avance?->mois + $this->frais?->mois + $this->caution?->mois) * $this->appartement->montant_location;
+                ($this->avance?->mois + $this->frais?->mois + $this->caution?->mois) * $this->appartement->montant_location;
         }
     }
 

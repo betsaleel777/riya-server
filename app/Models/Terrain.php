@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Scopes\OrderByIdDescScope;
 use App\StateMachines\TerrainStateMachine;
 use App\Traits\HasProperty;
 use App\Traits\HasResponsible;
@@ -21,9 +22,21 @@ class Terrain extends Model implements ContractsAuditable
     use Auditable, HasResponsible, HasStateMachines, HasProperty;
 
     protected $fillable = [
-        'reference', 'nom', 'ville', 'quartier', 'pays', 'montant_investit', 'cout_achat',
-        'montant_location', 'type_terrain_id', 'proprietaire_id', 'arreter_approbation',
-        'document_cession', 'titre_foncier', 'attestation_villageoise', 'superficie',
+        'reference',
+        'nom',
+        'ville',
+        'quartier',
+        'pays',
+        'montant_investit',
+        'cout_achat',
+        'montant_location',
+        'type_terrain_id',
+        'proprietaire_id',
+        'arreter_approbation',
+        'document_cession',
+        'titre_foncier',
+        'attestation_villageoise',
+        'superficie',
     ];
     protected $casts = [
         'attestation_villageoise' => 'boolean',
@@ -41,6 +54,16 @@ class Terrain extends Model implements ContractsAuditable
     ];
 
     protected $dates = ['created_at'];
+
+    /**
+     * The "booted" method of the model.
+     *
+     * @return void
+     */
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new OrderByIdDescScope);
+    }
 
     public function genererCode(): void
     {
