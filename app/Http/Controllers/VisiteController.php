@@ -8,12 +8,17 @@ use App\Http\Resources\VisiteResource;
 use App\Http\Resources\VisiteValidationResource;
 use App\Interfaces\ContratRepositoryInterface;
 use App\Interfaces\VisiteRepositoryInterface;
+use App\Models\Dette;
+use App\Models\Loyer;
+use App\Models\Paiement;
 use App\Models\Visite;
+use Exception;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\DB;
 
 class VisiteController extends Controller
 {
@@ -87,8 +92,33 @@ class VisiteController extends Controller
     public function destroy(Visite $visite)
     {
         $this->authorize('delete', Visite::class);
-        $visite->delete();
-        return response()->json("La visite $visite->code a été supprimée avec succès.");
+
+        DB::beginTransaction();
+        try {
+            $visite->loadMissing('contrat', 'appartement', 'dette');
+            $code = $visite->code;
+            if ($visite->contrat) {
+                $contrat = $visite->contrat;
+                $loyers = Loyer::where('contrat_id', $contrat->id)->get();
+                foreach ($loyers as $loyer) {
+                    Dette::where('origine_type', Loyer::class)->where('origine_id', $loyer->id)->delete();
+                    Paiement::where('payable_type', Loyer::class)->where('payable_id', $loyer->id)->delete();
+                }
+                Loyer::where('contrat_id', $contrat->id)->delete();
+                $contrat->delete();
+            }
+            optional($visite->dette)->delete();
+            optional($visite->appartement)->setFree();
+            $visite->delete();
+            DB::commit();
+            return response()->json("La visite $code a été supprimée avec succès.");
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Erreur lors de la suppression de la visite',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     public function patchFraisDossier(Request $request, Visite $visite): JsonResponse

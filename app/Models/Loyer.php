@@ -67,7 +67,7 @@ class Loyer extends Model implements ContractsAuditable
 
     public function scopeCurrentMonth(Builder $query): Builder
     {
-        return $query->whereMonth('created_at', now()->format('m'));
+        return $query->whereYear('created_at', now()->year)->whereMonth('created_at', now()->month);
     }
 
     public function scopeSearch(Builder $query, string $search): Builder

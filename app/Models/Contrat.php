@@ -56,6 +56,9 @@ class Contrat extends Model implements ContractsAuditable
     {
         if ($this->exists()) {
             $this->relationLoaded('operation') and $this->operation->relationLoaded('appartement') ?: $this->load(['operation' => ['avance', 'appartement']]);
+            if (!$this->operation || !$this->operation->avance) {
+                return false;
+            }
             return Carbon::now()->greaterThanOrEqualTo($this->debut->addMonth($this->operation->avance->mois));
         } else {
             return false;
