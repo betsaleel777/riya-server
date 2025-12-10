@@ -24,7 +24,12 @@ class AchatResource extends JsonResource
             'created_at' => $this->whenNotNull($this->created_at?->format('d-m-Y')),
             'total' => $this->whenNotNull((int) $this->total, 0),
             'contractible' => $this->contractible(),
-            'reste' => $this->whenLoaded('bien', fn() => $this->bien->cout_achat - $this->total),
+            'reste' => $this->whenLoaded('bien', function () {
+                $coutAchat = $this->relationLoaded('contrat') && $this->contrat?->cout_achat
+                    ? $this->contrat->cout_achat
+                    : $this->bien->cout_achat;
+                return $coutAchat - ($this->total ?? 0);
+            }),
             'personne' => PersonneResource::make($this->whenLoaded('personne')),
             'paiements' => PaiementResource::collection($this->whenLoaded('paiements')),
             'audit' => AuditResource::make($this->whenLoaded('audit')),

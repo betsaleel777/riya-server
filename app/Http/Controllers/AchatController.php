@@ -29,7 +29,7 @@ class AchatController extends Controller
     {
         $this->authorize('viewAny', Achat::class);
         $achats = Achat::withSum(['paiements as total' => fn($query) => $query->validated()], 'montant')
-            ->with('bien:id,nom,cout_achat', 'personne:id,nom_complet')->get();
+            ->with('bien:id,nom,cout_achat', 'personne:id,nom_complet', 'contrat:id,operation_id,operation_type,cout_achat')->get();
         return AchatListResource::collection($achats);
     }
 
@@ -69,7 +69,8 @@ class AchatController extends Controller
         $achat->loadSum(['paiements as total' => fn($query) => $query->validated()], 'montant')
             ->load(
                 'bien:id,reference,nom,pays,ville,quartier,cout_achat,superficie',
-                'personne:id,nom_complet,telephone,ville,quartier,email'
+                'personne:id,nom_complet,telephone,ville,quartier,email',
+                'contrat:id,operation_id,operation_type,cout_achat'
             )
             ->load(['paiements' => fn(MorphMany $query): MorphMany => $query->withNameResponsible()])
             ->load('audit:id,user_type,user_id,audits.auditable_id,audits.auditable_type', 'audit.user:id,name');

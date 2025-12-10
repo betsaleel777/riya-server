@@ -103,9 +103,9 @@ class Dette extends Model implements ContractsAuditable
     {
         return $query->when(!empty($search) and !ctype_space($search), function (Builder $query) use ($search): Builder {
             return $query->whereRaw("DATE_FORMAT(created_at,'%d-%m-%Y') LIKE ?", "$search%")
-                ->orWhere('status', $search)
-                ->orWhereLike('code', $search)
-                ->orWhereHas('origine', fn(Builder $query): Builder => $query->whereLike('code', $search));
+                ->orWhere('status', 'LIKE', "%$search%")
+                ->orWhere('code', 'LIKE', "%$search%")
+                ->orWhereHas('origine', fn(Builder $query): Builder => $query->where('code', 'LIKE', "%$search%"));
         });
     }
 

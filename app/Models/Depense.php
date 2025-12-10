@@ -47,9 +47,9 @@ class Depense extends Model implements ContractsAuditable
     {
         return $query->when(!empty($search) and !ctype_space($search), function (Builder $query) use ($search): Builder {
             return $query->whereRaw("DATE_FORMAT(created_at,'%d-%m-%Y') LIKE ?", "$search%")
-                ->orWhereLike('titre', $search)
-                ->orWhere('status', $search)
-                ->orWhereHas('type', fn(Builder $query): Builder => $query->whereLike('nom', $search));
+                ->orWhere('titre', 'LIKE', "%$search%")
+                ->orWhere('status', 'LIKE', "%$search%")
+                ->orWhereHas('type', fn(Builder $query): Builder => $query->where('nom', 'LIKE', "%$search%"));
         });
     }
 

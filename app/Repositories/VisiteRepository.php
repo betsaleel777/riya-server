@@ -26,7 +26,9 @@ class VisiteRepository implements VisiteRepositoryInterface
         return (int) Visite::select('*')
             ->from(fn($query) =>
             $query
-                ->selectRaw("visites.created_at,SUM(frais_dossier+montant+IFNULL(COALESCE(contrats.montant_location, ap.montant_location)*(c.mois+av.mois+f.mois),0)) as money")
+                ->selectRaw("
+                visites.created_at,
+                SUM(frais_dossier+montant+IFNULL(COALESCE(contrats.montant_location, ap.montant_location)*(c.mois+av.mois+f.mois),0)) as money")
                 ->leftJoin('cautions as c', 'c.visite_id', '=', 'visites.id')
                 ->leftjoin('appartements as ap', 'ap.id', '=', 'visites.appartement_id')
                 ->leftJoin('avances as av', 'av.visite_id', '=', 'visites.id')
@@ -51,7 +53,11 @@ class VisiteRepository implements VisiteRepositoryInterface
 
     public static function dashboard(): array
     {
-        $visites = Visite::selectRaw("visites.created_at,IFNULL(COALESCE(contrats.montant_location, ap.montant_location)*c.mois,0) as caution,IFNULL(COALESCE(contrats.montant_location, ap.montant_location)*av.mois,0) as avance,IFNULL(COALESCE(contrats.montant_location, ap.montant_location)*f.mois,0) as frais")
+        $visites = Visite::selectRaw("
+        visites.created_at,
+        IFNULL(COALESCE(contrats.montant_location, ap.montant_location)*c.mois,0) as caution,
+        IFNULL(COALESCE(contrats.montant_location, ap.montant_location)*av.mois,0) as avance,
+        IFNULL(COALESCE(contrats.montant_location, ap.montant_location)*f.mois,0) as frais")
             ->leftJoin('cautions as c', 'c.visite_id', '=', 'visites.id')
             ->leftjoin('appartements as ap', 'ap.id', '=', 'visites.appartement_id')
             ->leftJoin('avances as av', 'av.visite_id', '=', 'visites.id')

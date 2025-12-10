@@ -18,8 +18,9 @@ class AchatRepository implements AchatRepositoryInterface
 
     public function checkUptodate(Achat $achat): bool
     {
-        $bien = $achat->loadMissing('bien')->bien;
-        return $achat->paiements->isEmpty() ?: $achat->paiements->sum('montant') >= $bien->cout_achat;
+        $achat->loadMissing('contrat');
+        $coutAchat = $achat->contrat?->cout_achat;
+        return $achat->paiements->isEmpty() ?: $achat->paiements->sum('montant') >= $coutAchat;
     }
 
     public function cascadeAchatUptodate(Achat $achat): void

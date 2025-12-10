@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests\Operation;
 
+use App\Enums\ContratState;
+use App\Models\Contrat;
 use App\Models\Visite;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -29,15 +31,24 @@ class OperationRequest extends FormRequest
                 'numeric',
                 'exists:visites,id',
                 function ($attribute, $value, $fail) {
-                    $visite = Visite::with('appartement')->find($value);
+                    $visite = Visite::with(['appartement', 'contrat'])->find($value);
 
-                    if (!$visite) {
+                    if (!$visite || !$visite->appartement) {
                         return;
                     }
 
-                    // Vérifier si l'appartement est déjà occupé
-                    if ($visite->appartement && $visite->appartement->isBusy()) {
-                        $fail("L'appartement {$visite->appartement->nom} est déjà occupé par une autre location. Impossible de continuer le processus pour cette visite.");
+                    // Vérifier s'il existe un contrat EN COURS pour cet appartement (hors la visite actuelle)
+                    $query = Contrat::whereHasMorph('operation', [Visite::class], function ($query) use ($visite) {
+                        $query->where('appartement_id', $visite->appartement_id);
+                    })->where('etat', ContratState::USING);
+
+                    // Exclure le contrat de cette visite si il existe
+                    if ($visite->contrat) {
+                        $query->where('id', '!=', $visite->contrat->id);
+                    }
+
+                    if ($query->exists()) {
+                        $fail("L'appartement {$visite->appartement->nom} est déjà occupé par un contrat en cours. Impossible de continuer le processus pour cette visite.");
                     }
                 }
             ],

@@ -35,8 +35,10 @@ class Achat extends Model implements ContractsAuditable
         if ($this->exists()) {
             $this->loadMissing('paiements');
             $totalPaye = $this->paiements->sum('montant');
-            $this->loadMissing('bien');
-            return $this->bien->cout_achat - $totalPaye;
+            $this->loadMissing('contrat', 'bien');
+            // Utiliser le cout_achat du contrat s'il existe, sinon celui du bien
+            $coutAchat = $this->contrat?->cout_achat ?? $this->bien->cout_achat;
+            return $coutAchat - $totalPaye;
         } else {
             return 0;
         }
