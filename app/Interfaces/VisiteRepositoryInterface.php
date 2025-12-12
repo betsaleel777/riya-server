@@ -10,4 +10,5 @@ interface VisiteRepositoryInterface
     public static function amout(): int;
     public static function amoutDateFilter(string $date): int;
     public static function dashboard(): array;
+    public function freeBien(Visite $visite): void;
 }

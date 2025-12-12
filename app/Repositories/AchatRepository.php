@@ -38,4 +38,10 @@ class AchatRepository implements AchatRepositoryInterface
         PaiementValidated::dispatch($paiement);
         return $paiement;
     }
+
+    public function freeBien(Achat $achat): void
+    {
+        $achat->loadMissing('bien');
+        $achat->bien->setFree();
+    }
 }

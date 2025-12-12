@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\PayableStatus;
+use App\Events\ContratAborted;
 use App\Http\Requests\Contrat\ContratRequest;
 use App\Http\Resources\ContratListResource;
 use App\Http\Resources\ContratResource;
@@ -66,18 +66,6 @@ class ContratController extends Controller
         return response()->json("Le contrat pour la visite $visite->code a modifié avec succès.");
     }
 
-    public function abort(Contrat $contrat): JsonResponse
-    {
-        $this->authorize('resilier', Contrat::class);
-        $unpaidLoyers = $contrat->loyers()->where('status', '!=', PayableStatus::PAID->value)->exists();
-        $message = $unpaidLoyers ? "Impossible d'effacer le contrat : il existe des loyers impayés associés à ce contrat." : "Le contrat a été résilié avec succès.";
-        $httpCode = $unpaidLoyers ? 422 : 200;
-        if (!$unpaidLoyers) {
-            $contrat->setAborted();
-            //run event when contrat aborted
-        }
-        return response()->json($message, $httpCode);
-    }
 
     public function contratValidate(ContratRequest $request): JsonResponse
     {
@@ -90,9 +78,11 @@ class ContratController extends Controller
         return response()->json("L'opération $operation->code a été validée avec succès.");
     }
 
-    public function eraseRent(Contrat $contrat): JsonResponse
+    public function destroy(Contrat $contrat): JsonResponse
     {
-        //$this->authorize('erase', Contrat::class);
-        return response()->json("Le contrat a été effacé avec succès.");
+        $this->authorize('resilier', Contrat::class);
+        $contrat->setAborted();
+        ContratAborted::dispatch($contrat);
+        return response()->json("Le contrat a été résilié avec succès.");
     }
 }

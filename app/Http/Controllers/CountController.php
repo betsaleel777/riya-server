@@ -20,8 +20,10 @@ use Illuminate\Http\JsonResponse;
 
 class CountController extends Controller
 {
-    public function __construct(private VisiteRepositoryInterface $visiteRepository,
-        private PaiementRepositoryInterface $paiementRepository) {}
+    public function __construct(
+        private VisiteRepositoryInterface $visiteRepository,
+        private PaiementRepositoryInterface $paiementRepository
+    ) {}
 
     public function societe(): JsonResponse
     {
@@ -55,9 +57,8 @@ class CountController extends Controller
 
     public function pendings(): JsonResponse
     {
-        $pendings = Achat::pending()->count() + Dette::pending()->count() + Loyer::pending()->count() + Depense::pending()->count() +
-        Visite::pending()->count();
-        return response()->json((int) $pendings);
+        $pendings = (int) Achat::pending()->count() + (int) Dette::pending()->count() + (int) Loyer::pending()->count() + (int) Depense::pending()->count() + (int) Visite::pending()->count();
+        return response()->json($pendings);
     }
 
     public function depenses(CountDateRequest $request): JsonResponse
@@ -77,7 +78,9 @@ class CountController extends Controller
     public function chiffres(CountDateRequest $request): JsonResponse
     {
         $request->validated();
-        $this->visiteRepository::amoutDateFilter($request->query('date')) + Paiement::validated()->countDateFilter($request->query('date'))->sum('montant') - Dette::currentYear()->paid()->countDateFilter($request->query('date'))->sum('montant');
-        return response()->json();
+        $chiffres = $this->visiteRepository::amoutDateFilter($request->query('date')) +
+            (int)Paiement::validated()->countDateFilter($request->query('date'))->sum('montant') -
+            (int) Dette::currentYear()->paid()->countDateFilter($request->query('date'))->sum('montant');
+        return response()->json($chiffres);
     }
 }

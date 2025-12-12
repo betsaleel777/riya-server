@@ -33,7 +33,8 @@ class VisiteRepository implements VisiteRepositoryInterface
                 ->leftjoin('appartements as ap', 'ap.id', '=', 'visites.appartement_id')
                 ->leftJoin('avances as av', 'av.visite_id', '=', 'visites.id')
                 ->leftJoin('frais as f', 'f.visite_id', '=', 'visites.id')
-                ->leftJoin('contrats', fn($join) => $join->on('contrats.operation_id', '=', 'visites.id')->where('contrats.operation_type', '=', 'App\Models\Visite'))
+                ->leftJoin('contrats', fn($join) => $join->on('contrats.operation_id', '=', 'visites.id')
+                    ->where('contrats.operation_type', '=', Visite::class))
                 ->from('visites')->where('visites.status', ValidableEntityStatus::VALID->value)->groupBy('visites.id'))
             ->currentYear()->sum('money');
     }
@@ -42,11 +43,15 @@ class VisiteRepository implements VisiteRepositoryInterface
         return (int) Visite::select('*')
             ->from(fn($query) =>
             $query
-                ->selectRaw("visites.created_at,SUM(frais_dossier+montant+IFNULL(COALESCE(contrats.montant_location, ap.montant_location)*(c.mois+av.mois+f.mois),0)) as money")->leftJoin('cautions as c', 'c.visite_id', '=', 'visites.id')
+                ->selectRaw("
+                visites.created_at,
+                SUM(frais_dossier+montant+IFNULL(COALESCE(contrats.montant_location, ap.montant_location)*(c.mois+av.mois+f.mois),0)) as money")
+                ->leftJoin('cautions as c', 'c.visite_id', '=', 'visites.id')
                 ->leftjoin('appartements as ap', 'ap.id', '=', 'visites.appartement_id')
                 ->leftJoin('avances as av', 'av.visite_id', '=', 'visites.id')
                 ->leftJoin('frais as f', 'f.visite_id', '=', 'visites.id')
-                ->leftJoin('contrats', fn($join) => $join->on('contrats.operation_id', '=', 'visites.id')->where('contrats.operation_type', '=', 'App\Models\Visite'))
+                ->leftJoin('contrats', fn($join) => $join->on('contrats.operation_id', '=', 'visites.id')
+                    ->where('contrats.operation_type', '=', Visite::class))
                 ->from('visites')->where('visites.status', ValidableEntityStatus::VALID->value)->groupBy('visites.id'))
             ->countDateFilter($date)->sum('money');
     }
@@ -62,7 +67,8 @@ class VisiteRepository implements VisiteRepositoryInterface
             ->leftjoin('appartements as ap', 'ap.id', '=', 'visites.appartement_id')
             ->leftJoin('avances as av', 'av.visite_id', '=', 'visites.id')
             ->leftJoin('frais as f', 'f.visite_id', '=', 'visites.id')
-            ->leftJoin('contrats', fn($join) => $join->on('contrats.operation_id', '=', 'visites.id')->where('contrats.operation_type', '=', 'App\Models\Visite'))
+            ->leftJoin('contrats', fn($join) => $join->on('contrats.operation_id', '=', 'visites.id')
+                ->where('contrats.operation_type', '=', Visite::class))
             ->where('visites.status', ValidableEntityStatus::VALID->value)
             ->whereBetween('visites.created_at', [Carbon::now()->startOfMonth()->subMonth(4), Carbon::now()])->groupBy('visites.id')->get()
             ->groupBy(fn($date) => Carbon::parse($date->created_at)->format('Y-m'))
@@ -77,5 +83,11 @@ class VisiteRepository implements VisiteRepositoryInterface
             'avances' => $visites->map(fn($item) => $item->get('avance', 0))->values(),
             'frais' => $visites->map(fn($item) => $item->get('frais', 0))->values(),
         ];
+    }
+
+    public function freeBien(Visite $visite): void
+    {
+        $visite->loadMissing('appartement');
+        $visite->appartement->setFree();
     }
 }

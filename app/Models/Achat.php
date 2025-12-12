@@ -32,24 +32,26 @@ class Achat extends Model implements ContractsAuditable
 
     public function reste(): int
     {
-        if ($this->exists()) {
-            $this->loadMissing('paiements');
-            $totalPaye = $this->paiements->sum('montant');
-            $this->loadMissing('contrat', 'bien');
-            // Utiliser le cout_achat du contrat s'il existe, sinon celui du bien
-            $coutAchat = $this->contrat?->cout_achat ?? $this->bien->cout_achat;
-            return $coutAchat - $totalPaye;
-        } else {
+        if (!$this->exists) {
             return 0;
         }
+
+        $this->loadMissing('paiements');
+        $totalPaye = $this->paiements->sum('montant');
+        $this->loadMissing('contrat', 'bien');
+        // Utiliser le cout_achat du contrat s'il existe, sinon celui du bien
+        $coutAchat = $this->contrat?->cout_achat ?? $this->bien->cout_achat;
+        return $coutAchat - $totalPaye;
     }
 
     public function contractible(): bool
     {
-        if ($this->exists()) {
-            $this->loadMissing('paiements');
-            return $this->paiements->count() === 1;
+        if (!$this->exists) {
+            return false;
         }
+
+        $this->loadMissing('paiements');
+        return $this->paiements->count() === 1;
     }
 
     // scopes

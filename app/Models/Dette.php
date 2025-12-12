@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\PayableStatus;
+use App\Models\Paiement;
 use App\Scopes\OrderByIdDescScope;
 use App\StateMachines\DetteStatusStateMachine;
 use App\Traits\HasCountDateFilterScope;
@@ -44,26 +45,32 @@ class Dette extends Model implements ContractsAuditable
         $this->attributes['code'] = 'DET' . Str::upper(Str::random(3)) . Carbon::now()->format('y');
     }
 
-    public function getOrigine(): string
+    public function getOrigine(): ?string
     {
-        if ($this->exists) {
-            $this->loadMissing('origine');
-            return match ($this->origine_type) {
-                'App\Models\Paiement' => $this->origine->payable_type,
-                default => $this->origine_type,
-            };
+        if (!$this->exists) {
+            return null;
         }
+
+        $this->loadMissing('origine');
+
+        return match ($this->origine_type) {
+            Paiement::class => $this->origine->payable_type,
+            default => $this->origine_type,
+        };
     }
 
-    public function getOrigineId(): string
+    public function getOrigineId(): ?string
     {
-        if ($this->exists) {
-            $this->loadMissing('origine');
-            return match ($this->origine_type) {
-                'App\Models\Paiement' => $this->origine->payable_id,
-                default => $this->origine_id,
-            };
+        if (!$this->exists) {
+            return null;
         }
+
+        $this->loadMissing('origine');
+
+        return match ($this->origine_type) {
+            Paiement::class => $this->origine->payable_id,
+            default => $this->origine_id,
+        };
     }
 
     public function isVisiteResource(): bool

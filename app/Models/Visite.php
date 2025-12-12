@@ -46,37 +46,44 @@ class Visite extends Model implements ContractsAuditable
 
     public function statusAvance(): string
     {
-        $this->loadMissing('contrat');
-        if ($this->exists() and empty($this->contrat)) {
+        if (!$this->exists) {
             return AvanceStatus::CONTRACTWITHOUT->value;
         }
-        if ($this->exists() and !empty($this->contrat)) {
-            $this->loadMissing('avance');
-            return Carbon::now()->isBefore($this->contrat->debut->addMonth($this->avance->mois)) ?
-                AvanceStatus::INUSE->value : AvanceStatus::EXHAUSTED->value;
+
+        $this->loadMissing('contrat');
+        if (empty($this->contrat)) {
+            return AvanceStatus::CONTRACTWITHOUT->value;
         }
+
+        $this->loadMissing('avance');
+        return Carbon::now()->isBefore($this->contrat->debut->addMonth($this->avance->mois)) ?
+            AvanceStatus::INUSE->value : AvanceStatus::EXHAUSTED->value;
     }
 
     public function bailProcessStarted(): bool
     {
-        if ($this->exists) {
-            $this->loadMissing('avance');
-            $this->loadMissing('frais');
-            $this->loadMissing('caution');
-            return !empty($this->avance) or !empty($this->frais) or !empty($this->caution) or $this->frais_dossier !== 0;
+        if (!$this->exists) {
+            return false;
         }
+
+        $this->loadMissing('avance');
+        $this->loadMissing('frais');
+        $this->loadMissing('caution');
+        return !empty($this->avance) or !empty($this->frais) or !empty($this->caution) or $this->frais_dossier !== 0;
     }
 
     public function getAmountTotaly(): int
     {
-        if ($this->exists) {
-            $this->loadMissing('avance');
-            $this->loadMissing('frais');
-            $this->loadMissing('caution');
-            $this->loadMissing('appartement');
-            return $this->attributes['frais_dossier'] + $this->attributes['montant'] +
-                ($this->avance?->mois + $this->frais?->mois + $this->caution?->mois) * $this->appartement->montant_location;
+        if (!$this->exists) {
+            return 0;
         }
+
+        $this->loadMissing('avance');
+        $this->loadMissing('frais');
+        $this->loadMissing('caution');
+        $this->loadMissing('appartement');
+        return $this->attributes['frais_dossier'] + $this->attributes['montant'] +
+            ($this->avance?->mois + $this->frais?->mois + $this->caution?->mois) * $this->appartement->montant_location;
     }
 
     public function setExpiration(): void
