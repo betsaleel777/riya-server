@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Events\ContratAborted;
+use App\Events\ContratUpdated;
+use App\Http\Requests\Contrat\ContratEditRequest;
 use App\Http\Requests\Contrat\ContratRequest;
 use App\Http\Resources\ContratListResource;
 use App\Http\Resources\ContratResource;
@@ -12,6 +14,7 @@ use App\Models\Contrat;
 use App\Models\Visite;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
+use RuntimeException;
 
 class ContratController extends Controller
 {
@@ -58,12 +61,17 @@ class ContratController extends Controller
         return response()->json("Le contrat pour l'opération $operation->code a été crée avec succès.");
     }
 
-    public function update(ContratRequest $request, Contrat $contrat): JsonResponse
+    public function update(ContratEditRequest $request, Contrat $contrat): JsonResponse
     {
         $this->authorize('update', Contrat::class);
-        $contrat->update($request->all());
-        $visite = Visite::find($request->visite_id);
-        return response()->json("Le contrat pour la visite $visite->code a modifié avec succès.");
+        $contrat->load('operation');
+        $operation = $contrat->operation;
+        $message = match (true) {
+            $operation instanceof Visite => $this->contratRepository->visiteUpdated($contrat, $request->integer('montant')),
+            $operation instanceof Achat => $this->contratRepository->achatUpdated($contrat, $request->integer('montant')),
+            default => throw new RuntimeException('Operation type not found'),
+        };
+        return response()->json($message);
     }
 
 
