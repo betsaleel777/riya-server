@@ -61,4 +61,9 @@ class FinancialPolicy
     {
         return $user->hasRole(RolesName::ADMIN);
     }
+
+    public function viewStats(User $user): bool
+    {
+        return $user->hasAnyRole(RolesName::ADMIN, RolesName::FINANCIAL);
+    }
 }

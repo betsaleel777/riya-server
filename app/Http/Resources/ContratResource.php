@@ -25,6 +25,7 @@ class ContratResource extends JsonResource
             'etat' => $this->whenNotNull($this->resource->etat),
             'status' => $this->whenNotNull($this->resource->status),
             'montant_location' => $this->whenNotNull($this->resource->montant_location),
+            'cout_achat' => $this->whenNotNull($this->resource->cout_achat),
             'commission' => $this->whenNotNull($this->resource->commission),
             'operation_id' => $this->whenNotNull($this->resource->operation_id),
             'operation_type' => $this->when($this->resource->operation_type, class_basename($this->resource->operation_type)),

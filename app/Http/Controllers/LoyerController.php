@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\PayableStatus;
+use App\Enums\ValidableEntityStatus;
 use App\Http\Requests\Loyer\LoyerPatchRequest;
 use App\Http\Requests\Loyer\LoyerPostRequest;
 use App\Http\Resources\LoyerListResource;
@@ -69,9 +71,6 @@ class LoyerController extends Controller
         return LoyerValidationResource::collection($loyers);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Loyer $loyer): JsonResource
     {
         $this->authorize('view', Loyer::class);
@@ -146,5 +145,46 @@ class LoyerController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    public function getStats(): JsonResponse
+    {
+        $this->authorize('viewStats', Loyer::class);
+
+        $amounts = [
+            'total' => (int)Loyer::currentMonth()->sum('montant'),
+            'pending' => (int)Paiement::where('payable_type', Loyer::class)
+                ->where('status', ValidableEntityStatus::WAIT)
+                ->whereHas('payable', fn(Builder $query): Builder => $query->currentMonth())
+                ->sum('montant'),
+            'paid' => (int)Paiement::where('payable_type', Loyer::class)
+                ->where('status', ValidableEntityStatus::VALID)
+                ->whereHas('payable', fn(Builder $query): Builder => $query->currentMonth())
+                ->sum('montant'),
+        ];
+        $total = array_sum($amounts);
+
+        $unpaid = $amounts['total'] - $amounts['pending'] - $amounts['paid'];
+        $stats = [
+            'unpaid' => [
+                'amount' => $unpaid,
+                'percentage' => round(($unpaid / $total) * 100, 2),
+                'title' => 'à recouvrer',
+                'text' => 'texte à recouvrer'
+            ],
+            'pending' => [
+                'amount' => $amounts['pending'],
+                'percentage' => round(($amounts['pending'] / $total) * 100, 2),
+                'title' => 'recouvré(s) en attente',
+                'text' => 'texte recouvré en attente'
+            ],
+            'paid' => [
+                'amount' => $amounts['paid'],
+                'percentage' => round(($amounts['paid'] / $total) * 100, 2),
+                'title' => 'recouvré(s)',
+                'text' => 'texte recouvré'
+            ]
+        ];
+        return response()->json($stats);
     }
 }

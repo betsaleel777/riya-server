@@ -26,4 +26,9 @@ class LoyerPolicy extends EmployeePolicy
     {
         return $user->hasAnyRole(RolesName::ADMIN);
     }
+
+    public function viewStats(User $user): bool
+    {
+        return $user->hasAnyRole(RolesName::ADMIN, RolesName::FINANCIAL);
+    }
 }
