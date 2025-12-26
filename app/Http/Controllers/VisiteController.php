@@ -6,12 +6,13 @@ use App\Http\Requests\Visite\VisiteRequest;
 use App\Http\Resources\VisiteListResource;
 use App\Http\Resources\VisiteResource;
 use App\Http\Resources\VisiteValidationResource;
-use App\Interfaces\ContratRepositoryInterface;
+use App\Interfaces\DetteRepositoryInterface;
 use App\Interfaces\VisiteRepositoryInterface;
 use App\Models\Dette;
 use App\Models\Loyer;
 use App\Models\Paiement;
 use App\Models\Visite;
+use App\Repositories\DetteRepository;
 use Exception;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -23,8 +24,8 @@ use Illuminate\Support\Facades\DB;
 class VisiteController extends Controller
 {
     public function __construct(
-        private ContratRepositoryInterface $contratRepository,
-        private VisiteRepositoryInterface $visiteRepository
+        private VisiteRepositoryInterface $visiteRepository,
+        private DetteRepositoryInterface $detteRepository
     ) {}
 
     public function index(): JsonResource
@@ -77,7 +78,12 @@ class VisiteController extends Controller
     public function update(VisiteRequest $request, Visite $visite)
     {
         $this->authorize('update', Visite::class);
-        $visite->update($request->validated());
+        $visite->fill($request->validated());
+        if ($visite->isDirty('visite_date')) {
+            $visite->load('dette');
+            optional($visite->dette, fn($dette) => $this->detteRepository->cascadeUpdateFromVisite($visite));
+        }
+        $visite->save();
         return response()->json("La visite a été modifié avec succès.");
     }
 

@@ -27,7 +27,7 @@ class VisiteRepository implements VisiteRepositoryInterface
             ->from(fn($query) =>
             $query
                 ->selectRaw("
-                visites.created_at,
+                visites.visite_date,
                 SUM(frais_dossier+montant+IFNULL(COALESCE(contrats.montant_location, ap.montant_location)*(c.mois+av.mois+f.mois),0)) as money")
                 ->leftJoin('cautions as c', 'c.visite_id', '=', 'visites.id')
                 ->leftjoin('appartements as ap', 'ap.id', '=', 'visites.appartement_id')
@@ -35,16 +35,21 @@ class VisiteRepository implements VisiteRepositoryInterface
                 ->leftJoin('frais as f', 'f.visite_id', '=', 'visites.id')
                 ->leftJoin('contrats', fn($join) => $join->on('contrats.operation_id', '=', 'visites.id')
                     ->where('contrats.operation_type', '=', Visite::class))
-                ->from('visites')->where('visites.status', ValidableEntityStatus::VALID->value)->groupBy('visites.id'))
-            ->currentYear()->sum('money');
+                ->from('visites')
+                ->where('visites.status', ValidableEntityStatus::VALID->value)
+                ->whereBetween('visites.visite_date', [now()->startOfYear(), now()->endOfYear()])
+                ->groupBy('visites.id', 'visites.created_at', 'visites.visite_date'))
+            ->sum('money');
     }
+
     public static function amoutDateFilter(string $date): int
     {
+        $dates = explode(',', $date);
         return (int) Visite::select('*')
             ->from(fn($query) =>
             $query
                 ->selectRaw("
-                visites.created_at,
+                visites.visite_date,
                 SUM(frais_dossier+montant+IFNULL(COALESCE(contrats.montant_location, ap.montant_location)*(c.mois+av.mois+f.mois),0)) as money")
                 ->leftJoin('cautions as c', 'c.visite_id', '=', 'visites.id')
                 ->leftjoin('appartements as ap', 'ap.id', '=', 'visites.appartement_id')
@@ -52,14 +57,18 @@ class VisiteRepository implements VisiteRepositoryInterface
                 ->leftJoin('frais as f', 'f.visite_id', '=', 'visites.id')
                 ->leftJoin('contrats', fn($join) => $join->on('contrats.operation_id', '=', 'visites.id')
                     ->where('contrats.operation_type', '=', Visite::class))
-                ->from('visites')->where('visites.status', ValidableEntityStatus::VALID->value)->groupBy('visites.id'))
-            ->countDateFilter($date)->sum('money');
+                ->from('visites')
+                ->where('visites.status', ValidableEntityStatus::VALID->value)
+                ->when(count($dates) === 2, fn($q) => $q->whereBetween('visites.visite_date', [$dates[0], $dates[1]]))
+                ->when(count($dates) === 1, fn($q) => $q->whereDate('visites.visite_date', $dates[0]))
+                ->groupBy('visites.id', 'visites.visite_date'))
+            ->sum('money');
     }
 
     public static function dashboard(): array
     {
         $visites = Visite::selectRaw("
-        visites.created_at,
+        visites.visite_date,
         IFNULL(COALESCE(contrats.montant_location, ap.montant_location)*c.mois,0) as caution,
         IFNULL(COALESCE(contrats.montant_location, ap.montant_location)*av.mois,0) as avance,
         IFNULL(COALESCE(contrats.montant_location, ap.montant_location)*f.mois,0) as frais")
@@ -70,8 +79,10 @@ class VisiteRepository implements VisiteRepositoryInterface
             ->leftJoin('contrats', fn($join) => $join->on('contrats.operation_id', '=', 'visites.id')
                 ->where('contrats.operation_type', '=', Visite::class))
             ->where('visites.status', ValidableEntityStatus::VALID->value)
-            ->whereBetween('visites.created_at', [Carbon::now()->startOfMonth()->subMonth(4), Carbon::now()])->groupBy('visites.id')->get()
-            ->groupBy(fn($date) => Carbon::parse($date->created_at)->format('Y-m'))
+            ->whereBetween('visites.visite_date', [Carbon::now()->startOfMonth()->subMonth(4), Carbon::now()])
+            ->groupBy('visites.id', 'visites.visite_date')
+            ->get()
+            ->groupBy(fn($item) => Carbon::parse($item->visite_date)->format('Y-m'))
             ->map(fn($item) => Collect([
                 'caution' => $item->sum('caution'),
                 'avance' => $item->sum('avance'),

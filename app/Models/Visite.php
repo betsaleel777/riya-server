@@ -26,9 +26,17 @@ use OwenIt\Auditing\Contracts\Auditable as ContractsAuditable;
 class Visite extends Model implements ContractsAuditable
 {
     use Auditable, HasResponsible, HasStateMachines, HasCurrentYearScope, HasCountDateFilterScope, HasValidableEntityScope;
-    protected $fillable = ['code', 'personne_id', 'montant', 'date_expiration', 'appartement_id', 'frais_dossier'];
-    protected $dates = ['created_at'];
-    protected $casts = ['montant' => 'integer', 'date_expiration' => 'date', 'frais_dossier' => 'integer'];
+    protected $fillable = [
+        'code',
+        'personne_id',
+        'montant',
+        'date_expiration',
+        'appartement_id',
+        'frais_dossier',
+        'visite_date',
+    ];
+    protected $dates = ['created_at', 'visite_date'];
+    protected $casts = ['montant' => 'integer', 'date_expiration' => 'date', 'visite_date' => 'date', 'frais_dossier' => 'integer'];
 
     public $stateMachines = [
         'status' => ValidableEntityStateMachine::class,

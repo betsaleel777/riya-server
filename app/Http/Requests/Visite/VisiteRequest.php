@@ -25,6 +25,8 @@ class VisiteRequest extends FormRequest
             'personne_id' => 'required',
             'montant' => 'required',
             'appartement_id' => 'required',
+            'visite_date' => 'required|date',
+            'frais_dossier' => 'required|numeric',
         ];
     }
 }
