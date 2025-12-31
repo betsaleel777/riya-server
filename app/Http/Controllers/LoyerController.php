@@ -155,11 +155,11 @@ class LoyerController extends Controller
             'total' => (int)Loyer::currentMonth()->sum('montant'),
             'pending' => (int)Paiement::where('payable_type', Loyer::class)
                 ->where('status', ValidableEntityStatus::WAIT)
-                ->whereHas('payable', fn(Builder $query): Builder => $query->currentMonth())
+                ->whereHas('payable', fn(Builder $query): Builder => $query->whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()]))
                 ->sum('montant'),
             'paid' => (int)Paiement::where('payable_type', Loyer::class)
                 ->where('status', ValidableEntityStatus::VALID)
-                ->whereHas('payable', fn(Builder $query): Builder => $query->currentMonth())
+                ->whereHas('payable', fn(Builder $query): Builder => $query->whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()]))
                 ->sum('montant'),
         ];
         $total = array_sum($amounts);

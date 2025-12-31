@@ -85,6 +85,7 @@ Route::get('dashboard-count', [CountController::class, 'dashboard'])->middleware
 Route::get('dashboard-count/depenses', [CountController::class, 'depenses'])->middleware('auth:sanctum');
 Route::get('dashboard-count/dettes', [CountController::class, 'dettes'])->middleware('auth:sanctum');
 Route::get('dashboard-count/chiffres', [CountController::class, 'chiffres'])->middleware('auth:sanctum');
+Route::get('dashboard-count/rapport', [CountController::class, 'rapport'])->middleware('auth:sanctum');
 Route::get('dashboard-pendings', [CountController::class, 'pendings'])->middleware('auth:sanctum');
 Route::get('paiements/payable/{id}', [PaiementController::class, 'getByPayable'])->middleware('auth:sanctum');
 Route::post('paiements/direct', [PaiementController::class, 'createDirect'])->middleware('auth:sanctum');
