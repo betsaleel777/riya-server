@@ -168,19 +168,19 @@ class LoyerController extends Controller
         $stats = [
             'unpaid' => [
                 'amount' => $unpaid,
-                'percentage' => round(($unpaid / $total) * 100, 2),
+                'percentage' => $total > 0 ? round(($unpaid / $total) * 100, 2) : 0,
                 'title' => 'à recouvrer',
                 'text' => 'texte à recouvrer'
             ],
             'pending' => [
                 'amount' => $amounts['pending'],
-                'percentage' => round(($amounts['pending'] / $total) * 100, 2),
+                'percentage' => $total > 0 ? round(($amounts['pending'] / $total) * 100, 2) : 0,
                 'title' => 'recouvré(s) en attente',
                 'text' => 'texte recouvré en attente'
             ],
             'paid' => [
                 'amount' => $amounts['paid'],
-                'percentage' => round(($amounts['paid'] / $total) * 100, 2),
+                'percentage' => $total > 0 ? round(($amounts['paid'] / $total) * 100, 2) : 0,
                 'title' => 'recouvré(s)',
                 'text' => 'texte recouvré'
             ]
