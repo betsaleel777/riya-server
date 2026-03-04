@@ -2,16 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\ValidableEntityStatus;
 use App\Http\Requests\Depense\DepensePostRequest;
 use App\Http\Requests\Depense\DepensePutRequest;
 use App\Http\Resources\DepenseListResource;
 use App\Http\Resources\DepenseShowResource;
 use App\Http\Resources\DepenseValidationResource;
 use App\Models\Depense;
+use App\Repositories\VisiteRepository;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\DB;
 
 class DepenseController extends Controller
 {
@@ -24,6 +27,30 @@ class DepenseController extends Controller
         $depenses = Depense::select('id', 'titre', 'montant', 'type_depense_id', 'created_at', 'status')
             ->with(['type' => fn(BelongsTo $query) => $query->select('id', 'nom')])->get();
         return DepenseListResource::collection($depenses);
+    }
+
+    public function stats(): JsonResponse
+    {
+        $this->authorize('viewStats', Depense::class);
+        $depenses = DB::table('depenses')->selectRaw('SUM(montant) as total')
+            ->where('status', ValidableEntityStatus::VALID->value)
+            ->whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()])
+            ->first();
+        $recettes = VisiteRepository::entreesDateFilter([now()->startOfMonth(), now()->endOfMonth()]);
+        return response()->json([
+            'depenses' => [
+                'title' => 'Dépenses',
+                'amount' => (int)$depenses->total,
+            ],
+            'recettes' => [
+                'title' => 'Recettes',
+                'amount' => $recettes,
+            ],
+            'solde' => [
+                'title' => 'Solde',
+                'amount' => $recettes - (int)$depenses->total,
+            ],
+        ]);
     }
 
     public function getPending(): JsonResource

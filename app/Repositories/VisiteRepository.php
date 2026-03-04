@@ -65,6 +65,30 @@ class VisiteRepository implements VisiteRepositoryInterface
             ->sum('money');
     }
 
+    public static function entreesDateFilter(array $dates): int
+    {
+        return (int) Visite::select('*')
+            ->from(fn($query) =>
+            $query
+                ->selectRaw("
+                visites.visite_date,
+                SUM(frais_dossier+montant+
+                IFNULL(
+                COALESCE(contrats.montant_location, ap.montant_location)*(c.mois+av.mois)*(1-contrats.commission/100) + 
+                COALESCE(contrats.montant_location, ap.montant_location)*f.mois,0)) as money")
+                ->leftJoin('cautions as c', 'c.visite_id', '=', 'visites.id')
+                ->leftjoin('appartements as ap', 'ap.id', '=', 'visites.appartement_id')
+                ->leftJoin('avances as av', 'av.visite_id', '=', 'visites.id')
+                ->leftJoin('frais as f', 'f.visite_id', '=', 'visites.id')
+                ->leftJoin('contrats', fn($join) => $join->on('contrats.operation_id', '=', 'visites.id')
+                    ->where('contrats.operation_type', '=', Visite::class))
+                ->from('visites')
+                ->where('visites.status', ValidableEntityStatus::VALID->value)
+                ->whereBetween('visites.visite_date', [$dates[0], $dates[1]])
+                ->groupBy('visites.id', 'visites.visite_date'))
+            ->sum('money');
+    }
+
     public static function dashboard(): array
     {
         $visites = Visite::selectRaw("

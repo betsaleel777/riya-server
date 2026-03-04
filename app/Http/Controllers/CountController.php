@@ -69,21 +69,18 @@ class CountController extends Controller
 
     public function depenses(CountDateRequest $request): JsonResponse
     {
-        $request->validated();
         $depenses = (int) Depense::validated()->countDateFilter($request->query('date'))->sum('montant');
         return response()->json($depenses);
     }
 
     public function dettes(CountDateRequest $request): JsonResponse
     {
-        $request->validated();
         $dettes = (int) Dette::paid()->countDateFilter($request->query('date'))->sum('montant');
         return response()->json($dettes);
     }
 
     public function chiffres(CountDateRequest $request): JsonResponse
     {
-        $request->validated();
         $chiffres = $this->visiteRepository::amoutDateFilter($request->query('date')) +
             (int)Paiement::validated()->countDateFilter($request->query('date'))->sum('montant') -
             (int)Dette::currentYear()->paid()->countDateFilter($request->query('date'))->sum('montant');

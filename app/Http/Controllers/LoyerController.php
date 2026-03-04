@@ -45,6 +45,7 @@ class LoyerController extends Controller
     public function getPaginate(): JsonResource
     {
         $this->authorize('viewAny', Loyer::class);
+        /** @var \Illuminate\Pagination\LengthAwarePaginator $loyers */
         $loyers = Loyer::withExists(['paiements as pending' => fn(Builder $query): Builder => $query->pending()])->latest()
             ->withSum('paiements as paid', 'montant')
             ->with('client:personnes.id,personnes.nom_complet', 'bien:appartements.id,appartements.nom')
