@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ValidableEntityStatus;
+use App\Traits\HasResponsible;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -19,7 +20,7 @@ use OwenIt\Auditing\Contracts\Auditable as ContractsAuditable;
  */
 class Achat extends Model implements ContractsAuditable
 {
-    use Auditable;
+    use Auditable, HasResponsible;
     protected $fillable = ['personne_id', 'uptodate', 'code'];
     protected $dates = ['created_at'];
     protected $casts = ['uptodate' => 'boolean'];
@@ -31,22 +32,26 @@ class Achat extends Model implements ContractsAuditable
 
     public function reste(): int
     {
-        if ($this->exists()) {
-            $this->loadMissing('paiements');
-            $totalPaye = $this->paiements->sum('montant');
-            $this->loadMissing('bien');
-            return $this->bien->cout_achat - $totalPaye;
-        } else {
+        if (!$this->exists) {
             return 0;
         }
+
+        $this->loadMissing('paiements');
+        $totalPaye = $this->paiements->sum('montant');
+        $this->loadMissing('contrat', 'bien');
+        // Utiliser le cout_achat du contrat s'il existe, sinon celui du bien
+        $coutAchat = $this->contrat?->cout_achat ?? $this->bien->cout_achat;
+        return $coutAchat - $totalPaye;
     }
 
     public function contractible(): bool
     {
-        if ($this->exists()) {
-            $this->loadMissing('paiements');
-            return $this->paiements->count() === 1;
+        if (!$this->exists) {
+            return false;
         }
+
+        $this->loadMissing('paiements');
+        return $this->paiements->count() === 1;
     }
 
     // scopes

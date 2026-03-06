@@ -23,15 +23,15 @@ class ContratListResource extends JsonResource
             'status' => $this->status,
             'commission' => $this->commission,
             'operation_id' => $this->operation_id,
-            'operation_type' => str($this->operation_type)->explode('\\')[2],
+            'operation_type' => class_basename($this->operation_type),
             'debut' => $this->debut->format('d-m-Y'),
-            'fin' => $this->when(!empty($this->fin), fn () => $this->fin->format('d-m-Y')),
-            'code' => $this->whenLoaded('operation', fn () => $this->operation->code),
+            'fin' => $this->when(!empty($this->fin), fn() => $this->fin->format('d-m-Y')),
+            'code' => $this->whenLoaded('operation', fn() => $this->operation->code),
             'client' => $this->when(
                 $this->relationLoaded('operation') and $this->operation->relationLoaded('personne'),
-                fn () => Str::lower($this->operation->personne->nom_complet)
+                fn() => Str::lower($this->operation->personne->nom_complet)
             ),
-            'bien' => $this->whenLoaded('operation', fn () => match (true) {
+            'bien' => $this->whenLoaded('operation', fn() => match (true) {
                 $this->operation instanceof Visite => Str::lower($this->operation->appartement->nom),
                 $this->operation instanceof Achat => Str::lower($this->operation->bien->nom),
             }),

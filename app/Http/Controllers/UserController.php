@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
@@ -17,6 +18,7 @@ class UserController extends Controller
      */
     public function index(): JsonResource
     {
+        $this->authorize('viewAny', User::class);
         $users = User::with('photo:id,model_id,model_type,disk,file_name')->get();
         return UserResource::collection($users);
     }
@@ -26,10 +28,15 @@ class UserController extends Controller
      */
     public function store(UserPostRequest $request): JsonResponse
     {
+        $this->authorize('create', User::class);
         $request->validated();
-        $user = User::make($request->all());
+        $user = User::make($request->except('password'));
+        $user->password = Hash::make($request->password);
         $user->save();
-        $user->addMediaFromRequest('image')->toMediaCollection('photo');
+        $user->assignRole(explode(',', $request->roles));
+        $user->addMediaFromRequest('image')
+            ->sanitizingFileName(fn($fileName) => Str::slug(pathinfo($fileName, PATHINFO_FILENAME)) . '.' . pathinfo($fileName, PATHINFO_EXTENSION))
+            ->toMediaCollection('photo');
         return response()->json("L'utilisateur $user->name a été crée avec succès.");
     }
 
@@ -38,6 +45,7 @@ class UserController extends Controller
      */
     public function show(User $user): JsonResource
     {
+        $this->authorize('view', User::class);
         return UserResource::make($user->load('photo:id,model_id,model_type,disk,file_name'));
     }
 
@@ -46,6 +54,7 @@ class UserController extends Controller
      */
     public function update(UserPutRequest $request, User $user)
     {
+        $this->authorize('update', User::class);
         $request->validated();
         if ($request->filled('oldPassword')) {
             if (Hash::check($request->password, $user->password)) {
@@ -53,8 +62,11 @@ class UserController extends Controller
                 $user->email = $request->email;
                 $user->password = Hash::make($request->password);
                 $user->save();
+                $user->syncRoles(explode(',', $request->roles));
                 if ($request->hasFile('image')) {
-                    $user->addMediaFromRequest('image')->toMediaCollection('photo');
+                    $user->addMediaFromRequest('image')
+                        ->sanitizingFileName(fn($fileName) => Str::slug(pathinfo($fileName, PATHINFO_FILENAME)) . '.' . pathinfo($fileName, PATHINFO_EXTENSION))
+                        ->toMediaCollection('photo');
                 }
                 return response()->json('Utilisateur modifié avec succès.');
             } else {
@@ -64,8 +76,11 @@ class UserController extends Controller
             $user->name = $request->name;
             $user->email = $request->email;
             $user->save();
+            $user->syncRoles(explode(',', $request->roles));
             if ($request->hasFile('image')) {
-                $user->addMediaFromRequest('image')->toMediaCollection('photo');
+                $user->addMediaFromRequest('image')
+                    ->sanitizingFileName(fn($fileName) => Str::slug(pathinfo($fileName, PATHINFO_FILENAME)) . '.' . pathinfo($fileName, PATHINFO_EXTENSION))
+                    ->toMediaCollection('photo');
             }
             return response()->json('Utilisateur modifié avec succès.');
         }
@@ -76,6 +91,7 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
+        $this->authorize('delete', User::class);
         $user->delete();
         return response()->json("L'utilisateur a été supprimé avec succès.");
     }

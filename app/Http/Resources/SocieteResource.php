@@ -26,7 +26,7 @@ class SocieteResource extends JsonResource
             'siege' => $this->siege,
             'description' => $this->description,
             'frais_dossier' => $this->frais_dossier,
-            'logo' => $this->whenLoaded('logo', fn() => url($this->logo->getUrl())),
+            'logo' => $this->whenLoaded('logo', fn() => $this->logo->getUrl()),
         ];
     }
 }

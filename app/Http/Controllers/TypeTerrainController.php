@@ -6,7 +6,6 @@ use App\Http\Requests\Terrain\StoreTypeRequest;
 use App\Http\Requests\Terrain\UpdateTypeRequest;
 use App\Http\Resources\TypeResource;
 use App\Models\TypeTerrain;
-use Illuminate\Http\Request;
 
 class TypeTerrainController extends Controller
 {
@@ -15,8 +14,8 @@ class TypeTerrainController extends Controller
      */
     public function index()
     {
-        $types = TypeTerrain::get();
-        return TypeResource::collection($types);
+        $this->authorize('viewAny', TypeTerrain::class);
+        return TypeResource::collection(TypeTerrain::get());
     }
 
     /**
@@ -24,6 +23,7 @@ class TypeTerrainController extends Controller
      */
     public function store(StoreTypeRequest $request)
     {
+        $this->authorize('create', TypeTerrain::class);
         $request->validated();
         $type = TypeTerrain::make($request->all());
         $type->save();
@@ -35,6 +35,7 @@ class TypeTerrainController extends Controller
      */
     public function show(TypeTerrain $typeTerrain)
     {
+        $this->authorize('view', TypeTerrain::class);
         return TypeResource::make($typeTerrain);
     }
 
@@ -43,6 +44,7 @@ class TypeTerrainController extends Controller
      */
     public function update(UpdateTypeRequest $request, TypeTerrain $typeTerrain)
     {
+        $this->authorize('update', TypeTerrain::class);
         $request->validated();
         $typeTerrain->nom = $request->nom;
         $typeTerrain->save();
@@ -54,6 +56,7 @@ class TypeTerrainController extends Controller
      */
     public function destroy(TypeTerrain $typeTerrain)
     {
+        $this->authorize('delete', TypeTerrain::class);
         $typeTerrain->delete();
         return response()->json("Le type de terrain $typeTerrain->nom a été définitivement supprimé");
     }

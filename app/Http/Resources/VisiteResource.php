@@ -23,6 +23,7 @@ class VisiteResource extends JsonResource
             'status' => $this->whenNotNull($this->status),
             'frais_dossier' => $this->whenNotNull($this->frais_dossier),
             'created_at' => $this->whenNotNull($this->created_at?->format('d-m-Y')),
+            'visite_date' => $this->whenNotNull($this->visite_date),
             'date_expiration' => $this->whenNotNull($this->date_expiration?->format('d-m-Y')),
             'personne' => PersonneResource::make($this->whenLoaded('personne')),
             'appartement' => AppartementResource::make($this->whenLoaded('appartement')),

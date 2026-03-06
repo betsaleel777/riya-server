@@ -7,6 +7,7 @@ use App\Interfaces\PaiementRepositoryInterface;
 use App\Models\Achat;
 use App\Models\Loyer;
 use App\Models\Paiement;
+use Carbon\Carbon;
 
 class PaiementRepository implements PaiementRepositoryInterface
 {
@@ -28,11 +29,25 @@ class PaiementRepository implements PaiementRepositoryInterface
         return $paiement;
     }
 
-    public function createPaiementLoyer(Loyer $loyer): Paiement
+    public function createPaiementLoyer(Loyer $loyer, int $montant): Paiement
     {
-        $paiement = Paiement::make(['montant' => $loyer->montant]);
-        $paiement->genererCode('PAA');
+        $paiement = Paiement::make(['montant' => $montant]);
+        $paiement->genererCode('PAL');
         $paiement->payable()->associate($loyer)->save();
         return $paiement;
+    }
+
+    public static function dashboard(): array
+    {
+        $paiements = Paiement::select('created_at', 'montant', 'payable_type')->validated()
+            ->whereBetween('created_at', [Carbon::now()->startOfMonth()->subMonth(5), Carbon::now()])->get()
+            ->groupBy(fn($date) => Carbon::parse($date->created_at)->format('Y-m'))
+            ->map(fn($item) => $item->mapToGroups(fn($item) => [$item->payable_type => $item->montant]))
+            ->map(fn($item) => $item->map(fn($item) => $item->sum()));
+        return [
+            'dates' => $paiements->keys(),
+            'achats' => $paiements->map(fn($item) => $item->get('App\Models\Achat', 0))->values(),
+            'loyers' => $paiements->map(fn($item) => $item->get('App\Models\Loyer', 0))->values(),
+        ];
     }
 }

@@ -24,6 +24,7 @@ class DepenseListResource extends JsonResource
             'status' => $this->resource->status,
             'montant' => $this->resource->montant,
             'created_at' => $this->resource->created_at->format('d-m-Y'),
+            'date_depense' => $this->resource->date_depense?->format('Y-m-d'),
             'type' => $this->whenLoaded('type', str($this->resource->type->nom)->lower()),
         ];
     }

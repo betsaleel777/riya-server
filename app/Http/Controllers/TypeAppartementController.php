@@ -12,17 +12,19 @@ class TypeAppartementController extends Controller
 {
     public function index(): JsonResource
     {
-        $types = TypeAppartement::get();
-        return TypeResource::collection($types);
+        $this->authorize('viewAny', TypeAppartement::class);
+        return TypeResource::collection(TypeAppartement::get());
     }
 
     public function show(TypeAppartement $appartements_type): JsonResource
     {
+        $this->authorize('view', TypeAppartement::class);
         return TypeResource::make($appartements_type);
     }
 
     public function store(StoreTypeRequest $request)
     {
+        $this->authorize('create', TypeAppartement::class);
         $request->validated();
         $type = TypeAppartement::make($request->all());
         $type->save();
@@ -31,6 +33,7 @@ class TypeAppartementController extends Controller
 
     public function update(TypeAppartement $appartements_type, UpdateTypeRequest $request)
     {
+        $this->authorize('update', TypeAppartement::class);
         $request->validated();
         $appartements_type->nom = $request->nom;
         $appartements_type->save();
@@ -39,6 +42,7 @@ class TypeAppartementController extends Controller
 
     public function destroy(TypeAppartement $appartements_type)
     {
+        $this->authorize('delete', TypeAppartement::class);
         $appartements_type->delete();
         return response()->json("Le type d'appartement $appartements_type->nom a été définitivement supprimé");
     }

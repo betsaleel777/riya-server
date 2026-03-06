@@ -21,7 +21,7 @@ class ProprietaireResource extends JsonResource
             'telephone' => $this->telephone,
             'email' => $this->email,
             'cni' => $this->cni,
-            'created_at' => $this->created_at->format('d-m-Y'),
+            'created_at' => $this->whenNotNull($this->created_at?->format('d-m-Y')),
         ];
     }
 }

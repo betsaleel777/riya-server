@@ -11,11 +11,6 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 class DetteListResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
-     */
     public function toArray(Request $request): array
     {
         return [
@@ -23,8 +18,9 @@ class DetteListResource extends JsonResource
             'code' => $this->resource->code,
             'montant' => $this->resource->montant,
             'status' => $this->resource->status,
+            'origine_id' => $this->getOrigineId(),
             'created_at' => $this->resource->created_at->format('d-m-Y'),
-            'origine_type' => str($this->getOrigine())->explode('\\')[2],
+            'origine_type' => class_basename($this->getOrigine()),
             'origine_code' => $this->when($this->relationLoaded('origine'), $this->origine->code),
         ];
     }

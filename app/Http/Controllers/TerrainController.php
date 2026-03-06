@@ -15,12 +15,13 @@ class TerrainController extends Controller
 {
     public function index(): JsonResource
     {
-        $terrain = Terrain::with('type', 'proprietaire')->get();
-        return TerrainListResource::collection($terrain);
+        $this->authorize('viewAny', Terrain::class);
+        return TerrainListResource::collection(Terrain::with('type', 'proprietaire')->get());
     }
 
     public function store(StoreRequest $request): JsonResponse
     {
+        $this->authorize('create', Terrain::class);
         $request->validated();
         $terrain = Terrain::make($request->all());
         $terrain->genererCode();
@@ -30,11 +31,13 @@ class TerrainController extends Controller
 
     public function show(Terrain $terrain): JsonResource
     {
+        $this->authorize('view', Terrain::class);
         return TerrainResource::make($terrain);
     }
 
     public function update(UpdateRequest $updateRequest, Terrain $terrain): JsonResponse
     {
+        $this->authorize('update', Terrain::class);
         $updateRequest->validated();
         $terrain->update($updateRequest->all());
         return response()->json("Le terrain a été modifié avec succès.");
@@ -42,6 +45,7 @@ class TerrainController extends Controller
 
     public function destroy(Terrain $terrain)
     {
+        $this->authorize('delete', Terrain::class);
         $terrain->delete();
         return response()->json("Le terrain $terrain->nom a été supprimé avec succès.");
     }

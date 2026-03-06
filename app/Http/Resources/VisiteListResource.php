@@ -21,12 +21,16 @@ class VisiteListResource extends JsonResource
             'montant' => $this->montant,
             'status' => $this->status,
             'created_at' => $this->created_at->format('d-m-Y'),
-            'loyer' => $this->whenLoaded('appartement', $this->appartement->montant_location),
-            'personne' => $this->whenLoaded('personne', fn () => $this->personne->nom_complet),
+            'loyer' => $this->whenLoaded(
+                'contrat',
+                fn() => $this->contrat->montant_location,
+                fn() => $this->whenLoaded('appartement', $this->appartement->montant_location)
+            ),
+            'personne' => $this->whenLoaded('personne', fn() => $this->personne->nom_complet),
             'appartement' => $this->whenLoaded('appartement', Str::lower($this->appartement)),
-            'caution' => $this->whenLoaded('caution', fn () => $this->caution->mois) ?? 0,
-            'avance' => $this->whenLoaded('avance', fn () => $this->avance->mois) ?? 0,
-            'frais' => $this->whenLoaded('frais', fn () => $this->frais->mois) ?? 0,
+            'caution' => $this->whenLoaded('caution', fn() => $this->caution->mois) ?? 0,
+            'avance' => $this->whenLoaded('avance', fn() => $this->avance->mois) ?? 0,
+            'frais' => $this->whenLoaded('frais', fn() => $this->frais->mois) ?? 0,
             'avanceStatus' => $this->statusAvance(),
         ];
     }

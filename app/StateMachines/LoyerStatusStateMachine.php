@@ -14,9 +14,7 @@ class LoyerStatusStateMachine extends StateMachine
 
     public function transitions(): array
     {
-        return [
-            '*' => '*'
-        ];
+        return ['*' => '*'];
     }
 
     public function defaultState(): string

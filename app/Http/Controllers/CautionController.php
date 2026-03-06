@@ -11,16 +11,14 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class CautionController extends Controller
 {
-    public function __construct(private VisiteRepositoryInterface $visiteRepository)
-    {
-    }
+    public function __construct(private VisiteRepositoryInterface $visiteRepository) {}
     /**
      * Display a listing of the resource.
      */
     public function index(): JsonResource
     {
-        $cautions = Caution::get();
-        return OperationResource::collection($cautions);
+        $this->authorize('viewAny', Caution::class);
+        return OperationResource::collection(Caution::get());
     }
 
     /**
@@ -28,6 +26,7 @@ class CautionController extends Controller
      */
     public function store(OperationRequest $request)
     {
+        $this->authorize('create', Caution::class);
         $request->validated();
         $caution = Caution::make($request->all());
         $caution->save();
@@ -40,6 +39,7 @@ class CautionController extends Controller
      */
     public function show(Caution $caution): JsonResource
     {
+        $this->authorize('view', Caution::class);
         return OperationResource::make($caution);
     }
 
@@ -48,16 +48,9 @@ class CautionController extends Controller
      */
     public function update(OperationRequest $request, Caution $caution): JsonResponse
     {
+        $this->authorize('update', Caution::class);
         $request->validated();
         $caution->update($request->all());
         return response()->json("La caution a été modifié avec succès.");
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Caution $caution)
-    {
-        //
     }
 }

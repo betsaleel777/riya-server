@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\ContratState;
 use App\Enums\ContratStatus;
+use App\Scopes\OrderByIdDescScope;
 use App\StateMachines\ContratStateMachine;
 use App\StateMachines\ContratStatusStateMachine;
 use Asantibanez\LaravelEloquentStateMachines\Traits\HasStateMachines;
@@ -20,8 +21,20 @@ use OwenIt\Auditing\Contracts\Auditable as ContractsAuditable;
 class Contrat extends Model implements ContractsAuditable
 {
     use Auditable, HasStateMachines;
-    protected $fillable = ['debut', 'fin', 'commission'];
-    protected $casts = ['commission' => 'integer', 'debut' => 'date', 'fin' => 'date'];
+    protected $fillable = [
+        'debut',
+        'fin',
+        'commission',
+        'cout_achat',
+        'montant_location'
+    ];
+    protected $casts = [
+        'commission' => 'integer',
+        'debut' => 'date',
+        'fin' => 'date',
+        'cout_achat' => 'integer',
+        'montant_location' => 'integer'
+    ];
     protected $dates = ['created_at'];
 
     public $stateMachines = [
@@ -29,10 +42,23 @@ class Contrat extends Model implements ContractsAuditable
         'status' => ContratStatusStateMachine::class,
     ];
 
+    /**
+     * The "booted" method of the model.
+     *
+     * @return void
+     */
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new OrderByIdDescScope);
+    }
+
     public function encaissable(): bool
     {
         if ($this->exists()) {
             $this->relationLoaded('operation') and $this->operation->relationLoaded('appartement') ?: $this->load(['operation' => ['avance', 'appartement']]);
+            if (!$this->operation || !$this->operation->avance) {
+                return false;
+            }
             return Carbon::now()->greaterThanOrEqualTo($this->debut->addMonth($this->operation->avance->mois));
         } else {
             return false;
@@ -61,12 +87,31 @@ class Contrat extends Model implements ContractsAuditable
 
     public function scopePurchaseProcessing(Builder $query): Builder
     {
-        return $query->processing()->where('operation_type', 'App\Models\Achat');
+        return $query->processing()->where('operation_type', Achat::class);
     }
 
     public function scopeRentProcessing(Builder $query): Builder
     {
-        return $query->processing()->where('operation_type', 'App\Models\Visite');
+        return $query->processing()->where('operation_type', Visite::class);
+    }
+
+    public function scopeWhereAvanceProcessing(Builder $query): Builder
+    {
+        return $query->rentProcessing()
+            ->join('visites as v', 'operation_id', '=', 'v.id')
+            ->where('operation_type', Visite::class)
+            ->join('avances as a', 'a.visite_id', '=', 'v.id')
+            ->whereRaw('CURRENT_DATE >= DATE_ADD(debut,INTERVAL a.mois MONTH)');
+    }
+
+    public function scopeUptodate(Builder $query): Builder
+    {
+        return $query->where('status', ContratStatus::UPTODATE->value);
+    }
+
+    public function scopeNotUptodate(Builder $query): Builder
+    {
+        return $query->where('status', ContratStatus::NOTUPTODATE->value);
     }
 
     // sur achat et sur visite

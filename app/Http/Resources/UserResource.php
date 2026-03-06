@@ -5,6 +5,9 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @property User resource
+ */
 class UserResource extends JsonResource
 {
     /**
@@ -20,6 +23,7 @@ class UserResource extends JsonResource
             'email' => $this->whenNotNull($this->email),
             'created_at' => $this->whenNotNull($this->created_at?->format('d-m-Y')),
             'photo' => $this->whenLoaded('photo', fn() => $this->photo?->getUrl()),
+            'roles' => $this->getRoleNames(),
         ];
     }
 }

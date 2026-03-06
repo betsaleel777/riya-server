@@ -30,7 +30,8 @@ class PaiementResource extends JsonResource
                 $this->payable instanceof Achat => AchatResource::make($this->payable),
                 $this->payable instanceof Loyer => LoyerResource::make($this->payable),
             }),
-            'payable_type' => $this->whenNotNull(str($this->resource->payable_type)->explode('\\')[2]),
+            'payable_type' => $this->when($this->resource->payable_type, class_basename($this->resource->payable_type)),
+            'audit' => AuditResource::make($this->whenLoaded('audit')),
         ];
     }
 }

@@ -2,17 +2,15 @@
 
 namespace App\Listeners;
 
-use App\Events\LoyerValidated;
 use App\Events\PaiementValidated;
+use App\Interfaces\AchatRepositoryInterface;
+use App\Interfaces\DetteRepositoryInterface;
 use App\Models\Achat;
-use App\Repositories\AchatRepository;
-use App\Repositories\DetteRepository;
 
 class PaiementSubscriber
 {
-    public function __construct(private AchatRepository $achatRepository, private DetteRepository $detteRepository)
-    {
-    }
+    public function __construct(private AchatRepositoryInterface $achatRepository, private DetteRepositoryInterface $detteRepository)
+    {}
     /**
      * Handle the event.
      */
@@ -25,19 +23,8 @@ class PaiementSubscriber
         }
     }
 
-    public function handleLoyerValidated(LoyerValidated $event): void
-    {
-        $event->loyer->load('paiement', 'contrat');
-        $event->loyer->setPaid();
-        $event->loyer->paiement->setValide();
-        $this->detteRepository->storeForPayement($event->loyer->paiement, $event->loyer->contrat);
-    }
-
     public function subscribe(): array
     {
-        return [
-            PaiementValidated::class => 'handleValidated',
-            LoyerValidated::class => 'handleLoyerValidated',
-        ];
+        return [PaiementValidated::class => 'handleValidated'];
     }
 }

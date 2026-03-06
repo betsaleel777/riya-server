@@ -13,4 +13,5 @@ interface AchatRepositoryInterface
     public function checkUptodate(Achat $achat): bool;
     public function cascadeAchatUptodate(Achat $achat): void;
     public function valider(Achat $achat): Paiement;
+    public function freeBien(Achat $achat): void;
 }

@@ -25,7 +25,8 @@ class DepenseShowResource extends JsonResource
             'montant' => $this->resource->montant,
             'description' => $this->resource->description,
             'type_depense_id' => $this->resource->type_depense_id,
-            'created_at' => $this->resource->created_at->format('d-m-Y'),
+            'created_at' => $this->resource->created_at?->format('d-m-Y'),
+            'date_depense' => $this->resource->date_depense?->format('Y-m-d'),
             'type' => TypeResource::make($this->whenLoaded('type')),
         ];
     }

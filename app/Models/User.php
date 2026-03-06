@@ -3,6 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use App\Scopes\OrderByIdDescScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -13,13 +15,14 @@ use OwenIt\Auditing\Contracts\Auditable as ContractsAuditable;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Spatie\Permission\Traits\HasRoles;
 
 /**
  * @mixin IdeHelperUser
  */
 class User extends Authenticatable implements HasMedia, ContractsAuditable
 {
-    use HasApiTokens, HasFactory, Notifiable, InteractsWithMedia, Auditable;
+    use HasApiTokens, HasFactory, Notifiable, InteractsWithMedia, HasRoles, Auditable;
 
     /**
      * The attributes that are mass assignable.
@@ -43,6 +46,16 @@ class User extends Authenticatable implements HasMedia, ContractsAuditable
      * @var array<string, string>
      */
     protected $casts = ['email_verified_at' => 'datetime'];
+
+    /**
+     * The "booted" method of the model.
+     *
+     * @return void
+     */
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new OrderByIdDescScope);
+    }
 
     public function registerMediaCollections(): void
     {

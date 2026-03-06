@@ -18,8 +18,8 @@ class AppartementController extends Controller
      */
     public function index(): JsonResource
     {
-        $appartements = Appartement::with('type', 'proprietaire')->get();
-        return AppartementListResource::collection($appartements);
+        $this->authorize('viewAny', Appartement::class);
+        return AppartementListResource::collection(Appartement::with('type', 'proprietaire')->get());
     }
 
     /**
@@ -27,6 +27,7 @@ class AppartementController extends Controller
      */
     public function store(StoreRequest $storeRequest)
     {
+        $this->authorize('create', Appartement::class);
         $storeRequest->validated();
         $appartement = Appartement::make($storeRequest->all());
         $appartement->genererCode();
@@ -39,6 +40,7 @@ class AppartementController extends Controller
      */
     public function show(Appartement $appartement): JsonResource
     {
+        $this->authorize('view', Appartement::class);
         return AppartementResource::make($appartement);
     }
 
@@ -47,6 +49,7 @@ class AppartementController extends Controller
      */
     public function update(Appartement $appartement, UpdateRequest $request): JsonResponse
     {
+        $this->authorize('update', Appartement::class);
         $request->validated();
         $appartement->update($request->except('reference'));
         return response()->json("L'appartement a été modifié avec succès.");
@@ -57,6 +60,7 @@ class AppartementController extends Controller
      */
     public function destroy(Appartement $appartement)
     {
+        $this->authorize('delete', Appartement::class);
         $appartement->delete();
         return response()->json("Le client " . Str::upper($appartement->nom) . " a été supprimé avec succès.");
     }

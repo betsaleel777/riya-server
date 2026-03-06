@@ -3,7 +3,12 @@
 namespace App\Models;
 
 use App\Enums\ValidableEntityStatus;
+use App\Scopes\OrderByIdDescScope;
 use App\StateMachines\ValidableEntityStateMachine;
+use App\Traits\HasCountDateFilterScope;
+use App\Traits\HasCurrentYearScope;
+use App\Traits\HasResponsible;
+use App\Traits\HasValidableEntityScope;
 use Asantibanez\LaravelEloquentStateMachines\Traits\HasStateMachines;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -19,7 +24,7 @@ use OwenIt\Auditing\Contracts\Auditable as ContractsAuditable;
  */
 class Paiement extends Model implements ContractsAuditable
 {
-    use Auditable, HasStateMachines;
+    use Auditable, HasStateMachines, HasValidableEntityScope, HasCountDateFilterScope, HasCurrentYearScope, HasResponsible;
     protected $fillable = ['montant', 'code'];
     protected $dates = ['created_at'];
     protected $casts = ['montant' => 'integer'];
@@ -28,6 +33,16 @@ class Paiement extends Model implements ContractsAuditable
         'status' => ValidableEntityStateMachine::class,
     ];
 
+    /**
+     * The "booted" method of the model.
+     *
+     * @return void
+     */
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new OrderByIdDescScope);
+    }
+
     public function genererCode(string $prefix): void
     {
         $this->attributes['code'] = $prefix . Str::upper(Str::random(3)) . Carbon::now()->format('y');
@@ -35,18 +50,15 @@ class Paiement extends Model implements ContractsAuditable
 
     public function setValide(): void
     {
-        $this->status()->transitionTo($to = ValidableEntityStatus::VALID->value);
+        $this->status()->transitionTo(ValidableEntityStatus::VALID->value);
     }
 
-    //scope
-    public function scopePending(Builder $query): Builder
+    public function scopeSearch(Builder $query, string $search): Builder
     {
-        return $query->where('status', ValidableEntityStatus::WAIT->value);
-    }
-
-    public function scopeValidated(Builder $query): Builder
-    {
-        return $query->where('status', ValidableEntityStatus::VALID->value);
+        return $query->when(!empty($search) and !ctype_space($search), function (Builder $query) use ($search): Builder {
+            return $query->whereRaw("DATE_FORMAT(created_at,'%d-%m-%Y') LIKE ?", "%$search%")
+                ->orWhereLike('code', $search)->orWhere('status', $search);
+        });
     }
 
     public function payable(): MorphTo

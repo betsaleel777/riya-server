@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Scopes\OrderByIdDescScope;
 use App\StateMachines\AppartementStateMachine;
 use App\Traits\HasProperty;
 use Asantibanez\LaravelEloquentStateMachines\Traits\HasStateMachines;
@@ -20,10 +21,33 @@ class Appartement extends Model implements ContractsAuditable
 {
     use HasFactory, Auditable, HasStateMachines, HasProperty;
     protected $fillable = [
-        'reference', 'nom', 'ville', 'pays', 'quartier', 'observation', 'attestation_villageoise',
-        'titre_foncier', 'document_cession', 'arreter_approbation', 'superficie', 'montant_location',
-        'montant_investit', 'cout_achat', 'proprietaire_id', 'cours_commune', 'placard', 'etage',
-        'toilette', 'cuisine', 'garage', 'parking', 'cie', 'sodeci', 'cloture', 'type_appartement_id', 'observation',
+        'reference',
+        'nom',
+        'ville',
+        'pays',
+        'quartier',
+        'observation',
+        'attestation_villageoise',
+        'titre_foncier',
+        'document_cession',
+        'arreter_approbation',
+        'superficie',
+        'montant_location',
+        'montant_investit',
+        'cout_achat',
+        'proprietaire_id',
+        'cours_commune',
+        'placard',
+        'etage',
+        'toilette',
+        'cuisine',
+        'garage',
+        'parking',
+        'cie',
+        'sodeci',
+        'cloture',
+        'type_appartement_id',
+        'observation',
     ];
 
     protected $casts = [
@@ -52,6 +76,16 @@ class Appartement extends Model implements ContractsAuditable
     ];
 
     protected $dates = ['created_at'];
+
+    /**
+     * The "booted" method of the model.
+     *
+     * @return void
+     */
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new OrderByIdDescScope);
+    }
 
     public function genererCode(): void
     {

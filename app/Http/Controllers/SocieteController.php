@@ -8,14 +8,16 @@ use App\Http\Resources\SocieteResource;
 use App\Models\Societe;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Str;
 
 class SocieteController extends Controller
 {
 
     public function index(): JsonResource | JsonResponse
     {
+        $this->authorize('viewAny', Societe::class);
         $societes = Societe::get();
-        $societe = $societes->first();
+        $societe = Societe::get()->first();
         return $societes->isEmpty() ? response()->json('no societe') : SocieteResource::make($societe);
     }
     /**
@@ -23,10 +25,13 @@ class SocieteController extends Controller
      */
     public function store(StoreRequest $request): JsonResponse
     {
+        $this->authorize('create', Societe::class);
         $request->validated();
         $societe = Societe::make($request->all());
         $societe->save();
-        $societe->addMediaFromRequest('image')->toMediaCollection('logo');
+        $societe->addMediaFromRequest('image')
+            ->sanitizingFileName(fn($fileName) => Str::slug(pathinfo($fileName, PATHINFO_FILENAME)) . '.' . pathinfo($fileName, PATHINFO_EXTENSION))
+            ->toMediaCollection('logo');
         return response()->json("La société $societe->raison_sociale a été enregistré avec succès.");
     }
 
@@ -35,10 +40,13 @@ class SocieteController extends Controller
      */
     public function update(Societe $societe, UpdateRequest $request): JsonResponse
     {
+        $this->authorize('update', Societe::class);
         $request->validated();
         $societe->update($request->all());
         if ($request->hasFile('image')) {
-            $societe->addMediaFromRequest('image')->toMediaCollection('logo');
+            $societe->addMediaFromRequest('image')
+                ->sanitizingFileName(fn($fileName) => Str::slug(pathinfo($fileName, PATHINFO_FILENAME)) . '.' . pathinfo($fileName, PATHINFO_EXTENSION))
+                ->toMediaCollection('logo');
         }
         return response()->json("Les informations de la société ont bien été modifiés.");
     }

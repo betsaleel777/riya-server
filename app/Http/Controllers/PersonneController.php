@@ -17,8 +17,8 @@ class PersonneController extends Controller
      */
     public function index(): JsonResource
     {
-        $personnes = Personne::get();
-        return PersonneListResource::collection($personnes);
+        $this->authorize('viewAny', Personne::class);
+        return PersonneListResource::collection(Personne::get());
     }
 
     /**
@@ -26,13 +26,18 @@ class PersonneController extends Controller
      */
     public function store(StoreRequest $request)
     {
+        $this->authorize('create', Personne::class);
         $request->validated();
         $personne = Personne::make($request->all());
         $personne->genererCode();
         $personne->save();
-        $personne->addMediaFromRequest('image_piece')->toMediaCollection('piece');
+        $personne->addMediaFromRequest('image_piece')
+            ->sanitizingFileName(fn($fileName) => Str::slug(pathinfo($fileName, PATHINFO_FILENAME)) . '.' . pathinfo($fileName, PATHINFO_EXTENSION))
+            ->toMediaCollection('piece');
         if ($request->hasFile('image_avatar')) {
-            $personne->addMediaFromRequest('image_avatar')->toMediaCollection('avatar');
+            $personne->addMediaFromRequest('image_avatar')
+                ->sanitizingFileName(fn($fileName) => Str::slug(pathinfo($fileName, PATHINFO_FILENAME)) . '.' . pathinfo($fileName, PATHINFO_EXTENSION))
+                ->toMediaCollection('avatar');
         }
         return response()->json('Le client ' . Str::upper($personne->nom_complet) . ' a été enregistré avec succès.');
     }
@@ -42,8 +47,8 @@ class PersonneController extends Controller
      */
     public function show(Personne $personne): JsonResource
     {
-        $personne->load('piece', 'avatar:id,model_id,model_type,disk,file_name');
-        return PersonneResource::make($personne);
+        $this->authorize('view', Personne::class);
+        return PersonneResource::make($personne->load('piece', 'avatar:id,model_id,model_type,disk,file_name'));
     }
 
     /**
@@ -51,13 +56,18 @@ class PersonneController extends Controller
      */
     public function update(Personne $personne, UpdateRequest $request)
     {
+        $this->authorize('update', Personne::class);
         $request->validated();
         $personne->update($request->all());
         if ($request->hasFile('image_avatar')) {
-            $personne->addMediaFromRequest('image_avatar')->toMediaCollection('avatar');
+            $personne->addMediaFromRequest('image_avatar')
+                ->sanitizingFileName(fn($fileName) => Str::slug(pathinfo($fileName, PATHINFO_FILENAME)) . '.' . pathinfo($fileName, PATHINFO_EXTENSION))
+                ->toMediaCollection('avatar');
         }
         if ($request->hasFile('image_piece')) {
-            $personne->addMediaFromRequest('image_piece')->toMediaCollection('piece');
+            $personne->addMediaFromRequest('image_piece')
+                ->sanitizingFileName(fn($fileName) => Str::slug(pathinfo($fileName, PATHINFO_FILENAME)) . '.' . pathinfo($fileName, PATHINFO_EXTENSION))
+                ->toMediaCollection('piece');
         }
         return response()->json("Les informations du client ont bien été modifiées.");
     }
@@ -67,6 +77,7 @@ class PersonneController extends Controller
      */
     public function destroy(Personne $personne)
     {
+        $this->authorize('delete', Personne::class);
         $personne->delete();
         return response()->json("Le client " . Str::upper($personne->nom_complet) . " a été supprimé avec succès.");
     }

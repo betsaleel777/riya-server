@@ -18,11 +18,15 @@ class LoyerResource extends JsonResource
             'id' => $this->id,
             'code' => $this->whenNotNull($this->code),
             'montant' => $this->whenNotNull($this->montant),
+            'mois' => $this->whenNotNull($this->mois),
+            'paid' => $this->whenNotNull((int) $this->paid, 0),
             'status' => $this->whenNotNull($this->status),
             'created_at' => $this->whenNotNull($this->created_at?->format('d-m-Y')),
             'contrat' => ContratResource::make($this->whenLoaded('contrat')),
             'personne' => PersonneResource::make($this->whenLoaded('client')),
             'bien' => AppartementResource::make($this->whenLoaded('bien')),
+            'paiements' => PaiementResource::collection($this->whenLoaded('paiements')),
+            'proprietaire' => ProprietaireResource::make($this->whenLoaded('proprietaire')),
         ];
     }
 }

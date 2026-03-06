@@ -21,7 +21,12 @@ class AchatListResource extends JsonResource
             'created_at' => $this->whenNotNull($this->created_at?->format('d-m-Y')),
             'personne' => $this->whenLoaded('personne', fn() => str($this->personne->nom_complet)->lower()),
             'bien' => $this->whenLoaded('bien', str($this->bien->nom)->lower()),
-            'reste' => $this->whenLoaded('bien', $this->bien->cout_achat - $this->total),
+            'reste' => $this->whenLoaded('bien', function () {
+                $coutAchat = $this->relationLoaded('contrat') && $this->contrat?->cout_achat
+                    ? $this->contrat->cout_achat
+                    : $this->bien->cout_achat;
+                return $coutAchat - ($this->total ?? 0);
+            }),
         ];
     }
 }

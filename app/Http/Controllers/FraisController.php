@@ -20,8 +20,8 @@ class FraisController extends Controller
      */
     public function index(): JsonResource
     {
-        $frais = Frais::get();
-        return OperationResource::collection($frais);
+        $this->authorize('viewAny', Frais::class);
+        return OperationResource::collection(Frais::get());
     }
 
     /**
@@ -29,6 +29,7 @@ class FraisController extends Controller
      */
     public function store(OperationRequest $request): JsonResponse
     {
+        $this->authorize('create', Frais::class);
         $request->validated();
         $frais = Frais::make($request->all());
         $frais->save();
@@ -41,6 +42,7 @@ class FraisController extends Controller
      */
     public function show(Frais $frai): JsonResource
     {
+        $this->authorize('view', Frais::class);
         return OperationResource::make($frai);
     }
 
@@ -49,6 +51,7 @@ class FraisController extends Controller
      */
     public function update(OperationRequest $request, Frais $frai): JsonResponse
     {
+        $this->authorize('update', Frais::class);
         $request->validated();
         $frai->update($request->all());
         return response()->json("Les frais ont bien été modifié");

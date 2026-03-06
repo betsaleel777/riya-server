@@ -17,7 +17,7 @@ class TypeResource extends JsonResource
         return [
             'id' => $this->id,
             'nom' => $this->nom,
-            'created_at' => $this->created_at->format('d-m-Y'),
+            'created_at' => $this->whenNotNull($this->created_at?->format('d-m-Y')),
         ];
     }
 }

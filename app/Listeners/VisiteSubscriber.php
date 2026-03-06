@@ -9,9 +9,7 @@ class VisiteSubscriber
     /**
      * Create the event listener.
      */
-    public function __construct()
-    {
-    }
+    public function __construct() {}
 
     public function handleBailProcessing(BailProcessing $event): void
     {

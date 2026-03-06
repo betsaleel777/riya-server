@@ -3,12 +3,15 @@
 namespace App\Models;
 
 use App\Enums\PayableStatus;
+use App\Enums\ValidableEntityStatus;
+use App\Scopes\OrderByIdDescScope;
 use App\StateMachines\LoyerStatusStateMachine;
 use Asantibanez\LaravelEloquentStateMachines\Traits\HasStateMachines;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Support\Str;
 use OwenIt\Auditing\Auditable;
@@ -24,21 +27,31 @@ class Loyer extends Model implements ContractsAuditable
     use \Staudenmeir\EloquentHasManyDeep\HasRelationships;
     use Auditable;
 
-    protected $fillable = ['code', 'contrat_id', 'montant'];
+    protected $fillable = ['code', 'contrat_id', 'montant', 'mois'];
     protected $casts = ['montant' => 'integer'];
     protected $dates = ['created_at'];
     public $stateMachines = [
         'status' => LoyerStatusStateMachine::class,
     ];
 
+    /**
+     * The "booted" method of the model.
+     *
+     * @return void
+     */
+    protected static function booted()
+    {
+        static::addGlobalScope(new OrderByIdDescScope);
+    }
+
     public function genererCode(): void
     {
         $this->attributes['code'] = 'LOY' . Str::upper(Str::random(3)) . Carbon::now()->format('y');
     }
 
-    public function setPending(): void
+    public function setUnpaid(): void
     {
-        $this->status()->transitionTo(PayableStatus::PENDING->value);
+        $this->status()->transitionTo(PayableStatus::UNPAID->value);
     }
 
     public function setPaid(): void
@@ -49,7 +62,22 @@ class Loyer extends Model implements ContractsAuditable
     //scopes
     public function scopePending(Builder $query): Builder
     {
-        return $query->where('status', PayableStatus::PENDING->value);
+        return $query->whereHas('paiements', fn(Builder $query): Builder => $query->pending());
+    }
+
+    public function scopeCurrentMonth(Builder $query): Builder
+    {
+        return $query->whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()]);
+    }
+
+    public function scopeSearch(Builder $query, ?string $search): Builder
+    {
+        return $query->when(!empty($search) and !ctype_space($search), function (Builder $query) use ($search): Builder {
+            return $query->whereRaw("DATE_FORMAT(created_at,'%d-%m-%Y') LIKE ?", "$search%")
+                ->orWhere('code', 'LIKE', "%$search%")->orWhere('status', 'LIKE', "%$search%")
+                ->orWhereHas('client', fn(Builder $query): Builder => $query->where('personnes.nom_complet', 'LIKE', "%$search%"))
+                ->orWhereHas('bien', fn(Builder $query): Builder => $query->where('appartements.nom', 'LIKE', "%$search%"));
+        });
     }
 
     //relations
@@ -58,9 +86,9 @@ class Loyer extends Model implements ContractsAuditable
         return $this->belongsTo(Contrat::class);
     }
 
-    public function paiement(): MorphOne
+    public function paiements(): MorphMany
     {
-        return $this->morphOne(Paiement::class, 'payable');
+        return $this->morphMany(Paiement::class, 'payable');
     }
 
     public function client(): HasOneDeep
@@ -81,5 +109,30 @@ class Loyer extends Model implements ContractsAuditable
             ['id', 'id', 'id'],
             ['contrat_id', ['operation_type', 'operation_id'], 'appartement_id']
         );
+    }
+
+    public function proprietaire(): HasOneDeep
+    {
+        return $this->hasOneDeep(
+            Proprietaire::class,
+            [Contrat::class, Visite::class, Appartement::class],
+            ['id', 'id', 'id', 'id'],
+            ['contrat_id', ['operation_type', 'operation_id'], 'appartement_id', 'proprietaire_id']
+        );
+    }
+
+    public function pendingPaiement(): MorphOne
+    {
+        return $this->paiements()->one()->where('status', ValidableEntityStatus::WAIT->value);
+    }
+
+    public function firstPaiement(): MorphOne
+    {
+        return $this->morphOne(Paiement::class, 'payable')->oldestOfMany();
+    }
+
+    public function dette(): MorphOne
+    {
+        return $this->morphOne(Dette::class, 'origine');
     }
 }
