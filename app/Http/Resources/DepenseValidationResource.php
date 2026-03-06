@@ -22,7 +22,8 @@ class DepenseValidationResource extends JsonResource
             'id' => $this->resource->id,
             'montant' => $this->resource->montant,
             'titre' => $this->resource->titre,
-            'created_at' => $this->resource->created_at->format('d-m-Y'),
+            'created_at' => $this->resource->created_at?->format('d-m-Y'),
+            'date_depense' => $this->resource->date_depense?->format('Y-m-d'),
             'type' => $this->whenLoaded('type', $this->resource->type->nom),
             'audit' => AuditResource::make($this->whenLoaded('audit')),
         ];

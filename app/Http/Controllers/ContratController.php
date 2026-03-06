@@ -93,4 +93,11 @@ class ContratController extends Controller
         ContratAborted::dispatch($contrat);
         return response()->json("Le contrat a été résilié avec succès.");
     }
+
+    public function getByProprietaire(int $id): JsonResponse
+    {
+        $this->authorize('view', Contrat::class);
+        $contrats = $this->contratRepository->getByProprietaire($id);
+        return response()->json($contrats);
+    }
 }

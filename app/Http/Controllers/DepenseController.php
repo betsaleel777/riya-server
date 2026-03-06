@@ -24,8 +24,9 @@ class DepenseController extends Controller
     public function index(): JsonResource
     {
         $this->authorize('viewAny', Depense::class);
-        $depenses = Depense::select('id', 'titre', 'montant', 'type_depense_id', 'created_at', 'status')
-            ->with(['type' => fn(BelongsTo $query) => $query->select('id', 'nom')])->get();
+        $depenses = Depense::select('id', 'titre', 'montant', 'type_depense_id', 'created_at', 'date_depense', 'status')
+            ->with(['type' => fn(BelongsTo $query) => $query->select('id', 'nom')])
+            ->get();
         return DepenseListResource::collection($depenses);
     }
 
@@ -34,9 +35,9 @@ class DepenseController extends Controller
         $this->authorize('viewStats', Depense::class);
         $depenses = DB::table('depenses')->selectRaw('SUM(montant) as total')
             ->where('status', ValidableEntityStatus::VALID->value)
-            ->whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()])
+            ->whereBetween('date_depense', [now()->startOfYear(), now()])
             ->first();
-        $recettes = VisiteRepository::entreesDateFilter([now()->startOfMonth(), now()->endOfMonth()]);
+        $recettes = VisiteRepository::entreesDateFilter([now()->startOfYear(), now()]);
         return response()->json([
             'depenses' => [
                 'title' => 'Dépenses',
@@ -56,15 +57,20 @@ class DepenseController extends Controller
     public function getPending(): JsonResource
     {
         $this->authorize('viewPending', Depense::class);
-        $depenses = Depense::select('id', 'titre', 'montant', 'type_depense_id', 'created_at')
-            ->with(['type' => fn(BelongsTo $query) => $query->select('id', 'nom')])->withResponsible()->pending()->get();
+        $depenses = Depense::select('id', 'titre', 'montant', 'type_depense_id', 'created_at', 'date_depense')
+            ->with(['type' => fn(BelongsTo $query) => $query->select('id', 'nom')])
+            ->withResponsible()
+            ->pending()
+            ->get();
         return DepenseValidationResource::collection($depenses);
     }
 
     public function getPaginate(): JsonResource
     {
         $this->authorize('viewAny', Depense::class);
-        $depenses = Depense::select('id', 'titre', 'montant', 'type_depense_id', 'created_at', 'status')->with('type:id,nom')->latest()
+        $depenses = Depense::select('id', 'titre', 'montant', 'type_depense_id', 'created_at', 'date_depense', 'status')
+            ->with('type:id,nom')
+            ->latest()
             ->paginate(8);
         return DepenseListResource::collection($depenses->withPath('api/depenses/paginate'));
     }
@@ -72,8 +78,11 @@ class DepenseController extends Controller
     public function getSearch(Request $request): JsonResource
     {
         $this->authorize('viewAny', Depense::class);
-        $depenses = Depense::select('id', 'titre', 'montant', 'type_depense_id', 'created_at', 'status')
-            ->with('type:id,nom')->latest()->search($request->search)->paginate(8);
+        $depenses = Depense::select('id', 'titre', 'montant', 'type_depense_id', 'created_at', 'date_depense', 'status')
+            ->with('type:id,nom')
+            ->search($request->search)
+            ->latest()
+            ->paginate(8);
         return DepenseListResource::collection($depenses->withPath('api/depenses/search'));
     }
 

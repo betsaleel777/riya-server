@@ -69,8 +69,7 @@ class VisiteRepository implements VisiteRepositoryInterface
     {
         return (int) Visite::select('*')
             ->from(fn($query) =>
-            $query
-                ->selectRaw("
+            $query->selectRaw("
                 visites.visite_date,
                 SUM(frais_dossier+montant+
                 IFNULL(

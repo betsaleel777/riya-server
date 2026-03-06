@@ -23,9 +23,9 @@ class Depense extends Model implements ContractsAuditable
 {
     use HasStateMachines, HasResponsible, HasCurrentYearScope, HasCountDateFilterScope, HasValidableEntityScope, Auditable;
 
-    protected $fillable = ['titre', 'montant', 'description', 'type_depense_id'];
+    protected $fillable = ['titre', 'montant', 'description', 'type_depense_id', 'date_depense'];
     protected $dates = ['created_at'];
-    protected $casts = ['montant' => 'integer'];
+    protected $casts = ['montant' => 'integer', 'date_depense' => 'date'];
     public $stateMachines = ['status' => ValidableEntityStateMachine::class];
 
     /**
@@ -46,7 +46,7 @@ class Depense extends Model implements ContractsAuditable
     public function scopeSearch(Builder $query, string $search): Builder
     {
         return $query->when(!empty($search) and !ctype_space($search), function (Builder $query) use ($search): Builder {
-            return $query->whereRaw("DATE_FORMAT(created_at,'%d-%m-%Y') LIKE ?", "$search%")
+            return $query->whereRaw("DATE_FORMAT(date_depense,'%d-%m-%Y') LIKE ?", "$search%")
                 ->orWhere('titre', 'LIKE', "%$search%")
                 ->orWhere('status', 'LIKE', "%$search%")
                 ->orWhereHas('type', fn(Builder $query): Builder => $query->where('nom', 'LIKE', "%$search%"));

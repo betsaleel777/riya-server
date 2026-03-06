@@ -6,6 +6,7 @@ use App\Enums\PayableStatus;
 use App\Enums\ValidableEntityStatus;
 use App\Http\Requests\Loyer\LoyerPatchRequest;
 use App\Http\Requests\Loyer\LoyerPostRequest;
+use App\Http\Requests\Loyer\LoyerSearchRequest;
 use App\Http\Resources\LoyerListResource;
 use App\Http\Resources\LoyerResource;
 use App\Http\Resources\LoyerValidationResource;
@@ -53,14 +54,25 @@ class LoyerController extends Controller
         return LoyerListResource::collection($loyers->withPath('api/loyers/paginate'));
     }
 
-    public function getSearch(Request $request): JsonResource
+    public function getSearch(LoyerSearchRequest $request): JsonResource
     {
         $this->authorize('viewAny', Loyer::class);
-        $loyers = Loyer::withExists(['paiements as pending' => fn(Builder $query): Builder => $query->pending()])->latest()
+        $validated = $request->validated();
+        $dateFrom = $validated['date_from'] ?? null;
+        $dateTo = $validated['date_to'] ?? null;
+        $status = $validated['status'] ?? null;
+        $page = (int) ($validated['page'] ?? 1);
+
+        $query = Loyer::withExists(['paiements as pending' => fn(Builder $query): Builder => $query->pending()])->latest()
             ->withSum('paiements as paid', 'montant')
             ->with('client:personnes.id,personnes.nom_complet', 'bien:appartements.id,appartements.nom')
-            ->search($request->search)->paginate(8);
-        return LoyerListResource::collection($loyers->withPath('api/loyers/search'));
+            ->search($validated['search'] ?? null)
+            ->when(
+                $dateFrom && $dateTo,
+                fn(Builder $q): Builder => $q->whereBetween('created_at', [$dateFrom, $dateTo])
+            )->when($status, fn(Builder $q): Builder => $q->where('status', $status));
+        $loyers = $query->paginate(10, ['*'], 'page', $page)->withPath('api/loyers/search')->withQueryString();
+        return LoyerListResource::collection($loyers);
     }
 
     public function getPending(): JsonResource
@@ -68,7 +80,8 @@ class LoyerController extends Controller
         $this->authorize('viewPending', Loyer::class);
         $loyers = Loyer::select('id', 'code', 'montant', 'created_at', 'contrat_id')
             ->with('client:personnes.id,nom_complet', 'bien:appartements.id,nom', 'client.avatar:id,model_id,model_type,disk,file_name')
-            ->pending()->get();
+            ->pending()
+            ->get();
         return LoyerValidationResource::collection($loyers);
     }
 

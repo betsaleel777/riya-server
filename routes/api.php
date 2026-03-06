@@ -55,6 +55,7 @@ Route::apiResource('visites', VisiteController::class)->middleware('auth:sanctum
 Route::apiResource('frais', FraisController::class)->middleware('auth:sanctum');
 Route::apiResource('avances', AvanceController::class)->middleware('auth:sanctum');
 Route::apiResource('cautions', CautionController::class)->middleware('auth:sanctum');
+Route::get('contrats/{id}/proprietaire', [ContratController::class, 'getByProprietaire'])->middleware('auth:sanctum');
 Route::get('contrats/active-bail', [ContratController::class, 'getRentProcessing'])->middleware('auth:sanctum');
 Route::get('contrats/active-avance-bail', [ContratController::class, 'getRentAvanceProcessing'])->middleware('auth:sanctum');
 Route::apiResource('contrats', ContratController::class)->middleware('auth:sanctum');

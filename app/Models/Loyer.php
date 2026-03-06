@@ -70,7 +70,7 @@ class Loyer extends Model implements ContractsAuditable
         return $query->whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()]);
     }
 
-    public function scopeSearch(Builder $query, string $search): Builder
+    public function scopeSearch(Builder $query, ?string $search): Builder
     {
         return $query->when(!empty($search) and !ctype_space($search), function (Builder $query) use ($search): Builder {
             return $query->whereRaw("DATE_FORMAT(created_at,'%d-%m-%Y') LIKE ?", "$search%")
